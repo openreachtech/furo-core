@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <link rel="icon" type="image/x-icon" href="../../static/favicon.ico">
+
+  <style>
+    .result-box {
+      min-height: 20rem;
+
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+
+      background: white;
+      color: #333;
+    }
+
+    .result-box:empty::before {
+      content: 'No result';
+      color: #999;
+    }
+  </style>
+
+  <style>
+    form {
+      margin-inline: 1rem;
+    }
+
+    label.row,
+    label.column {
+      margin-block-start: 1rem;
+    }
+
+    label.row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label.column {
+      display: flex;
+      flex-direction: row;
+    }
+
+    form button {
+      margin-block-start: 1rem;
+    }
+
+    form button.standard {
+      border: none;
+      border-radius: .25rem;
+
+      padding-block: .5rem;
+      padding-inline: 1rem;
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    form button.standard:active {
+      background-color: #03c;
+    }
+
+    form button[disabled] {
+      background-color: #ccc;
+    }
+
+    [data-validation-message] {
+      height: 1.618rem;
+    }
+  </style>
+
+  <title>Sign Up - furo GraphQL client</title>
+
+  <script type="module">
+    import SignUpMutationGraphqlLauncher from '../../app/graphql/clients/mutations/signUp/SignUpMutationGraphqlLauncher.js'
+    import SignUpFormElementClerk from '../../app/domClerk/SignUpFormElementClerk.js'
+
+    /**
+     * @type {furo.GraphqlLauncherHooks}
+     */
+    const launcherHooks = {
+      async beforeRequest (payload) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.remove('hidden')
+
+        return false
+      },
+      async afterRequest (capsule) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.add('hidden')
+      },
+    }
+
+    const validationReference = {
+      valid: {},
+      invalid: {},
+      messages: {},
+      message: {},
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      hydrateValidationReference({
+        validation: validationReference,
+      })
+    })
+
+    // Expose the function to the global scope
+    window.invokeRequestOnEvent = invokeRequestOnEvent
+    window.submitForm = submitForm
+
+    // -------------------------------------------------------------------------
+
+    async function invokeRequestOnEvent ({
+      variables,
+      hooks,
+      options = {},
+    }) {
+      invokeRequest({
+        variables,
+        hooks,
+        options,
+      })
+    }
+
+    async function invokeRequest ({
+      variables,
+      hooks,
+      options = {},
+    }) {
+      const Launcher = SignUpMutationGraphqlLauncher
+
+      const payload = Launcher.createPayload({
+        variables,
+        options,
+      })
+
+      const validation = payload
+
+      const launcher = Launcher.create()
+
+      const capsule = await launcher.launchRequest({
+        payload,
+        hooks,
+      })
+
+      console.log('capsule', capsule)
+
+      hydrateResponse({
+        capsule,
+      })
+    }
+
+    async function submitForm ({
+      formElement,
+      hooks = launcherHooks,
+      options = {},
+      generateVariables = valueHash => ({
+        input: valueHash,
+      }),
+    }) {
+      const formClerk = SignUpFormElementClerk.create({
+        formElement,
+      })
+
+      const validation = formClerk.generateValidationHash()
+      hydrateValidationReference({
+        validation,
+      })
+
+      // Skip #launchRequest(), if invalid value hash of <form>.
+      if (formClerk.isInvalid()) {
+        return false
+      }
+
+      const {
+        email,
+        username,
+        firstName,
+        lastName,
+        password,
+      } = formClerk.extractValueHash()
+
+      await invokeRequest({
+        variables: generateVariables({
+          email,
+          username,
+          firstName,
+          lastName,
+          password,
+        }),
+        hooks,
+        options,
+      })
+    }
+
+    function hydrateValidationReference ({
+      validation
+    }) {
+      const validationElements = document.querySelectorAll('[data-validation-message]')
+
+      Array.from(validationElements)
+        .map(it => [
+          it,
+          it.dataset.validationMessage,
+        ])
+        .forEach(([
+          element,
+          key = ' ',
+        ]) => {
+          element.textContent =
+            validation.message[key]
+            ?? ' '
+        })
+    }
+
+    function hydrateResponse ({
+      capsule,
+    }) {
+      const contentResponseElement = document.querySelector('[data-graphql-response="content"]')
+      const errorsResponseElement = document.querySelector('[data-graphql-response="errors"]')
+
+      contentResponseElement.textContent = JSON.stringify(
+        capsule.extractContent(),
+        null,
+        2
+      )
+
+      errorsResponseElement.textContent = JSON.stringify(
+        capsule.extractErrors(),
+        null,
+        2
+      )
+    }
+  </script>
+</head>
+<body>
+  <header>I am Header</header>
+
+  <main>
+    <h1>Sign Up - GraphQL client</h1>
+
+    <form
+      onsubmit="
+        submitForm({
+          formElement: this,
+        })
+
+        return false
+      "
+    >
+      <label class="row">
+        <span>メールアドレス</span>
+        <input
+          name="email"
+          type="text"
+          placeholder="メールアドレスを入力してください。"
+          value="stew.eucen@openreach.tech"
+        >
+        <div data-validation-message="email"></div>
+      </label>
+
+      <label class="row">
+        <span>ユーザ名</span>
+        <input
+          name="username"
+          type="text"
+          placeholder="ユーザ名を入力してください。"
+          value="John Doe"
+        >
+        <div data-validation-message="username"></div>
+      </label>
+
+      <label class="row">
+        <span>First Name</span>
+        <input
+          name="firstName"
+          type="text"
+          placeholder="Please enter your first name."
+          value="Eucen"
+        >
+        <div data-validation-message="firstName"></div>
+      </label>
+
+      <label class="row">
+        <span>First Name</span>
+        <input
+          name="lastName"
+          type="text"
+          placeholder="Please enter your last name."
+          value="Stew"
+        >
+        <div data-validation-message="lastName"></div>
+      </label>
+
+      <label class="row">
+        <span>パスワード</span>
+        <input
+          name="password"
+          type="password"
+          placeholder="パスワードを入力してください。"
+        >
+        <div data-validation-message="password"></div>
+      </label>
+
+      <label class="row">
+        <span>パスワード (確認用)</span>
+        <input
+          name="password-confirmation"
+          type="password"
+          placeholder="パスワードを入力してください。"
+        >
+        <div data-validation-message="password-confirmation"></div>
+      </label>
+
+      <style>
+        :not(.toggle:has(input:checked)) + button {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      </style>
+
+      <label class="column toggle">
+        <input type="checkbox">
+        <span>利用規約に同意する</span>
+      </label>
+
+      <button
+        class="standard"
+        type="submit"
+      >
+        新規登録
+      </button>
+    </form>
+
+    <div style="margin-block-start: 3rem;">data</div>
+    <pre
+      style="
+        border: 1px #000 solid;
+
+        padding-block: .5rem;
+        padding-inline: 1rem;
+      "
+      data-graphql-response="content"
+    ></pre>
+
+    <div>errors</div>
+    <pre
+      style="
+        border: 1px #000 solid;
+
+        padding-block: .5rem;
+        padding-inline: 1rem;
+      "
+      data-graphql-response="errors"
+    ></pre>
+
+    <div
+      id="loading"
+      class="unit-loading hidden"
+    >
+      Loading ...
+    </div>
+  </main>
+
+  <footer>I am Footer</footer>
+</body>
+</html>

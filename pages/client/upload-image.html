@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <link rel="icon" type="image/x-icon" href="../../static/favicon.ico">
+
+  <style>
+    .result-box {
+      min-height: 20rem;
+
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+
+      background: white;
+      color: #333;
+    }
+
+    .result-box:empty::before {
+      content: 'No result';
+      color: #999;
+    }
+  </style>
+
+  <style>
+    form {
+      margin-inline: 1rem;
+    }
+
+    label.row,
+    label.column {
+      margin-block-start: 1rem;
+    }
+
+    label.row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label.column {
+      display: flex;
+      flex-direction: row;
+    }
+
+    form button {
+      margin-block-start: 1rem;
+    }
+
+    form button.standard {
+      border: none;
+      border-radius: .25rem;
+
+      padding-block: .5rem;
+      padding-inline: 1rem;
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    form button.standard:active {
+      background-color: #03c;
+    }
+
+    form button[disabled] {
+      background-color: #ccc;
+    }
+
+    [data-validation-message] {
+      height: 1.618rem;
+    }
+  </style>
+
+  <title>Upload Image - furo GraphQL client</title>
+
+  <script type="module">
+    import UploadImagePageGraphqlSubmitter from '../../app/contexts/UploadImagePageGraphqlSubmitter.js'
+
+    import UploadImageFormElementClerk from '../../app/domClerk/UploadImageFormElementClerk.js'
+    import UploadArrayImagesFormElementClerk from '../../app/domClerk/UploadArrayImagesFormElementClerk.js'
+    import UploadDeepPropertyImagesFormElementClerk from '../../app/domClerk/UploadDeepPropertyImagesFormElementClerk.js'
+
+    import UploadImageMutationGraphqlLauncher from '../../app/graphql/clients/mutations/uploadImage/UploadImageMutationGraphqlLauncher.js'
+    import UploadArrayImagesMutationGraphqlLauncher from '../../app/graphql/clients/mutations/uploadArrayImages/UploadArrayImagesMutationGraphqlLauncher.js'
+    import UploadDeepPropertyImagesMutationGraphqlLauncher from '../../app/graphql/clients/mutations/uploadDeepPropertyImages/UploadDeepPropertyImagesMutationGraphqlLauncher.js'
+
+    // -------------------------------------------------------------------------
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadImageRootElement = document.getElementById('root-upload-image')
+
+      const uploadImageSubmitter = UploadImagePageGraphqlSubmitter.create({
+        LauncherCtor: UploadImageMutationGraphqlLauncher,
+        FormClerkCtor: UploadImageFormElementClerk,
+        rootElement: uploadImageRootElement,
+      })
+      uploadImageSubmitter.hydrateValidationReference({
+        validation: uploadImageSubmitter.validationReference,
+      })
+      // Expose the function to the global scope
+      window.uploadImageSubmitter = uploadImageSubmitter
+
+      // -----------------------------------------------------------------------
+
+      const uploadArrayImagesRootElement = document.getElementById('root-upload-array-images')
+
+      const uploadArrayImagesSubmitter = UploadImagePageGraphqlSubmitter.create({
+        LauncherCtor: UploadArrayImagesMutationGraphqlLauncher,
+        FormClerkCtor: UploadArrayImagesFormElementClerk,
+        rootElement: uploadArrayImagesRootElement,
+      })
+      uploadArrayImagesSubmitter.hydrateValidationReference({
+        validation: uploadArrayImagesSubmitter.validationReference,
+      })
+      // Expose the function to the global scope
+      window.uploadArrayImagesSubmitter = uploadArrayImagesSubmitter
+
+      // -----------------------------------------------------------------------
+
+      const uploadDeepPropertyImagesRootElement = document.getElementById('root-upload-deep-property-images')
+
+      const uploadDeepPropertyImagesSubmitter = UploadImagePageGraphqlSubmitter.create({
+        LauncherCtor: UploadDeepPropertyImagesMutationGraphqlLauncher,
+        FormClerkCtor: UploadDeepPropertyImagesFormElementClerk,
+        rootElement: uploadDeepPropertyImagesRootElement,
+      })
+      uploadDeepPropertyImagesSubmitter.hydrateValidationReference({
+        validation: uploadDeepPropertyImagesSubmitter.validationReference,
+      })
+      // Expose the function to the global scope
+      window.uploadDeepPropertyImagesSubmitter = uploadDeepPropertyImagesSubmitter
+    })
+  </script>
+</head>
+<body>
+  <header>I am Header</header>
+
+  <main>
+    <h1>Upload Image - GraphQL client</h1>
+
+    <section class="unit-section">
+      <h2 class="title">Single image by &lt;input&gt;</h2>
+
+      <div
+        id="root-upload-image"
+        class="content"
+      >
+        <form class="unit-form"
+          onsubmit="
+            uploadImageSubmitter.submitForm({
+              formElement: this,
+            })
+
+            return false
+          "
+        >
+          <label class="control">
+            <span class="title">File Input</span>
+            <input
+              name="image"
+              type="file"
+            >
+            <div data-validation-message="image"></div>
+          </label>
+
+          <button
+            class="standard"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+
+        <div class="unit-response">
+          <div>data</div>
+          <pre
+            class="json"
+            data-graphql-response="content"
+          ></pre>
+        </div>
+
+        <div class="unit-response">
+          <div>errors</div>
+          <pre
+            class="json"
+            data-graphql-response="errors"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="unit-section">
+      <h2 class="title">Array images by &lt;input multiple&gt;</h2>
+
+      <div
+        id="root-upload-array-images"
+        class="content"
+      >
+        <form class="unit-form"
+          onsubmit="
+            uploadArrayImagesSubmitter.submitForm({
+              formElement: this,
+            })
+
+            return false
+          "
+        >
+          <label class="control">
+            <span class="title">File Input</span>
+            <input
+              name="images"
+              type="file"
+              multiple
+            >
+            <div data-validation-message="image"></div>
+          </label>
+
+          <button
+            class="standard"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+
+        <div class="unit-response">
+          <div>data</div>
+          <pre
+            class="json"
+            data-graphql-response="content"
+          ></pre>
+        </div>
+
+        <div class="unit-response">
+          <div>errors</div>
+          <pre
+            class="json"
+            data-graphql-response="errors"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="unit-section">
+      <h2 class="title">Upload Image in Deep Property Nest</h2>
+
+      <div
+        id="root-upload-deep-property-images"
+        class="content"
+      >
+        <form class="unit-form"
+          onsubmit="
+            uploadDeepPropertyImagesSubmitter.submitForm({
+              formElement: this,
+            })
+
+            return false
+          "
+        >
+          <!-- Profile Section -->
+          <div class="form-section">
+            <h3>Profile Information</h3>
+
+            <label class="control">
+              <span class="title">Nickname</span>
+              <input
+                name="nickname"
+                type="text"
+                value="John Doe"
+              >
+              <div data-validation-message="nickname"></div>
+            </label>
+
+            <label class="control">
+              <span class="title">Bio</span>
+              <textarea
+                name="bio"
+                rows="3"
+              >John Doe is a software engineer.</textarea>
+              <div data-validation-message="bio"></div>
+            </label>
+
+            <label class="control">
+              <span class="title">Avatar Image</span>
+              <input
+                name="avatar-image"
+                type="file"
+                accept="image/*"
+              >
+              <div data-validation-message="avatarImage"></div>
+            </label>
+          </div>
+
+          <!-- Config Section -->
+          <div class="form-section">
+            <h3>Configuration</h3>
+
+            <label class="control">
+              <span class="title">Theme Color</span>
+              <input
+                name="theme-color"
+                type="color"
+              >
+              <div data-validation-message="themeColor"></div>
+            </label>
+
+            <label class="control">
+              <span class="title">Cover Image</span>
+              <input
+                name="cover-image"
+                type="file"
+                accept="image/*"
+              >
+              <div data-validation-message="coverImage"></div>
+            </label>
+          </div>
+
+          <button
+            class="standard"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+
+        <div class="unit-response">
+          <div>Response Data</div>
+          <pre
+            class="json"
+            data-graphql-response="content"
+          ></pre>
+        </div>
+
+        <div class="unit-response">
+          <div>Errors</div>
+          <pre
+            class="json"
+            data-graphql-response="errors"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <div
+      id="loading"
+      class="unit-loading hidden"
+    >
+      <div>Loading ...</div>
+
+      <progress
+        class="progress"
+        id="uploading-progress"
+        max="398982983"
+        value="98982983"
+      ></progress>
+    </div>
+  </main>
+
+  <footer>I am Footer</footer>
+
+  <style>
+    .page-title {
+      margin-block-end: 2rem;
+
+      font-size: 2rem;
+    }
+
+    .unit-section > .title {
+      grid-column: 1 / -1;
+
+      font-size: calc(1rem * var(--value-golden-ratio));
+    }
+
+    .unit-section > .content {
+      margin-block-start: 0.75rem;
+
+      border: calc(var(--size-thinnest) * 3) #000 double;
+
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /******************************************************************************/
+
+    .unit-form {
+      grid-column: 1 / -1;
+    }
+
+    .unit-form .control {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .unit-form .control .validation-message {
+      min-height: calc(1rem * var(--value-golden-ratio));
+    }
+
+    /******************************************************************************/
+
+    .unit-response .json {
+      border: var(--size-thinnest) #000 solid;
+
+      padding-block: 0.25rem;
+      padding-inline: 0.5rem;
+    }
+
+    .unit-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      border: 1rem red solid;
+
+      display: grid;
+      place-items: center;
+
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 3rem;
+
+      z-index: calc(var(--value-z-index-layer-overlay) + 0);
+    }
+
+    .unit-loading .progress {
+      margin-inline-start: 1rem;
+
+      width: 20rem;
+    }
+  </style>
+</body>
+</html>

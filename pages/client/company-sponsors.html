@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <link rel="icon" type="image/x-icon" href="../../static/favicon.ico">
+
+  <title>Company Sponsors - furo GraphQL client</title>
+
+  <script>
+    class CompanySponsor extends HTMLElement {
+      constructor() {
+        super()
+
+        this.attachShadow({
+          mode: 'open',
+        })
+      }
+
+      connectedCallback() {
+        const template = document.getElementById('company-sponsor-template')
+
+        this.shadowRoot.appendChild(
+          template.content.cloneNode(true)
+        )
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      customElements.define('company-sponsor', CompanySponsor)
+    })
+  </script>
+
+  <script type="module">
+    import CompanySponsorsQueryGraphqlLauncher from '../../app/graphql/clients/queries/companySponsors/CompanySponsorsQueryGraphqlLauncher.js'
+    import BaseFormElementClerk from '../../lib/domClerks/BaseFormElementClerk.js'
+
+    /**
+     * @type {furo.GraphqlLauncherHooks}
+     */
+    const launcherHooks = {
+      async beforeRequest (payload) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.remove('hidden')
+
+        return false
+      },
+      async afterRequest (capsule) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.add('hidden')
+      },
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      invokeRequestOnMounted()
+    })
+
+    // -------------------------------------------------------------------------
+
+    function invokeRequestOnMounted () {
+      invokeRequest({
+        variables: {
+          input: {
+            pagination: {
+              limit: 5,
+              offset: 0,
+              sort: {
+                targetColumn: 'title',
+                orderBy: 'ASC',
+              },
+            },
+          },
+        },
+        hooks: launcherHooks,
+      })
+    }
+
+    async function invokeRequest ({
+      variables,
+      hooks,
+      options = {},
+    }) {
+      const Launcher = CompanySponsorsQueryGraphqlLauncher
+
+      const payload = Launcher.createPayload({
+        variables,
+        options,
+      })
+
+      const launcher = Launcher.create()
+
+      const capsule = await launcher.launchRequest({
+        payload,
+        hooks,
+      })
+
+      /*
+       * Display the result to the DOM.
+       */
+      {
+        const fragment = document.createDocumentFragment()
+        fragment.append(...capsule.companySponsors
+          .map(it => `
+            <span slot="name">${it.companyName}</span>
+            <span slot="description">${it.companyDescription}</span>
+          `)
+          .map(it => {
+            const sponsorElement = document.createElement('company-sponsor')
+            sponsorElement.innerHTML = it
+
+            return sponsorElement
+          })
+        )
+
+        document.getElementById('company-sponsors-container')
+          ?.appendChild(fragment)
+      }
+    }
+  </script>
+</head>
+<body>
+  <header>I am Header</header>
+
+  <main>
+    <h1>Company Sponsors - GraphQL client</h1>
+
+    <div
+      id="company-sponsors-container"
+      class="company-sponsor-layout"
+    ></div>
+
+    <style>
+      .company-sponsor-layout {
+        margin-block: 1rem;
+
+        padding-block: 1rem;
+        padding-inline: 2rem;
+        background: #fff;
+      }
+    </style>
+
+    <template id="company-sponsor-template">
+      <div class="company-sponsor">
+        <h3 class="name"><slot name="name"></slot></h3>
+        <div><slot name="description" class="description"></slot></div>
+      </div>
+
+      <style>
+        .company-sponsor {
+          margin-bottom: 1rem;
+          border: 1px solid #000;
+
+          padding-block: 0.5rem;
+          padding-inline: 1rem;
+        }
+
+        .name {
+          margin-block: 0;
+          font-size: 2rem;
+        }
+
+        .description {
+          margin-block-start: 0.5rem;
+          color: green;
+          font-size: 1rem;
+        }
+      </style>
+    </template>
+
+    <div
+      id="loading"
+      class="unit-loading"
+    >
+      Loading ...
+    </div>
+  </main>
+
+  <footer>I am Footer</footer>
+</body>
+</html>

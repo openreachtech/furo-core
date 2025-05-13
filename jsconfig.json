@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "module": "ES2022",
+    "target": "ES2023",
+    "paths": {
+      "~/*": [
+        "./*"
+      ]
+    },
+    "types": [
+      "jest"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
+
+  <style>
+    :root {
+      --size-result-width: 20rem;
+    }
+
+    .unit-two-column {
+      display: flex;
+      flex-direction: row;
+
+      padding-inline-end: calc(var(--size-result-width) + 1rem);
+    }
+
+    .unit-two-column > :first-child {
+      flex-grow: 1;
+    }
+
+    .unit-pane.right {
+      margin-block-start: -3rem;
+
+      min-height: 100%;
+
+      display: flex;
+      flex-direction: column;
+
+      padding-inline: 0.25rem;
+    }
+
+    .unit-pane.right {
+      position: fixed;
+      right: 1rem;
+    }
+
+    .unit-pane.right .form-value-hash {
+      width: var(--size-result-width);
+      height: 30rem;
+
+      padding-block: .25rem;
+      padding-inline: .5rem;
+
+      background: white;
+
+      overflow: scroll;
+    }
+
+    .unit-pane.right .form-value-hash:empty::before {
+      content: 'No value';
+      color: #999;
+    }
+
+    /* ---------------------------------------------------------------------- */
+
+    form {
+      margin-block: 1rem 3rem;
+      margin-inline: 1rem;
+    }
+
+    fieldset.row,
+    fieldset.column,
+    label.row,
+    label.column {
+      margin-block-start: 1rem;
+    }
+
+    fieldset.row,
+    label.row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label.column {
+      display: flex;
+      flex-direction: row;
+    }
+
+    form button {
+      margin-block-start: 1rem;
+    }
+
+    form button.standard {
+      border: none;
+      border-radius: .25rem;
+
+      padding-block: .5rem;
+      padding-inline: 1rem;
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    form button.standard:active {
+      background-color: #03c;
+    }
+
+    form button[disabled] {
+      background-color: #ccc;
+    }
+  </style>
+
+  <title>Playground of furo</title>
+
+  <script type="module">
+    import BaseFormElementClerk from '../lib/domClerks/BaseFormElementClerk.js'
+
+    function submitForm ({ formElement }) {
+      const formClerk = BaseFormElementClerk.create({
+        formElement,
+      })
+
+      const resultElement = document.getElementById('form-value-hash')
+
+      resultElement.textContent = JSON.stringify(
+        formClerk.extractValueHash(),
+        null,
+        2
+      )
+    }
+
+    // Expose the function to the global scope
+    window.submitForm = submitForm
+  </script>
+</head>
+<body>
+  <header>I am Header</header>
+
+  <main>
+    <h1>Form Controls Inspector</h1>
+
+    <div class="unit-two-column">
+      <form
+        ref="formRef"
+        onsubmit="
+          window.submitForm({
+            formElement: this,
+          })
+
+          return false
+        "
+      >
+        <button
+          class="standard"
+          type="submit"
+        >
+          Submit (above)
+        </button>
+
+        <label class="row">
+          <span>Text</span>
+          <input
+            name="text"
+            type="text"
+            value="default text"
+          >
+        </label>
+
+        <label class="row">
+          <span>Array Texts</span>
+          <input
+            name="array-texts[]"
+            type="text"
+            value="item 001"
+          >
+          <input
+            name="array-texts[]"
+            type="text"
+            value="item 002"
+          >
+        </label>
+
+        <fieldset class="row"
+          name="users[]"
+        >
+          <legend>User01</legend>
+
+          <span>username</span>
+          <input
+            name="username"
+            type="text"
+            value="user01"
+          >
+
+          <span>tags</span>
+          <input
+            name="tags[]"
+            type="text"
+            value="user01 tag01"
+          >
+          <input
+            name="tags[]"
+            type="text"
+            value="user01 tag02"
+          >
+        </fieldset>
+
+        <fieldset class="row"
+          name="users[]"
+        >
+          <legend>User02</legend>
+
+          <span>username</span>
+          <input
+            name="username"
+            type="text"
+            value="user02"
+          >
+
+          <span>tags</span>
+          <input
+            name="tags[]"
+            type="text"
+            value="user02 tag01"
+          >
+          <input
+            name="tags[]"
+            type="text"
+            value="user02 tag02"
+          >
+        </fieldset>
+
+        <label class="row">
+          <span>Tags</span>
+          <input
+            name="tags[]"
+            type="text"
+            value="tag 001"
+          >
+          <input
+            name="tags[]"
+            type="text"
+            value="tag 002"
+          >
+        </label>
+
+        <label class="row">
+          <span>Password</span>
+          <input
+            name="password"
+            type="password"
+            value="password123"
+          >
+        </label>
+
+        <label class="row">
+          <span>Email</span>
+          <input
+            name="email"
+            type="email"
+            value="example@example.com"
+          >
+        </label>
+
+        <label class="row">
+          <span>Website</span>
+          <input
+            name="url"
+            type="url"
+            value="https://www.example.com"
+          >
+        </label>
+
+        <label class="row">
+          <span>Telephone Number</span>
+          <input
+            name="tel"
+            type="tel"
+            value="090-1234-5678"
+          >
+        </label>
+
+        <label class="row">
+          <span>Search</span>
+          <input
+            name="search"
+            type="search"
+            value="search text"
+          >
+        </label>
+
+        <label class="row">
+          <span>Color</span>
+          <input
+            name="color"
+            type="color"
+            value="#ff00ff"
+          >
+        </label>
+
+        <button
+          class="standard"
+          type="submit"
+        >
+          Submit (middle)
+        </button>
+
+        <label class="row">
+          <span>Number</span>
+          <input
+            name="number"
+            type="number"
+            min="1"
+            max="10"
+            value="5"
+          >
+        </label>
+
+        <label class="row">
+          <span>Range</span>
+          <input
+            name="range"
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+          >
+        </label>
+
+        <label class="row">
+          <span>Date</span>
+          <input
+            name="date"
+            type="date"
+            value="2024-01-01"
+          >
+        </label>
+
+        <label class="row">
+          <span>Time</span>
+          <input
+            name="time"
+            type="time"
+            value="11:22:33"
+            step="1"
+          >
+        </label>
+
+        <label class="row">
+          <span>DateTime</span>
+          <input
+            name="datetime-local"
+            type="datetime-local"
+            value="2024-01-31T11:22:33"
+            step="1"
+          >
+        </label>
+
+        <label class="row">
+          <span>Year Month</span>
+          <input
+            name="month"
+            type="month"
+            value="2024-01"
+          >
+        </label>
+
+        <label class="row">
+          <span>File</span>
+          <input
+            name="file"
+            type="file"
+          >
+        </label>
+
+        <hr>
+
+        <h2>Emotion</h2>
+        <label>
+          <input
+            name="emotion"
+            type="radio"
+            value="happy"
+          >
+          <span>happy</span>
+        </label>
+        <br>
+        <label>
+          <input
+            name="emotion"
+            type="radio"
+            value="sad"
+          >
+          <span>sad</span>
+        </label>
+        <br>
+        <label>
+          <input
+            name="emotion"
+            type="radio"
+            value="angry"
+          >
+          <span>angry</span>
+        </label>
+
+        <hr>
+
+        <h2>Interest</h2>
+        <label>
+          <input
+            name="interest"
+            type="checkbox"
+            value="coding"
+            checked
+          >
+          <span>coding</span>
+        </label>
+        <br>
+        <label>
+          <input
+            name="interest"
+            type="checkbox"
+            value="music"
+          >
+          <span>music</span>
+        </label>
+        <br>
+        <label>
+          <input
+            name="interest"
+            type="checkbox"
+            value="sports"
+            checked
+          >
+          <span>sports</span>
+        </label>
+
+        <hr>
+
+        <label class="row">
+          <span>Message</span>
+          <textarea
+            name="message"
+            rows="4"
+            cols="50"
+          >default message</textarea>
+        </label>
+
+        <label class="column">
+          <span>City</span>
+          <select
+            name="city"
+            style="
+              min-width: 10rem;
+            "
+          >
+            <option value="tokyo">Tokyo</option>
+            <option value="osaka">Osaka</option>
+            <option value="kyoto">Kyoto</option>
+          </select>
+        </label>
+
+        <label class="column">
+          <span>Amount (Optional)</span>
+          <select
+            name="amount"
+            style="
+              min-width: 10rem;
+            "
+          >
+            <option value="" disabled selected>Please select</option>
+            <option value="small">small</option>
+            <option value="large">large</option>
+          </select>
+        </label>
+
+        <label class="column">
+          <span>Greek</span>
+          <select
+            name="greek"
+            multiple
+            style="
+              height: 5rem;
+              min-width: 10rem;
+            "
+          >
+            <option value="alpha" selected>alpha</option>
+            <option value="beta">beta</option>
+            <option value="gamma" selected>gamma</option>
+            <option value="delta">delta</option>
+            <option value="epsilon">epsilon</option>
+            <option value="zeta">zeta</option>
+            <option value="eta">eta</option>
+            <option value="theta">theta</option>
+          </select>
+        </label>
+
+        <button
+          class="standard"
+          type="submit"
+        >
+          Submit (below)
+        </button>
+      </form>
+
+      <section class="unit-pane right">
+        <a href="../index.html">Back to Index</a>
+
+        <h2>&lt;form&gt; value hash</h2>
+
+        <button
+          onclick="document.getElementById('form-value-hash').textContent = ''"
+          style="
+            margin-block: 0.5rem;
+          "
+        >
+          Clear
+        </button>
+
+        <pre
+          id="form-value-hash"
+          class="form-value-hash"
+        ></pre>
+      </section>
+  </main>
+
+  <footer>I am Footer</footer>
+</body>
+</html>

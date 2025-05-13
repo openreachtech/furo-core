@@ -1,0 +1,161 @@
+<!--
+Columns of Sequence Diagram
+
+UI
+IndexedDB
+PageContext
+Subscriber
+Alpha Query Launcher
+Alpha Mutation Luncher
+WebSocket Server
+GraphQL Server
+
+; Sequence Diagram
+
+* [PageContext] → [Subscriber] Start subscribing
+* [Subscriber] → [WebSocket Server] Connect to WebSocket
+* [Subscriber] ← [WebSocket Server] Connected
+
+* [PageContext] → [Alpha Query Launcher] Request Alpha Query on mounted
+* [Alpha Query Launcher] → [GraphQL Server]
+* [Alpha Query Launcher] ← [GraphQL Server]
+* [IndexedDB] ← [Alpha Query Launcher] Store Alpha Query Response
+* [PageContext] ← [Alpha Query Launcher] Display Alpha Data via IndexedDB
+
+* [PageContext] → [Alpha Mutation Luncher] Request Alpha Mutation to Update Alpha Data
+* [Alpha Mutation Luncher] → [GraphQL Server]
+* [Alpha Mutation Luncher] ← [GraphQL Server]
+* [PageContext] ← [Alpha Mutation Luncher] Alpha Mutation Response
+* [WebSocket Server] ← [GraphQL Server] Publish a flag Updated Alpha Data { alpha: true, beta: false }
+* [Subscriber] ← [WebSocket Server] Publish Alpha data
+* [Subscriber] → [Alpha Query Launcher] Fetch Updated Alpha Data
+* [Alpha Query Launcher] → [GraphQL Server]
+* [Alpha Query Launcher] ← [GraphQL Server]
+* [IndexedDB] ← [Alpha Query Launcher] Store Updated Alpha Data
+* [PageContext] ← [Alpha Query Launcher] Displace Updated Alpha Data via IndexedDB
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1630 1000">
+  <!-- Background -->
+  <rect width="1630" height="1000" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="815" y="30" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">Alpha Data Flow Sequence Diagram</text>
+
+  <!-- Participant headers -->
+  <rect x="40" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="240" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="440" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="640" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="840" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="1040" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="1240" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+  <rect x="1430" y="50" width="160" height="60" rx="5" ry="5" fill="#8FBCBB" stroke="#2E3440" stroke-width="2"/>
+
+  <!-- Participant labels -->
+  <text x="120" y="85" font-family="Arial" font-size="12" text-anchor="middle">UI</text>
+  <text x="320" y="85" font-family="Arial" font-size="12" text-anchor="middle">IndexedDB</text>
+  <text x="520" y="85" font-family="Arial" font-size="12" text-anchor="middle">PageContext</text>
+  <text x="720" y="85" font-family="Arial" font-size="12" text-anchor="middle">Subscriber</text>
+  <text x="920" y="85" font-family="Arial" font-size="12" text-anchor="middle">Alpha Query Launcher</text>
+  <text x="1120" y="85" font-family="Arial" font-size="12" text-anchor="middle">Alpha Mutation Luncher</text>
+  <text x="1320" y="85" font-family="Arial" font-size="12" text-anchor="middle">WebSocket Server</text>
+  <text x="1510" y="85" font-family="Arial" font-size="12" text-anchor="middle">GraphQL Server</text>
+
+  <!-- Lifelines -->
+  <line x1="120" y1="110" x2="120" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="320" y1="110" x2="320" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="520" y1="110" x2="520" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="720" y1="110" x2="720" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="920" y1="110" x2="920" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="1120" y1="110" x2="1120" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="1320" y1="110" x2="1320" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="1510" y1="110" x2="1510" y2="980" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5"/>
+
+  <!-- Activation boxes -->
+  <rect x="515" y="160" width="10" height="120" fill="#88C0D0" opacity="0.7"/>
+  <rect x="515" y="514" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+  <rect x="715" y="160" width="10" height="60" fill="#88C0D0" opacity="0.7"/>
+  <rect x="715" y="714" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+  <rect x="915" y="280" width="10" height="140" fill="#88C0D0" opacity="0.7"/>
+  <rect x="915" y="754" width="10" height="150" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1115" y="554" width="10" height="60" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1315" y="180" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1315" y="674" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1505" y="300" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1505" y="574" width="10" height="100" fill="#88C0D0" opacity="0.7"/>
+  <rect x="1505" y="784" width="10" height="40" fill="#88C0D0" opacity="0.7"/>
+
+  <!-- Initial subscribe phase -->
+  <line x1="520" y1="160" x2="715" y2="160" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="617" y="155" font-family="Arial" font-size="12" text-anchor="middle">Start subscribing</text>
+
+  <line x1="720" y1="180" x2="1315" y2="180" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="820" y="175" font-family="Arial" font-size="12" text-anchor="middle">Connect to WebSocket</text>
+
+  <line x1="1315" y1="220" x2="720" y2="220" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="1210" y="215" font-family="Arial" font-size="12" text-anchor="middle">Connected</text>
+
+  <!-- Initial Alpha Query phase -->
+  <line x1="520" y1="280" x2="915" y2="280" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="620" y="260" font-family="Arial" font-size="12" text-anchor="middle">Request Alpha Query</text>
+  <text x="620" y="275" font-family="Arial" font-size="12" text-anchor="middle">on Mounted</text>
+
+  <line x1="920" y1="300" x2="1505" y2="300" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1020" y="295" font-family="Arial" font-size="12" text-anchor="middle">GraphQL Query</text>
+
+  <line x1="1505" y1="340" x2="920" y2="340" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="1410" y="335" font-family="Arial" font-size="12" text-anchor="middle">Query Response</text>
+
+  <line x1="920" y1="380" x2="320" y2="380" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="820" y="375" font-family="Arial" font-size="12" text-anchor="middle">Store Alpha Query Response</text>
+
+  <line x1="920" y1="420" x2="120" y2="420" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="620" y="415" font-family="Arial" font-size="12" text-anchor="middle">Display Alpha Data</text>
+
+  <!-- Alpha Mutation phase -->
+  <line x1="120" y1="514" x2="515" y2="514" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="317" y="509" font-family="Arial" font-size="12" text-anchor="middle">Submit Alpha Data</text>
+
+  <line x1="520" y1="554" x2="1115" y2="554" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="620" y="534" font-family="Arial" font-size="12" text-anchor="middle">Request Alpha Mutation</text>
+  <text x="620" y="549" font-family="Arial" font-size="12" text-anchor="middle">to Update Alpha Data</text>
+
+  <line x1="1120" y1="574" x2="1505" y2="574" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1217" y="569" font-family="Arial" font-size="12" text-anchor="middle">GraphQL Mutation</text>
+
+  <line x1="1505" y1="614" x2="1120" y2="614" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="1410" y="609" font-family="Arial" font-size="12" text-anchor="middle">Mutation Response</text>
+
+  <!-- WebSocket Notification -->
+  <line x1="1510" y1="674" x2="1320" y2="674" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1415" y="654" font-family="Arial" font-size="12" text-anchor="middle">Publish Alpha Signals</text>
+  <text x="1415" y="669" font-family="Arial" font-size="12" text-anchor="middle">{ alpha: true, beta: false }</text>
+
+  <line x1="1320" y1="714" x2="720" y2="714" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1220" y="694" font-family="Arial" font-size="12" text-anchor="middle">Publish Alpha Signals</text>
+  <text x="1220" y="709" font-family="Arial" font-size="12" text-anchor="middle">{ alpha: true, beta: false }</text>
+
+  <!-- Fetch Updated Alpha Data -->
+  <line x1="720" y1="754" x2="915" y2="754" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="817" y="744" font-family="Arial" font-size="12" text-anchor="middle">Fetch Updated Alpha Data</text>
+
+  <line x1="920" y1="784" x2="1505" y2="784" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1020" y="779" font-family="Arial" font-size="12" text-anchor="middle">GraphQL Query</text>
+
+  <line x1="1505" y1="824" x2="920" y2="824" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="1410" y="819" font-family="Arial" font-size="12" text-anchor="middle">Query Response</text>
+
+  <line x1="920" y1="864" x2="320" y2="864" stroke="#2E3440" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="820" y="859" font-family="Arial" font-size="12" text-anchor="middle">Store Updated Alpha Data</text>
+
+  <line x1="920" y1="904" x2="120" y2="904" stroke="#2E3440" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <text x="620" y="899" font-family="Arial" font-size="12" text-anchor="middle">Display Updated Alpha Data</text>
+
+  <!-- Arrow definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2E3440"/>
+    </marker>
+  </defs>
+</svg>

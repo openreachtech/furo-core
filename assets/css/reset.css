@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+dl {
+  margin: 0;
+  padding: 0;
+}
+
+dt,
+dd {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+audio,
+canvas,
+embed,
+iframe,
+img,
+object,
+picture,
+svg,
+video {
+  vertical-align: middle;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+p {
+  margin: 0;
+  line-height: var(--value-golden-ratio);
+}

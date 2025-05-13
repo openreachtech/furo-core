@@ -1,0 +1,12 @@
+:root {
+  --palette-white: #fff;
+
+  --color-background: var(--palette-white);
+
+  --value-golden-ratio: 1.618;
+
+  --size-header-height: 5rem;
+  --size-footer-height: 6rem;
+
+  --size-thinnest: 1px;
+}
