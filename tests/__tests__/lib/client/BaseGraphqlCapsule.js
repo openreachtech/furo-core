@@ -1089,6 +1089,198 @@ describe('BaseGraphqlCapsule', () => {
 })
 
 describe('BaseGraphqlCapsule', () => {
+  describe('#get:errors', () => {
+    const mockResponse = new Response()
+    const mockPayload = new BaseGraphqlPayload({
+      queryTemplate: /* GraphQL */ `
+        query {
+          customer {
+            id
+          }
+        }
+      `,
+      variables: null,
+    })
+
+    const cases = [
+      {
+        params: {
+          args: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: {
+              errors: [
+                {
+                  message: 'error message-01',
+                  locations: [
+                    {
+                      line: 100001,
+                      column: 11,
+                    },
+                  ],
+                },
+              ],
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: [
+          {
+            message: 'error message-01',
+            locations: [
+              {
+                line: 100001,
+                column: 11,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        params: {
+          args: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: {
+              errors: [
+                {
+                  message: 'error message-01',
+                  locations: [
+                    {
+                      line: 200001,
+                      column: 21,
+                    },
+                  ],
+                },
+                {
+                  message: 'error message-02',
+                  locations: [
+                    {
+                      line: 200002,
+                      column: 22,
+                    },
+                  ],
+                },
+              ],
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: [
+          {
+            message: 'error message-01',
+            locations: [
+              {
+                line: 200001,
+                column: 21,
+              },
+            ],
+          },
+          {
+            message: 'error message-02',
+            locations: [
+              {
+                line: 200002,
+                column: 22,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        params: {
+          args: {
+            rawResponse: null,
+            payload: mockPayload,
+            result: {
+              errors: [
+                {
+                  message: 'error message-01',
+                  locations: [
+                    {
+                      line: 300001,
+                      column: 31,
+                    },
+                  ],
+                },
+                {
+                  message: 'error message-02',
+                  locations: [
+                    {
+                      line: 300002,
+                      column: 32,
+                    },
+                  ],
+                },
+                {
+                  message: 'error message-03',
+                  locations: [
+                    {
+                      line: 300003,
+                      column: 33,
+                    },
+                  ],
+                },
+              ],
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: [
+          {
+            message: 'error message-01',
+            locations: [
+              {
+                line: 300001,
+                column: 31,
+              },
+            ],
+          },
+          {
+            message: 'error message-02',
+            locations: [
+              {
+                line: 300002,
+                column: 32,
+              },
+            ],
+          },
+          {
+            message: 'error message-03',
+            locations: [
+              {
+                line: 300003,
+                column: 33,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        params: {
+          args: {
+            rawResponse: null,
+            payload: null,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: [],
+      },
+    ]
+
+    test.each(cases)('result: $params.args.result', ({ params, expected }) => {
+      const capsule = new BaseGraphqlCapsule(params.args)
+
+      const actual = capsule.errors
+
+      expect(actual)
+        .toEqual(expected)
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
   describe('#isPending()', () => {
     const mockResponse = new Response()
     const mockResult = {
