@@ -983,6 +983,112 @@ describe('BaseGraphqlCapsule', () => {
 })
 
 describe('BaseGraphqlCapsule', () => {
+  describe('#get:content', () => {
+    const mockResponse = new Response()
+    const mockPayload = new BaseGraphqlPayload({
+      queryTemplate: /* GraphQL */ `
+        query {
+          customer {
+            id
+          }
+        }
+      `,
+      variables: null,
+    })
+
+    const cases = [
+      {
+        params: {
+          args: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: {
+              data: {
+                customer: {
+                  id: 1000001,
+                },
+              },
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: {
+          customer: {
+            id: 1000001,
+          },
+        },
+      },
+      {
+        params: {
+          args: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: {
+              data: {
+                admin: {
+                  id: 2000001,
+                },
+              },
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: {
+          admin: {
+            id: 2000001,
+          },
+        },
+      },
+      {
+        params: {
+          args: {
+            rawResponse: null,
+            payload: mockPayload,
+            result: {
+              data: {
+                articles: [
+                  { id: 1000001, title: 'Article 01' },
+                  { id: 1000002, title: 'Article 02' },
+                  { id: 1000003, title: 'Article 03' },
+                ],
+              },
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: {
+          articles: [
+            { id: 1000001, title: 'Article 01' },
+            { id: 1000002, title: 'Article 02' },
+            { id: 1000003, title: 'Article 03' },
+          ],
+        },
+      },
+      {
+        params: {
+          args: {
+            rawResponse: null,
+            payload: null,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: null,
+      },
+    ]
+
+    test.each(cases)('result: $params.args.result', ({ params, expected }) => {
+      const capsule = new BaseGraphqlCapsule(params.args)
+
+      const actual = capsule.content
+
+      expect(actual)
+        .toEqual(expected)
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
   describe('#isPending()', () => {
     const mockResponse = new Response()
     const mockResult = {
