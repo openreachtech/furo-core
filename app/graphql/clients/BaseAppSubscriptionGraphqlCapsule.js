@@ -1,4 +1,4 @@
-import BaseSubscriptionGraphqlCapsule from '../../../lib/client/BaseSubscriptionGraphqlCapsule.js'
+import BaseSubscriptionGraphqlCapsule from '../../../lib/client/graphql/BaseSubscriptionGraphqlCapsule.js'
 
 /**
  * Base app subscription GraphQL capsule.

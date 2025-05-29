@@ -7,7 +7,7 @@ export { default as HeadersParser } from './lib/tools/HeadersParser.js'
 
 export { default as SubscriptionConnector } from './lib/client/SubscriptionConnector.js'
 export { default as BaseSubscriptionGraphqlPayload } from './lib/client/BaseSubscriptionGraphqlPayload.js'
-export { default as BaseSubscriptionGraphqlCapsule } from './lib/client/BaseSubscriptionGraphqlCapsule.js'
+export { default as BaseSubscriptionGraphqlCapsule } from './lib/client/graphql/BaseSubscriptionGraphqlCapsule.js'
 export { default as BaseGraphqlSubscriber } from './lib/client/graphql/BaseGraphqlSubscriber.js'
 
 export { default as BaseFormElementClerk } from './lib/domClerks/BaseFormElementClerk.js'
