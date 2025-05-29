@@ -68,7 +68,7 @@ import {
   BaseGraphqlSubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
   GraphqlSubscriberHooks,
-} from '../lib/client/BaseGraphqlSubscriber'
+} from '../lib/client/graphql/BaseGraphqlSubscriber'
 
 import {
   ConnectorCtor,
