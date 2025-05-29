@@ -1,4 +1,4 @@
-import BaseSubscriptionGraphqlPayload from '../../../lib/client/BaseSubscriptionGraphqlPayload.js'
+import BaseSubscriptionGraphqlPayload from '../../../lib/client/graphql/BaseSubscriptionGraphqlPayload.js'
 import StorageClerk from '../../../lib/storage/StorageClerk.js'
 
 import {
