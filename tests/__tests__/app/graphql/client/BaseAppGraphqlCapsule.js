@@ -1,5 +1,5 @@
 import BaseAppGraphqlCapsule from '~/app/graphql/clients/BaseAppGraphqlCapsule.js'
-import BaseGraphqlCapsule from '~/lib/client/BaseGraphqlCapsule.js'
+import BaseGraphqlCapsule from '~/lib/client/graphql/BaseGraphqlCapsule.js'
 
 beforeEach(() => {
   localStorage.clear()
