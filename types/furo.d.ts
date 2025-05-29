@@ -60,7 +60,7 @@ import {
   BaseSubscriptionGraphqlCapsuleParams,
   BaseSubscriptionGraphqlCapsuleFactoryParams,
   SUBSCRIBE_ABORTED_REASON,
-} from '../lib/client/BaseSubscriptionGraphqlCapsule'
+} from '../lib/client/graphql/BaseSubscriptionGraphqlCapsule'
 
 import {
   SubscriberCtor,
