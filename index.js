@@ -1,4 +1,4 @@
-export { default as BaseGraphqlCapsule } from './lib/client/BaseGraphqlCapsule.js'
+export { default as BaseGraphqlCapsule } from './lib/client/graphql/BaseGraphqlCapsule.js'
 export { default as BaseGraphqlLauncher } from './lib/client/BaseGraphqlLauncher.js'
 export { default as BaseGraphqlPayload } from './lib/client/BaseGraphqlPayload.js'
 

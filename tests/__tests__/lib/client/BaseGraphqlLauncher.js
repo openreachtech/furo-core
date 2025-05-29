@@ -7,7 +7,7 @@ import BaseGraphqlPayload from '~/lib/client/BaseGraphqlPayload.js'
 import {
   default as BaseGraphqlCapsule,
   LAUNCH_ABORTED_REASON,
-} from '~/lib/client/BaseGraphqlCapsule'
+} from '~/lib/client/graphql/BaseGraphqlCapsule'
 
 import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher'
 
