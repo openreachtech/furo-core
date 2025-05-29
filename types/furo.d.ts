@@ -24,7 +24,7 @@ import {
   BaseGraphqlPayloadParams,
   BaseGraphqlPayloadFactoryParams,
   GraphqlRequestVariables,
-} from '../lib/client/BaseGraphqlPayload'
+} from '../lib/client/graphql/BaseGraphqlPayload'
 
 import {
   CapsuleCtor,
