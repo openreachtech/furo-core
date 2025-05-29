@@ -52,7 +52,7 @@ import {
   SubscriptionPayload,
   BaseSubscriptionGraphqlPayloadParams,
   BaseSubscriptionGraphqlPayloadFactoryParams,
-} from '../lib/client/BaseSubscriptionGraphqlPayload'
+} from '../lib/client/graphql/BaseSubscriptionGraphqlPayload'
 
 import {
   SubscriptionCapsuleCtor,
