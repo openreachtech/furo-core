@@ -45,7 +45,7 @@ import {
   GraphqlLaunchRequestArgs,
   GraphqlRequestArgs,
   GraphqlLauncherHooks,
-} from '../lib/client/BaseGraphqlLauncher'
+} from '../lib/client/graphql/BaseGraphqlLauncher'
 
 import {
   SubscriptionPayloadCtor,

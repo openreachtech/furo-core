@@ -2,7 +2,7 @@ import {
   ConstructorSpy,
 } from '@openreachtech/jest-constructor-spy'
 
-import BaseGraphqlLauncher from '~/lib/client/BaseGraphqlLauncher.js'
+import BaseGraphqlLauncher from '~/lib/client/graphql/BaseGraphqlLauncher.js'
 import BaseGraphqlPayload from '~/lib/client/BaseGraphqlPayload.js'
 import {
   default as BaseGraphqlCapsule,
