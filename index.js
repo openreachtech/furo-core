@@ -1,6 +1,6 @@
 export { default as BaseGraphqlCapsule } from './lib/client/graphql/BaseGraphqlCapsule.js'
 export { default as BaseGraphqlLauncher } from './lib/client/graphql/BaseGraphqlLauncher.js'
-export { default as BaseGraphqlPayload } from './lib/client/BaseGraphqlPayload.js'
+export { default as BaseGraphqlPayload } from './lib/client/graphql/BaseGraphqlPayload.js'
 
 export { default as ProgressHttpFetcher } from './lib/tools/ProgressHttpFetcher.js'
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
