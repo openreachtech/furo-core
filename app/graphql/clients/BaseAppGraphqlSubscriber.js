@@ -1,4 +1,4 @@
-import BaseGraphqlSubscriber from '../../../lib/client/BaseGraphqlSubscriber.js'
+import BaseGraphqlSubscriber from '../../../lib/client/graphql/BaseGraphqlSubscriber.js'
 
 /**
  * Base app GraphQL subscriber.
