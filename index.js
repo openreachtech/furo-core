@@ -6,7 +6,7 @@ export { default as ProgressHttpFetcher } from './lib/tools/ProgressHttpFetcher.
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
 
 export { default as SubscriptionConnector } from './lib/client/SubscriptionConnector.js'
-export { default as BaseSubscriptionGraphqlPayload } from './lib/client/BaseSubscriptionGraphqlPayload.js'
+export { default as BaseSubscriptionGraphqlPayload } from './lib/client/graphql/BaseSubscriptionGraphqlPayload.js'
 export { default as BaseSubscriptionGraphqlCapsule } from './lib/client/graphql/BaseSubscriptionGraphqlCapsule.js'
 export { default as BaseGraphqlSubscriber } from './lib/client/graphql/BaseGraphqlSubscriber.js'
 
