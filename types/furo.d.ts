@@ -35,7 +35,7 @@ import {
   GraphqlResponseContent,
   GraphqlResponseError,
   LAUNCH_ABORTED_REASON,
-} from '../lib/client/BaseGraphqlCapsule'
+} from '../lib/client/graphql/BaseGraphqlCapsule'
 
 import {
   LauncherCtor,
