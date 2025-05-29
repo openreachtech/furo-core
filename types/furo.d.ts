@@ -75,7 +75,7 @@ import {
   Connector,
   SubscriptionConnectorParams,
   SubscriptionConnectorFactoryParams,
-} from '../lib/client/SubscriptionConnector'
+} from '../lib/client/graphql/SubscriptionConnector'
 
 import {
   FormElementClerkCtor,

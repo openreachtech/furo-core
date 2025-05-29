@@ -2,7 +2,7 @@ import {
   createClient,
 } from 'graphql-ws'
 
-import SubscriptionConnector from '../../../../lib/client/SubscriptionConnector.js'
+import SubscriptionConnector from '../../../../lib/client/graphql/SubscriptionConnector.js'
 
 describe('SubscriptionConnector', () => {
   describe('constructor', () => {
