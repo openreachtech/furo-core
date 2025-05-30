@@ -2,7 +2,7 @@ import {
   ConstructorSpy,
 } from '@openreachtech/jest-constructor-spy'
 
-import BaseGraphqlPayload from '~/lib/client/BaseGraphqlPayload.js'
+import BaseGraphqlPayload from '~/lib/client/graphql/BaseGraphqlPayload.js'
 import UploadingPropertyPathBuilder from '~/lib/domClerks/UploadingPropertyPathBuilder.js'
 
 describe('BaseGraphqlPayload', () => {
