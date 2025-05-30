@@ -2,12 +2,12 @@ import {
   ConstructorSpy,
 } from '@openreachtech/jest-constructor-spy'
 
-import BaseGraphqlLauncher from '~/lib/client/BaseGraphqlLauncher.js'
-import BaseGraphqlPayload from '~/lib/client/BaseGraphqlPayload.js'
+import BaseGraphqlLauncher from '~/lib/client/graphql/BaseGraphqlLauncher.js'
+import BaseGraphqlPayload from '~/lib/client/graphql/BaseGraphqlPayload.js'
 import {
   default as BaseGraphqlCapsule,
   LAUNCH_ABORTED_REASON,
-} from '~/lib/client/BaseGraphqlCapsule'
+} from '~/lib/client/graphql/BaseGraphqlCapsule'
 
 import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher'
 

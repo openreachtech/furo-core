@@ -24,7 +24,7 @@ import {
   BaseGraphqlPayloadParams,
   BaseGraphqlPayloadFactoryParams,
   GraphqlRequestVariables,
-} from '../lib/client/BaseGraphqlPayload'
+} from '../lib/client/graphql/BaseGraphqlPayload'
 
 import {
   CapsuleCtor,
@@ -35,7 +35,7 @@ import {
   GraphqlResponseContent,
   GraphqlResponseError,
   LAUNCH_ABORTED_REASON,
-} from '../lib/client/BaseGraphqlCapsule'
+} from '../lib/client/graphql/BaseGraphqlCapsule'
 
 import {
   LauncherCtor,
@@ -45,14 +45,14 @@ import {
   GraphqlLaunchRequestArgs,
   GraphqlRequestArgs,
   GraphqlLauncherHooks,
-} from '../lib/client/BaseGraphqlLauncher'
+} from '../lib/client/graphql/BaseGraphqlLauncher'
 
 import {
   SubscriptionPayloadCtor,
   SubscriptionPayload,
   BaseSubscriptionGraphqlPayloadParams,
   BaseSubscriptionGraphqlPayloadFactoryParams,
-} from '../lib/client/BaseSubscriptionGraphqlPayload'
+} from '../lib/client/graphql/BaseSubscriptionGraphqlPayload'
 
 import {
   SubscriptionCapsuleCtor,
@@ -60,7 +60,7 @@ import {
   BaseSubscriptionGraphqlCapsuleParams,
   BaseSubscriptionGraphqlCapsuleFactoryParams,
   SUBSCRIBE_ABORTED_REASON,
-} from '../lib/client/BaseSubscriptionGraphqlCapsule'
+} from '../lib/client/graphql/BaseSubscriptionGraphqlCapsule'
 
 import {
   SubscriberCtor,
@@ -68,14 +68,14 @@ import {
   BaseGraphqlSubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
   GraphqlSubscriberHooks,
-} from '../lib/client/BaseGraphqlSubscriber'
+} from '../lib/client/graphql/BaseGraphqlSubscriber'
 
 import {
   ConnectorCtor,
   Connector,
   SubscriptionConnectorParams,
   SubscriptionConnectorFactoryParams,
-} from '../lib/client/SubscriptionConnector'
+} from '../lib/client/graphql/SubscriptionConnector'
 
 import {
   FormElementClerkCtor,

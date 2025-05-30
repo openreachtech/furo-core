@@ -1,5 +1,5 @@
 import BaseAppGraphqlLauncher from '~/app/graphql/clients/BaseAppGraphqlLauncher.js'
-import BaseGraphqlLauncher from '~/lib/client/BaseGraphqlLauncher.js'
+import BaseGraphqlLauncher from '~/lib/client/graphql/BaseGraphqlLauncher.js'
 
 beforeEach(() => {
   localStorage.clear()
