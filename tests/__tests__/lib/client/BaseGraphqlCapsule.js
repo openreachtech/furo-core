@@ -4,9 +4,9 @@ import {
 
 import BaseGraphqlCapsule, {
   LAUNCH_ABORTED_REASON,
-} from '~/lib/client/BaseGraphqlCapsule.js'
+} from '~/lib/client/graphql/BaseGraphqlCapsule.js'
 
-import BaseGraphqlPayload from '~/lib/client/BaseGraphqlPayload.js'
+import BaseGraphqlPayload from '~/lib/client/graphql/BaseGraphqlPayload.js'
 
 describe('BaseGraphqlCapsule', () => {
   describe('constructor', () => {

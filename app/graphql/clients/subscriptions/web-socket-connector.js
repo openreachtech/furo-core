@@ -1,6 +1,6 @@
 import graphqlConfig from '../../graphql.config.js'
 
-import SubscriptionConnector from '../../../../lib/client/SubscriptionConnector.js'
+import SubscriptionConnector from '../../../../lib/client/graphql/SubscriptionConnector.js'
 
 const Timber = console
 
