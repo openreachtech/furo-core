@@ -1,4 +1,4 @@
-import BaseGraphqlCapsule from '../../../lib/client/BaseGraphqlCapsule.js'
+import BaseGraphqlCapsule from '../../../lib/client/graphql/BaseGraphqlCapsule.js'
 
 /**
  * Company sponsors query graphql launcher.
