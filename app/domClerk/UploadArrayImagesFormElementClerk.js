@@ -3,7 +3,7 @@ import BaseFormElementClerk from '../../lib/domClerks/BaseFormElementClerk.js'
 /**
  * Form element clerk of upload array images form element.
  *
- * @extends {BaseFormElementClerk<typeof UploadArrayImagesFormElementClerk, UploadArrayImagesFormValueHash, SchemaVariableHash>}
+ * @extends {BaseFormElementClerk<UploadArrayImagesFormValueHash>}
  */
 export default class UploadArrayImagesFormElementClerk extends BaseFormElementClerk {
   /** @override */
@@ -33,10 +33,4 @@ export default class UploadArrayImagesFormElementClerk extends BaseFormElementCl
  * @typedef {{
  *   images: Array<File>
  * }} UploadArrayImagesFormValueHash
- */
-
-/**
- * @typedef {{
- *   images: Array<File>
- * }} SchemaVariableHash
  */
