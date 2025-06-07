@@ -1005,3 +1005,111 @@ describe('ProgressHttpFetcher', () => {
     })
   })
 })
+
+describe('ProgressHttpFetcher', () => {
+  describe('.createFormDataBody()', () => {
+    describe('with body required method', () => {
+      const alphaFormDataBody = new FormData()
+      const betaFormDataBody = new FormData()
+      const gammaFormDataBody = new FormData()
+
+      alphaFormDataBody.append('alpha', 'alpha value')
+      betaFormDataBody.append('beta', 'beta value')
+      gammaFormDataBody.append('gamma', 'gamma value')
+
+      const cases = [
+        {
+          params: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: alphaFormDataBody,
+            }),
+          },
+          formDataTally: alphaFormDataBody,
+        },
+        {
+          params: {
+            request: new Request('https://example.com/beta', {
+              method: 'PUT',
+              body: betaFormDataBody,
+            }),
+          },
+          formDataTally: betaFormDataBody,
+        },
+        {
+          params: {
+            request: new Request('https://example.com/gamma', {
+              method: 'PATCH',
+              body: gammaFormDataBody,
+            }),
+          },
+          formDataTally: gammaFormDataBody,
+        },
+      ]
+
+      test.each(cases)('method: $params.request.method', async ({ params, formDataTally }) => {
+        jest.spyOn(ProgressHttpFetcher, 'createFormDataFromRequest')
+          .mockResolvedValue(formDataTally)
+
+        const actual = await ProgressHttpFetcher.createFormDataBody(params)
+
+        expect(actual)
+          .toBe(formDataTally) // same reference
+      })
+    })
+
+    describe('with body not required method', () => {
+      const cases = [
+        {
+          params: {
+            request: new Request('https://example.com/alpha', {
+              method: 'GET',
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/beta', {
+              method: 'DELETE',
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/gamma', {
+              method: 'HEAD',
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/delta', {
+              method: 'OPTIONS',
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/epsilon', {
+              method: 'TRACE',
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/zeta', {
+              method: 'CONNECT',
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $params.request.method', async ({ params }) => {
+        const actual = await ProgressHttpFetcher.createFormDataBody(params)
+
+        expect(actual)
+          .toBeNull()
+      })
+    })
+  })
+})
