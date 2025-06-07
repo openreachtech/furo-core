@@ -332,7 +332,7 @@ describe('ProgressHttpFetcher', () => {
             const formDataTally = new FormData()
             const responseTally = new Response()
 
-            const createFormDataFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataFromRequest')
+            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -345,7 +345,7 @@ describe('ProgressHttpFetcher', () => {
             expect(actual)
               .toBe(responseTally) // same reference
 
-            expect(createFormDataFromRequestSpy)
+            expect(createFormDataBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
@@ -507,7 +507,7 @@ describe('ProgressHttpFetcher', () => {
 
             const formDataTally = new FormData()
 
-            const createFormDataFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataFromRequest')
+            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -518,7 +518,7 @@ describe('ProgressHttpFetcher', () => {
               .rejects
               .toThrow(expected)
 
-            expect(createFormDataFromRequestSpy)
+            expect(createFormDataBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
