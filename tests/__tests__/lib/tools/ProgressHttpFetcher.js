@@ -879,3 +879,129 @@ describe('ProgressHttpFetcher', () => {
     })
   })
 })
+
+describe('ProgressHttpFetcher', () => {
+  describe('.isBodyRequiredMethod()', () => {
+    const alphaFormDataBody = new FormData()
+    const betaFormDataBody = new FormData()
+
+    alphaFormDataBody.append('alpha', 'alpha value')
+    betaFormDataBody.append('beta', 'beta value')
+
+    describe('to be truthy', () => {
+      const cases = [
+        {
+          params: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: alphaFormDataBody,
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/beta', {
+              method: 'PUT',
+              body: betaFormDataBody,
+              headers: new Headers({
+                'Content-Type': 'multiple/form-data',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/eta', {
+              method: 'PATCH',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $params.request.method', ({ params }) => {
+        const actual = ProgressHttpFetcher.isBodyRequiredMethod(params)
+
+        expect(actual)
+          .toBeTruthy()
+      })
+    })
+
+    describe('to be falsy', () => {
+      const cases = [
+        {
+          params: {
+            request: new Request('https://example.com/alpha', {
+              method: 'GET',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/beta', {
+              method: 'DELETE',
+              headers: new Headers({
+                'Content-Type': 'multiple/form-data',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/gamma', {
+              method: 'HEAD',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/delta', {
+              method: 'OPTIONS',
+              headers: new Headers({
+                'Content-Type': 'multiple/form-data',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/epsilon', {
+              method: 'TRACE',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+        },
+        {
+          params: {
+            request: new Request('https://example.com/zeta', {
+              method: 'CONNECT',
+              headers: new Headers({
+                'Content-Type': 'multiple/form-data',
+              }),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $params.request.method', ({ params }) => {
+        const actual = ProgressHttpFetcher.isBodyRequiredMethod(params)
+
+        expect(actual)
+          .toBeFalsy()
+      })
+    })
+  })
+})
