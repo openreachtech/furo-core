@@ -2926,7 +2926,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return 'GET'
+        return /** @type {RestfulApiType.METHOD} */ ('GET')
       }
 
       /** @override */
@@ -2958,7 +2958,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return 'POST'
+        return /** @type {RestfulApiType.METHOD} */ ('POST')
       }
 
       /** @override */
@@ -3253,7 +3253,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return 'GET'
+        return /** @type {RestfulApiType.METHOD} */ ('GET')
       }
 
       /** @override */
@@ -3285,7 +3285,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return 'POST'
+        return /** @type {RestfulApiType.METHOD} */ ('POST')
       }
 
       /** @override */
