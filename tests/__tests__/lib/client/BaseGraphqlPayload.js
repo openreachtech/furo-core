@@ -1445,6 +1445,94 @@ describe('BaseGraphqlPayload', () => {
           .toEqual([...expected.entries()])
       })
     })
+
+    describe('with overridden Headers', () => {
+      const AlphaGraphqlPayload = class extends BaseGraphqlPayload {
+        /** @override */
+        static collectBasedHeadersOptions () {
+          return [
+            { 'Content-Type': 'application/json' },
+            { 'X-APP-KEY': 'alpha' },
+          ]
+        }
+      }
+
+      const BetaGraphqlPayload = class extends BaseGraphqlPayload {
+        /** @override */
+        static collectBasedHeadersOptions () {
+          return [
+            { 'Content-Type': 'multipart/form-data' },
+            { 'X-APP-KEY': 'beta' },
+          ]
+        }
+      }
+
+      const payloadCases = [
+        {
+          args: {
+            Payload: AlphaGraphqlPayload,
+          },
+          cases: [
+            {
+              headers: new Headers(),
+              expected: new Headers({
+                'Content-Type': 'application/json',
+                'X-APP-KEY': 'alpha',
+              }),
+            },
+            {
+              headers: new Headers({
+                'X-APP-KEY': 'custom-alpha',
+              }),
+              expected: new Headers({
+                'Content-Type': 'application/json',
+                'X-APP-KEY': 'custom-alpha',
+              }),
+            },
+          ],
+        },
+        {
+          args: {
+            Payload: BetaGraphqlPayload,
+          },
+          cases: [
+            {
+              headers: new Headers(),
+              expected: new Headers({
+                'Content-Type': 'multipart/form-data',
+                'X-APP-KEY': 'beta',
+              }),
+            },
+            {
+              headers: new Headers({
+                'X-APP-KEY': 'custom-beta',
+              }),
+              expected: new Headers({
+                'Content-Type': 'multipart/form-data',
+                'X-APP-KEY': 'custom-beta',
+              }),
+            },
+          ],
+        },
+      ]
+
+      describe.each(payloadCases)('Payload: $args.Payload.name', ({ args, cases }) => {
+        test.each(cases)('headers: $headers', ({ headers, expected }) => {
+          const payload = new args.Payload({
+            queryTemplate,
+            variables: {},
+            options: {
+              headers,
+            },
+          })
+
+          const actual = payload.createMergedHeaders()
+
+          expect(actual)
+            .toEqual(expected)
+        })
+      })
+    })
   })
 })
 
