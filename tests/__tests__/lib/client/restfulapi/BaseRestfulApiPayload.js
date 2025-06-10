@@ -1,3 +1,7 @@
+import {
+  RESTFUL_API_METHOD,
+} from '~/lib/client/restfulapi/constants.js'
+
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
 
 describe('BaseRestfulApiPayload', () => {
@@ -1133,7 +1137,7 @@ describe('BaseRestfulApiPayload', () => {
             Payload: class extends BaseRestfulApiPayload {
               /** @override */
               static get method () {
-                return /** @type {RestfulApiType.METHOD} */ ('POST')
+                return RESTFUL_API_METHOD.POST
               }
             },
           },
@@ -1143,7 +1147,7 @@ describe('BaseRestfulApiPayload', () => {
             Payload: class extends BaseRestfulApiPayload {
               /** @override */
               static get method () {
-                return /** @type {RestfulApiType.METHOD} */ ('PUT')
+                return RESTFUL_API_METHOD.PUT
               }
             },
           },
@@ -1153,7 +1157,7 @@ describe('BaseRestfulApiPayload', () => {
             Payload: class extends BaseRestfulApiPayload {
               /** @override */
               static get method () {
-                return /** @type {RestfulApiType.METHOD} */ ('PATCH')
+                return RESTFUL_API_METHOD.PATCH
               }
             },
           },
@@ -1175,7 +1179,7 @@ describe('BaseRestfulApiPayload', () => {
             Payload: class extends BaseRestfulApiPayload {
               /** @override */
               static get method () {
-                return /** @type {RestfulApiType.METHOD} */ ('GET')
+                return RESTFUL_API_METHOD.GET
               }
             },
           },
@@ -1185,7 +1189,7 @@ describe('BaseRestfulApiPayload', () => {
             Payload: class extends BaseRestfulApiPayload {
               /** @override */
               static get method () {
-                return /** @type {RestfulApiType.METHOD} */ ('DELETE')
+                return RESTFUL_API_METHOD.DELETE
               }
             },
           },
@@ -1788,7 +1792,7 @@ describe('BaseRestfulApiPayload', () => {
     const AlphaGetRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('GET')
+        return RESTFUL_API_METHOD.GET
       }
 
       /** @override */
@@ -1811,7 +1815,7 @@ describe('BaseRestfulApiPayload', () => {
     const BetaPostRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('POST')
+        return RESTFUL_API_METHOD.POST
       }
 
       /** @override */
@@ -1836,7 +1840,7 @@ describe('BaseRestfulApiPayload', () => {
     const GammaPutRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('PUT')
+        return RESTFUL_API_METHOD.PUT
       }
 
       /** @override */
@@ -2360,7 +2364,7 @@ describe('BaseRestfulApiPayload', () => {
     const AlphaGetRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('GET')
+        return RESTFUL_API_METHOD.GET
       }
 
       /** @override */
@@ -2375,7 +2379,7 @@ describe('BaseRestfulApiPayload', () => {
     const BetaPostRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('POST')
+        return RESTFUL_API_METHOD.POST
       }
 
       /** @override */
@@ -2390,7 +2394,7 @@ describe('BaseRestfulApiPayload', () => {
     const GammaPutRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('PUT')
+        return RESTFUL_API_METHOD.PUT
       }
 
       /** @override */
@@ -2405,7 +2409,7 @@ describe('BaseRestfulApiPayload', () => {
     const DeltaDeleteRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('DELETE')
+        return RESTFUL_API_METHOD.DELETE
       }
 
       /** @override */
@@ -2654,7 +2658,7 @@ describe('BaseRestfulApiPayload', () => {
     const AlphaGetRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('GET')
+        return RESTFUL_API_METHOD.GET
       }
 
       /** @override */
@@ -2669,7 +2673,7 @@ describe('BaseRestfulApiPayload', () => {
     const BetaPostRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('POST')
+        return RESTFUL_API_METHOD.POST
       }
 
       /** @override */
@@ -2684,7 +2688,7 @@ describe('BaseRestfulApiPayload', () => {
     const GammaPutRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('PUT')
+        return RESTFUL_API_METHOD.PUT
       }
 
       /** @override */
@@ -2699,7 +2703,7 @@ describe('BaseRestfulApiPayload', () => {
     const DeltaDeleteRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('DELETE')
+        return RESTFUL_API_METHOD.DELETE
       }
 
       /** @override */
@@ -2926,7 +2930,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('GET')
+        return RESTFUL_API_METHOD.GET
       }
 
       /** @override */
@@ -2958,7 +2962,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('POST')
+        return RESTFUL_API_METHOD.POST
       }
 
       /** @override */
@@ -3253,7 +3257,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('GET')
+        return RESTFUL_API_METHOD.GET
       }
 
       /** @override */
@@ -3285,7 +3289,7 @@ describe('BaseRestfulApiPayload', () => {
 
       /** @override */
       static get method () {
-        return /** @type {RestfulApiType.METHOD} */ ('POST')
+        return RESTFUL_API_METHOD.POST
       }
 
       /** @override */
