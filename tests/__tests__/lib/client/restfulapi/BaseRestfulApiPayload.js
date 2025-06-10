@@ -2990,8 +2990,8 @@ describe('BaseRestfulApiPayload', () => {
      *   args: {
      *     Payload: RestfulApiType.PayloadCtor<*>
      *   }
-     *   truthyCases: Array<RestfulApiType.xxxxx>,
-     *   falsyCases: Array<RestfulApiType.xxxxx>,
+     *   truthyCases: Array<Omit<ConstructorParameters<RestfulApiType.PayloadCtor<*>>[0], 'options'>>,
+     *   falsyCases: Array<Omit<ConstructorParameters<RestfulApiType.PayloadCtor<*>>[0], 'options'>>,
      * }>}
      */
     const cases = [
@@ -3317,8 +3317,8 @@ describe('BaseRestfulApiPayload', () => {
      *   args: {
      *     Payload: RestfulApiType.PayloadCtor<*>
      *   }
-     *   truthyCases: Array<RestfulApiType.xxxxx>,
-     *   falsyCases: Array<RestfulApiType.xxxxx>,
+     *   truthyCases: Array<Omit<ConstructorParameters<RestfulApiType.PayloadCtor<*>>[0], 'options'>>,
+     *   falsyCases: Array<Omit<ConstructorParameters<RestfulApiType.PayloadCtor<*>>[0], 'options'>>,
      * }>}
      */
     const cases = [
