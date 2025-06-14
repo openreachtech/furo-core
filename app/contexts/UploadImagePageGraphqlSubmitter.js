@@ -201,7 +201,7 @@ export default class UploadImagePageGraphqlSubmitter {
    * Hydrates the response.
    *
    * @param {{
-   *   capsule: furo.Capsule<*>
+   *   capsule: GraphqlType.Capsule<*>
    * }} params - The parameters
    */
   hydrateResponse ({
