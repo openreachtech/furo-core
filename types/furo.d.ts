@@ -187,7 +187,6 @@ declare global {
       BaseGraphqlSubscriberFactoryParams,
 
       GraphqlSubscribeRequestArgs,
-      GraphqlRequestArgs,
       GraphqlSubscriberHooks,
 
       // from SubscriptionConnector
