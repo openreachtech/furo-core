@@ -3,6 +3,7 @@ import {
 } from 'graphql'
 
 import './graphql.d.ts'
+import './restfulapi.d.ts'
 
 import {
   Client as WebSocketClient,
