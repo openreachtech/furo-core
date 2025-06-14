@@ -226,7 +226,7 @@ export default class UploadImagePageGraphqlSubmitter {
 
 /**
  * @typedef {{
- *   LauncherCtor: furo.LauncherCtor
+ *   LauncherCtor: GraphqlType.LauncherCtor
  *   FormClerkCtor: furo.FormElementClerkCtor<*>
  *   rootElement: HTMLElement
  *   validationReference: furo.ValidatorHashType
@@ -235,7 +235,7 @@ export default class UploadImagePageGraphqlSubmitter {
 
 /**
  * @typedef {{
- *   LauncherCtor: furo.LauncherCtor
+ *   LauncherCtor: GraphqlType.LauncherCtor
  *   FormClerkCtor: furo.FormElementClerkCtor<*>
  *   rootElement: HTMLElement
  * }} UploadImagePageGraphqlSubmitterFactoryParams
