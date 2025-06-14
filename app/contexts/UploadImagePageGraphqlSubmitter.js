@@ -56,7 +56,7 @@ export default class UploadImagePageGraphqlSubmitter {
    *
    * @param {{
    *   formElement: HTMLFormElement
-   *   hooks?: furo.GraphqlLauncherHooks
+   *   hooks?: GraphqlType.LauncherHooks
    *   options?: Record<string, *>
    *   generateVariables?: (valueHash: Record<string, *>) => Record<string, *>
    * }} params - The parameters
@@ -96,7 +96,7 @@ export default class UploadImagePageGraphqlSubmitter {
   /**
    * get: Launcher hooks.
    *
-   * @returns {furo.GraphqlLauncherHooks} The hooks
+   * @returns {GraphqlType.LauncherHooks} The hooks
    */
   get launcherHooks () {
     const progressElement = document.getElementById('uploading-progress')
@@ -139,7 +139,7 @@ export default class UploadImagePageGraphqlSubmitter {
    *
    * @param {{
    *   valueHash: Record<string, *>
-   *   hooks: furo.GraphqlLauncherHooks
+   *   hooks: GraphqlType.LauncherHooks
    *   options?: Record<string, *>
    * }} params - The parameters
    * @returns {Promise<void>} A promise that resolves when the request is complete
