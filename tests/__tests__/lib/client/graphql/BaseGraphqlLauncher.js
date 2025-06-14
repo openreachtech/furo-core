@@ -996,7 +996,7 @@ describe('BaseGraphqlLauncher', () => {
       /**
        * @type {Array<{
        *   params: {
-       *     Payload: furo.PayloadCtor<*>
+       *     Payload: GraphqlType.PayloadCtor<*>
        *     valueHash: Record<string, *>
        *     options: RequestInit
        *   }
@@ -1107,7 +1107,7 @@ describe('BaseGraphqlLauncher', () => {
         /**
          * @type {Array<{
          *   params: {
-         *     Payload: furo.PayloadCtor<*>
+         *     Payload: GraphqlType.PayloadCtor<*>
          *     valueHash: Record<string, *>
          *     extraValueHash: Record<string, *>
          *     options: RequestInit
@@ -1228,7 +1228,7 @@ describe('BaseGraphqlLauncher', () => {
         /**
          * @type {Array<{
          *   params: {
-         *     Payload: furo.PayloadCtor<*>
+         *     Payload: GraphqlType.PayloadCtor<*>
          *     valueHash: Record<string, *>
          *     options: RequestInit
          *   }
