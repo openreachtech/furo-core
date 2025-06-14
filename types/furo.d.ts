@@ -67,6 +67,7 @@ import {
   Subscriber,
   BaseGraphqlSubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
+  GraphqlSubscribeRequestArgs,
   GraphqlSubscriberHooks,
 } from '../lib/client/graphql/BaseGraphqlSubscriber'
 
