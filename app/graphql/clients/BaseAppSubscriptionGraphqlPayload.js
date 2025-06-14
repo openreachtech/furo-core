@@ -9,7 +9,7 @@ import {
 /**
  * Base app subscription GraphQL payload.
  *
- * @template {furo.GraphqlRequestVariables} SV
+ * @template {GraphqlType.RequestVariables} SV
  * @extends {BaseSubscriptionGraphqlPayload<SV>}
  */
 export default class BaseAppSubscriptionGraphqlPayload extends BaseSubscriptionGraphqlPayload {
