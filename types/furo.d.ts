@@ -2,6 +2,8 @@ import {
   GraphQLError,
 } from 'graphql'
 
+import './graphql.d.ts'
+
 import {
   Client as WebSocketClient,
   ClientOptions as WebSocketClientOptions,
