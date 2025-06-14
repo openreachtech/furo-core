@@ -2466,28 +2466,18 @@ describe('BaseRestfulApiLauncher', () => {
         {
           input: {
             payload: BaseRestfulApiPayload.create({
-              queryTemplate: /* GraphQL */ `
-                query {
-                  customer {
-                    id
-                  }
-                }
-              `,
-              variables: null,
+              query: {
+                id: 10001,
+              },
             }),
           },
         },
         {
           input: {
             payload: BaseRestfulApiPayload.create({
-              queryTemplate: /* GraphQL */ `
-                query {
-                  admin {
-                    id
-                  }
-                }
-              `,
-              variables: null,
+              query: {
+                id: 20001,
+              },
             }),
           },
         },
@@ -2541,14 +2531,9 @@ describe('BaseRestfulApiLauncher', () => {
         {
           input: {
             payload: BaseRestfulApiPayload.create({
-              queryTemplate: /* GraphQL */ `
-                query {
-                  customer {
-                    id
-                  }
-                }
-              `,
-              variables: null,
+              query: {
+                id: 10001,
+              },
             }),
             rawResponse: new Response(`{
               "data": {
@@ -2569,14 +2554,9 @@ describe('BaseRestfulApiLauncher', () => {
         {
           input: {
             payload: BaseRestfulApiPayload.create({
-              queryTemplate: /* GraphQL */ `
-                query {
-                  admin {
-                    id
-                  }
-                }
-              `,
-              variables: null,
+              query: {
+                id: 20001,
+              },
             }),
             rawResponse: new Response(`{
               "data": {
