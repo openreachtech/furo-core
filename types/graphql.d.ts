@@ -55,6 +55,17 @@ import {
   GraphqlSubscriberHooks,
 } from '../lib/client/graphql/BaseGraphqlSubscriber'
 
+type WebSocketSink = Partial<{
+  connecting: GraphqlWebsocketEventConnectingListener
+  opened: GraphqlWebsocketEventOpenedListener
+  message: GraphqlWebsocketEventMessageListener
+  connected: GraphqlWebsocketEventConnectedListener
+  closed: GraphqlWebsocketEventClosedListener
+  ping: GraphqlWebsocketEventPingListener
+  pong: GraphqlWebsocketEventPongListener
+  error: GraphqlWebsocketEventErrorListener
+}>
+
 /**
  * Furo GraphQL types
  */
@@ -64,6 +75,8 @@ declare global {
       //--------------------------------------------------- Native GraphQL Types
 
       GraphqlError as ResponseError,
+
+      WebSocketSink,
 
       // ---------------------------------------------------- Query and Mutation
 
