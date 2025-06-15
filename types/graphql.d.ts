@@ -34,7 +34,7 @@ import type {
 import {
   SubscriptionPayloadCtor,
   SubscriptionPayload,
-  BaseSubscriptionGraphqlPayloadParams,
+  BaseSubscriptionGraphqlPayloadParams as SubscriptionPayloadParams,
   BaseSubscriptionGraphqlPayloadFactoryParams,
 } from '../lib/client/graphql/BaseSubscriptionGraphqlPayload'
 
@@ -117,7 +117,7 @@ declare global {
       // from BaseSubscriptionGraphqlPayload
       SubscriptionPayloadCtor,
       SubscriptionPayload,
-      BaseSubscriptionGraphqlPayloadParams,
+      SubscriptionPayloadParams,
       BaseSubscriptionGraphqlPayloadFactoryParams,
 
       // from BaseSubscriptionGraphqlCapsule
