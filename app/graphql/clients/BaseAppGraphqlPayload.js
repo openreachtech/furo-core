@@ -9,7 +9,7 @@ import {
 /**
  * Base class of GraphQL payload for the app.
  *
- * @template {furo.GraphqlRequestVariables} SV
+ * @template {GraphqlType.RequestVariables} SV
  * @extends {BaseGraphqlPayload<SV>}
  */
 export default class BaseAppGraphqlPayload extends BaseGraphqlPayload {

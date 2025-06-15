@@ -2,6 +2,9 @@ import {
   GraphQLError,
 } from 'graphql'
 
+import './graphql.d.ts'
+import './restfulapi.d.ts'
+
 import {
   Client as WebSocketClient,
   ClientOptions as WebSocketClientOptions,
@@ -17,58 +20,6 @@ import {
   EventPingListener as GraphqlWebsocketEventPingListener,
   EventPongListener as GraphqlWebsocketEventPongListener,
 } from 'graphql-ws'
-
-import {
-  PayloadCtor,
-  Payload,
-  BaseGraphqlPayloadParams,
-  BaseGraphqlPayloadFactoryParams,
-  GraphqlRequestVariables,
-} from '../lib/client/graphql/BaseGraphqlPayload'
-
-import {
-  CapsuleCtor,
-  Capsule,
-  BaseGraphqlCapsuleParams,
-  BaseGraphqlCapsuleFactoryParams,
-  GraphqlResponse,
-  GraphqlResponseContent,
-  GraphqlResponseError,
-  LAUNCH_ABORTED_REASON,
-} from '../lib/client/graphql/BaseGraphqlCapsule'
-
-import {
-  LauncherCtor,
-  Launcher,
-  BaseGraphqlLauncherParams,
-  BaseGraphqlLauncherFactoryParams,
-  GraphqlLaunchRequestArgs,
-  GraphqlRequestArgs,
-  GraphqlLauncherHooks,
-} from '../lib/client/graphql/BaseGraphqlLauncher'
-
-import {
-  SubscriptionPayloadCtor,
-  SubscriptionPayload,
-  BaseSubscriptionGraphqlPayloadParams,
-  BaseSubscriptionGraphqlPayloadFactoryParams,
-} from '../lib/client/graphql/BaseSubscriptionGraphqlPayload'
-
-import {
-  SubscriptionCapsuleCtor,
-  SubscriptionCapsule,
-  BaseSubscriptionGraphqlCapsuleParams,
-  BaseSubscriptionGraphqlCapsuleFactoryParams,
-  SUBSCRIBE_ABORTED_REASON,
-} from '../lib/client/graphql/BaseSubscriptionGraphqlCapsule'
-
-import {
-  SubscriberCtor,
-  Subscriber,
-  BaseGraphqlSubscriberParams,
-  BaseGraphqlSubscriberFactoryParams,
-  GraphqlSubscriberHooks,
-} from '../lib/client/graphql/BaseGraphqlSubscriber'
 
 import {
   ConnectorCtor,
@@ -113,81 +64,12 @@ import {
   ValidatorHashType,
 } from '../lib/validator/ValueHashValidator'
 
-type GraphqlWebSocketSink = Partial<{
-  connecting: GraphqlWebsocketEventConnectingListener
-  opened: GraphqlWebsocketEventOpenedListener
-  message: GraphqlWebsocketEventMessageListener
-  connected: GraphqlWebsocketEventConnectedListener
-  closed: GraphqlWebsocketEventClosedListener
-  ping: GraphqlWebsocketEventPingListener
-  pong: GraphqlWebsocketEventPongListener
-  error: GraphqlWebsocketEventErrorListener
-}>
-
-type GraphqlWebSocketSinkError = Error
-  | Array<furo.GraphQLError>
-  | furo.WebSocketCloseEvent
-
 declare global {
   namespace furo {
     export {
-      GraphQLError,
-
       CloseEvent as WebSocketCloseEvent,
 
-      GraphqlWebSocketSink,
-      GraphqlWebSocketSinkError,
-
-      // from BaseGraphqlPayload
-      PayloadCtor,
-      Payload,
-      BaseGraphqlPayloadParams,
-      BaseGraphqlPayloadFactoryParams,
-      GraphqlRequestVariables,
-
-      // from BaseGraphqlCapsule
-      CapsuleCtor,
-      Capsule,
-      BaseGraphqlCapsuleParams,
-      BaseGraphqlCapsuleFactoryParams,
-      GraphqlResponse,
-      GraphqlResponseContent,
-      GraphqlResponseError,
-      LAUNCH_ABORTED_REASON,
-
-      // from BaseGraphqlLauncher
-      LauncherCtor,
-      Launcher,
-      BaseGraphqlLauncherParams,
-      BaseGraphqlLauncherFactoryParams,
-      GraphqlLaunchRequestArgs,
-      GraphqlRequestArgs,
-      GraphqlLauncherHooks,
-
       // ---------------------------------------------------------- Subscription
-
-      // from BaseSubscriptionGraphqlPayload
-      SubscriptionPayloadCtor,
-      SubscriptionPayload,
-      BaseSubscriptionGraphqlPayloadParams,
-      BaseSubscriptionGraphqlPayloadFactoryParams,
-
-      // from BaseSubscriptionGraphqlCapsule
-      SubscriptionCapsuleCtor,
-      SubscriptionCapsule,
-      BaseSubscriptionGraphqlCapsuleParams,
-      BaseSubscriptionGraphqlCapsuleFactoryParams,
-      SUBSCRIBE_ABORTED_REASON,
-
-      // from BaseGraphqlSubscriber
-      SubscriberCtor,
-      Subscriber,
-      BaseGraphqlSubscriberParams,
-      BaseGraphqlSubscriberFactoryParams,
-
-      GraphqlSubscribeRequestArgs,
-      GraphqlRequestArgs,
-      GraphqlSubscriberHooks,
 
       // from SubscriptionConnector
       ConnectorCtor,
