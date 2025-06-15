@@ -49,7 +49,7 @@ import {
 import {
   SubscriberCtor,
   Subscriber,
-  BaseGraphqlSubscriberParams,
+  BaseGraphqlSubscriberParams as SubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
   GraphqlSubscribeRequestArgs as SubscribeRequestArgs,
   GraphqlSubscriberHooks as SubscriberHooks,
@@ -130,7 +130,7 @@ declare global {
       // from BaseGraphqlSubscriber
       SubscriberCtor,
       Subscriber,
-      BaseGraphqlSubscriberParams,
+      SubscriberParams,
       BaseGraphqlSubscriberFactoryParams,
 
       SubscribeRequestArgs,
