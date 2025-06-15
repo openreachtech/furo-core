@@ -1,3 +1,7 @@
+import {
+  GraphQLError as GraphqlError,
+} from 'graphql'
+
 import type {
   PayloadCtor,
   Payload,
@@ -57,6 +61,10 @@ import {
 declare global {
   namespace GraphqlType {
     export {
+      //--------------------------------------------------- Native GraphQL Types
+
+      GraphqlError as ResponseError,
+
       // ---------------------------------------------------- Query and Mutation
 
       // Payload
@@ -74,7 +82,6 @@ declare global {
 
       Response,
       ResponseContent,
-      ResponseError,
       LAUNCH_ABORTED_REASON,
 
       // Launcher
