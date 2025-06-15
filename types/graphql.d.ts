@@ -52,7 +52,7 @@ import {
   BaseGraphqlSubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
   GraphqlSubscribeRequestArgs as SubscribeRequestArgs,
-  GraphqlSubscriberHooks,
+  GraphqlSubscriberHooks as SubscriberHooks,
 } from '../lib/client/graphql/BaseGraphqlSubscriber'
 
 type WebSocketSink = Partial<{
@@ -134,7 +134,7 @@ declare global {
       BaseGraphqlSubscriberFactoryParams,
 
       SubscribeRequestArgs,
-      GraphqlSubscriberHooks,
+      SubscriberHooks,
     }
   }
 }
