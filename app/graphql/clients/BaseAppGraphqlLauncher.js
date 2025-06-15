@@ -15,5 +15,5 @@ export default class BaseAppGraphqlLauncher extends BaseGraphqlLauncher {
 }
 
 /**
- * @typedef {furo.BaseGraphqlLauncherFactoryParams} BaseAppGraphqlLauncherFactoryParams
+ * @typedef {GraphqlType.LauncherFactoryParams} BaseAppGraphqlLauncherFactoryParams
  */

@@ -1,3 +1,7 @@
+import {
+  GraphQLError as GraphqlError,
+} from 'graphql'
+
 import type {
   PayloadCtor,
   Payload,
@@ -30,26 +34,41 @@ import type {
 import {
   SubscriptionPayloadCtor,
   SubscriptionPayload,
-  BaseSubscriptionGraphqlPayloadParams,
-  BaseSubscriptionGraphqlPayloadFactoryParams,
+  BaseSubscriptionGraphqlPayloadParams as SubscriptionPayloadParams,
+  BaseSubscriptionGraphqlPayloadFactoryParams as SubscriptionPayloadFactoryParams,
 } from '../lib/client/graphql/BaseSubscriptionGraphqlPayload'
 
 import {
   SubscriptionCapsuleCtor,
   SubscriptionCapsule,
-  BaseSubscriptionGraphqlCapsuleParams,
-  BaseSubscriptionGraphqlCapsuleFactoryParams,
+  BaseSubscriptionGraphqlCapsuleParams as SubscriptionCapsuleParams,
+  BaseSubscriptionGraphqlCapsuleFactoryParams as SubscriptionCapsuleFactoryParams,
   SUBSCRIBE_ABORTED_REASON,
 } from '../lib/client/graphql/BaseSubscriptionGraphqlCapsule'
 
 import {
   SubscriberCtor,
   Subscriber,
-  BaseGraphqlSubscriberParams,
-  BaseGraphqlSubscriberFactoryParams,
-  GraphqlSubscribeRequestArgs,
-  GraphqlSubscriberHooks,
+  BaseGraphqlSubscriberParams as SubscriberParams,
+  BaseGraphqlSubscriberFactoryParams as SubscriberFactoryParams,
+  GraphqlSubscribeRequestArgs as SubscribeRequestArgs,
+  GraphqlSubscriberHooks as SubscriberHooks,
 } from '../lib/client/graphql/BaseGraphqlSubscriber'
+
+type WebSocketSink = Partial<{
+  connecting: GraphqlWebsocketEventConnectingListener
+  opened: GraphqlWebsocketEventOpenedListener
+  message: GraphqlWebsocketEventMessageListener
+  connected: GraphqlWebsocketEventConnectedListener
+  closed: GraphqlWebsocketEventClosedListener
+  ping: GraphqlWebsocketEventPingListener
+  pong: GraphqlWebsocketEventPongListener
+  error: GraphqlWebsocketEventErrorListener
+}>
+
+type WebSocketSinkError = Error
+  | Array<ResponseError>
+  | furo.WebSocketCloseEvent
 
 /**
  * Furo GraphQL types
@@ -57,6 +76,13 @@ import {
 declare global {
   namespace GraphqlType {
     export {
+      //--------------------------------------------------- Native GraphQL Types
+
+      GraphqlError as ResponseError,
+
+      WebSocketSink,
+      WebSocketSinkError,
+
       // ---------------------------------------------------- Query and Mutation
 
       // Payload
@@ -74,7 +100,6 @@ declare global {
 
       Response,
       ResponseContent,
-      ResponseError,
       LAUNCH_ABORTED_REASON,
 
       // Launcher
@@ -92,24 +117,24 @@ declare global {
       // from BaseSubscriptionGraphqlPayload
       SubscriptionPayloadCtor,
       SubscriptionPayload,
-      BaseSubscriptionGraphqlPayloadParams,
-      BaseSubscriptionGraphqlPayloadFactoryParams,
+      SubscriptionPayloadParams,
+      SubscriptionPayloadFactoryParams,
 
       // from BaseSubscriptionGraphqlCapsule
       SubscriptionCapsuleCtor,
       SubscriptionCapsule,
-      BaseSubscriptionGraphqlCapsuleParams,
-      BaseSubscriptionGraphqlCapsuleFactoryParams,
+      SubscriptionCapsuleParams,
+      SubscriptionCapsuleFactoryParams,
       SUBSCRIBE_ABORTED_REASON,
 
       // from BaseGraphqlSubscriber
       SubscriberCtor,
       Subscriber,
-      BaseGraphqlSubscriberParams,
-      BaseGraphqlSubscriberFactoryParams,
+      SubscriberParams,
+      SubscriberFactoryParams,
 
-      GraphqlSubscribeRequestArgs,
-      GraphqlSubscriberHooks,
+      SubscribeRequestArgs,
+      SubscriberHooks,
     }
   }
 }

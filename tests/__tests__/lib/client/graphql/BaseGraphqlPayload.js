@@ -2205,9 +2205,9 @@ describe('BaseGraphqlPayload', () => {
 
     /**
      * @type {Array<{
-     *   Payload: furo.PayloadCtor<*>,
-     *   truthyCases: Array<furo.GraphqlRequestVariables>,
-     *   falsyCases: Array<furo.GraphqlRequestVariables>,
+     *   Payload: GraphqlType.PayloadCtor<*>,
+     *   truthyCases: Array<GraphqlType.RequestVariables>,
+     *   falsyCases: Array<GraphqlType.RequestVariables>,
      * }>}
      */
     const cases = [
@@ -2669,9 +2669,9 @@ describe('BaseGraphqlPayload', () => {
 
     /**
      * @type {Array<{
-     *   Payload: furo.PayloadCtor<*>,
-     *   truthyCases: Array<furo.GraphqlRequestVariables>,
-     *   falsyCases: Array<furo.GraphqlRequestVariables>,
+     *   Payload: GraphqlType.PayloadCtor<*>,
+     *   truthyCases: Array<GraphqlType.RequestVariables>,
+     *   falsyCases: Array<GraphqlType.RequestVariables>,
      * }>}
      */
     const cases = [
