@@ -41,7 +41,7 @@ import {
 import {
   SubscriptionCapsuleCtor,
   SubscriptionCapsule,
-  BaseSubscriptionGraphqlCapsuleParams,
+  BaseSubscriptionGraphqlCapsuleParams as SubscriptionCapsuleParams,
   BaseSubscriptionGraphqlCapsuleFactoryParams,
   SUBSCRIBE_ABORTED_REASON,
 } from '../lib/client/graphql/BaseSubscriptionGraphqlCapsule'
@@ -123,7 +123,7 @@ declare global {
       // from BaseSubscriptionGraphqlCapsule
       SubscriptionCapsuleCtor,
       SubscriptionCapsule,
-      BaseSubscriptionGraphqlCapsuleParams,
+      SubscriptionCapsuleParams,
       BaseSubscriptionGraphqlCapsuleFactoryParams,
       SUBSCRIBE_ABORTED_REASON,
 
