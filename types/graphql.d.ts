@@ -66,6 +66,10 @@ type WebSocketSink = Partial<{
   error: GraphqlWebsocketEventErrorListener
 }>
 
+type WebSocketSinkError = Error
+  | Array<ResponseError>
+  | furo.WebSocketCloseEvent
+
 /**
  * Furo GraphQL types
  */
@@ -77,6 +81,7 @@ declare global {
       GraphqlError as ResponseError,
 
       WebSocketSink,
+      WebSocketSinkError,
 
       // ---------------------------------------------------- Query and Mutation
 
