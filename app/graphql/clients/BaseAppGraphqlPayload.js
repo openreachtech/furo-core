@@ -9,7 +9,7 @@ import {
 /**
  * Company sponsors query graphql launcher.
  *
- * @template {furo.GraphqlRequestVariables} SV
+ * @template {GraphqlType.RequestVariables} SV
  * @extends {BaseGraphqlPayload<SV>}
  */
 export default class BaseAppGraphqlPayload extends BaseGraphqlPayload {
