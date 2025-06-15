@@ -51,7 +51,7 @@ import {
   Subscriber,
   BaseGraphqlSubscriberParams,
   BaseGraphqlSubscriberFactoryParams,
-  GraphqlSubscribeRequestArgs,
+  GraphqlSubscribeRequestArgs as SubscribeRequestArgs,
   GraphqlSubscriberHooks,
 } from '../lib/client/graphql/BaseGraphqlSubscriber'
 
@@ -133,7 +133,7 @@ declare global {
       BaseGraphqlSubscriberParams,
       BaseGraphqlSubscriberFactoryParams,
 
-      GraphqlSubscribeRequestArgs,
+      SubscribeRequestArgs,
       GraphqlSubscriberHooks,
     }
   }
