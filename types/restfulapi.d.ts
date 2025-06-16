@@ -3,7 +3,10 @@ import type {
   Payload,
   BaseRestfulApiPayloadParams as PayloadParams,
   BaseRestfulApiPayloadFactoryParams as PayloadFactoryParams,
-  RestfulApiRequestBody as RequestVariables,
+
+  RestfulApiRequestQuery as RequestQuery,
+  RestfulApiRequestBody as RequestBody,
+  RestfulApiRequestPathParams as RequestPathParams,
 } from '../lib/client/restfulapi/BaseRestfulApiPayload'
 
 import type {
@@ -51,7 +54,10 @@ declare global {
       Payload,
       PayloadParams,
       PayloadFactoryParams,
-      RequestVariables,
+
+      RequestQuery,
+      RequestBody,
+      RequestPathParams,
 
       // Capsule
       CapsuleCtor,
