@@ -22,6 +22,7 @@ describe('DerivedClassNameGenerator', () => {
             className: input.className,
             fixedPrefix: '',
           }
+
           const generator = new DerivedClassNameGenerator(args)
 
           expect(generator)
@@ -48,6 +49,7 @@ describe('DerivedClassNameGenerator', () => {
             className: 'BaseOmega',
             fixedPrefix: input.fixedPrefix,
           }
+
           const generator = new DerivedClassNameGenerator(args)
 
           expect(generator)
