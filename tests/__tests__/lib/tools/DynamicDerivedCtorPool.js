@@ -886,7 +886,7 @@ describe('DynamicDerivedCtorPool', () => {
             pool: new Map(),
           })
 
-          const actual = pool.retrieveCtor(input)
+          const actual = pool.containsCtor(input)
 
           expect(actual)
             .toBeFalsy()
