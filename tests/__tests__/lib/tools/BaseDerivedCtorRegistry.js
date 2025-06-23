@@ -129,7 +129,7 @@ describe('BaseDerivedCtorRegistry', () => {
       const BaseExtraGamma = class {}
 
       const alphaCtorPool = DynamicDerivedCtorPool.create()
-      const BetaCtorPool = DynamicDerivedCtorPool.create()
+      const betaCtorPool = DynamicDerivedCtorPool.create()
 
       describe('with full parameters', () => {
         const cases = [
@@ -157,13 +157,13 @@ describe('BaseDerivedCtorRegistry', () => {
           {
             input: {
               SuperCtor: BaseAppBeta,
-              pool: BetaCtorPool,
+              pool: betaCtorPool,
               fixedPrefix: 'BaseApp',
             },
             expected: {
               constructorArgs: {
                 SuperCtor: BaseAppBeta,
-                pool: BetaCtorPool,
+                pool: betaCtorPool,
                 classNameGenerator: DerivedClassNameGenerator.create({
                   className: 'BaseAppBeta',
                   fixedPrefix: 'BaseApp',
@@ -243,7 +243,7 @@ describe('BaseDerivedCtorRegistry', () => {
           {
             input: {
               SuperCtor: BaseAppBeta,
-              // pool: BetaCtorPool,
+              // pool: betaCtorPool,
               fixedPrefix: 'BaseApp',
             },
             expected: {
