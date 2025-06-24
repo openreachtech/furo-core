@@ -1236,6 +1236,64 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.createDerivedCtorRegistry()', () => {
+    const BaseAppRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseApp'
+      }
+    }
+
+    const inputCases = [
+      {
+        input: {
+          PayloadCtor: BaseRestfulApiPayload,
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseAppRestfulApiPayload,
+        },
+      },
+    ]
+
+    describe.each(inputCases)('SuperCtor: $input.SuperCtor.name', ({ input }) => {
+      const cases = [
+        { method: RESTFUL_API_METHOD.GET },
+        { method: RESTFUL_API_METHOD.POST },
+        { method: RESTFUL_API_METHOD.PUT },
+        { method: RESTFUL_API_METHOD.PATCH },
+        { method: RESTFUL_API_METHOD.DELETE },
+        { method: RESTFUL_API_METHOD.HEAD },
+        { method: RESTFUL_API_METHOD.OPTIONS },
+        { method: RESTFUL_API_METHOD.TRACE },
+        { method: RESTFUL_API_METHOD.CONNECT },
+      ]
+
+      test.each(cases)('method: $method', ({ method }) => {
+        const expectedArgs = {
+          SuperCtor: input.PayloadCtor,
+          fixedPrefix: input.PayloadCtor.FIXED_CLASS_NAME_PREFIX,
+          method,
+        }
+
+        const createSpy = jest.spyOn(RestMethodRestfulApiPayloadDerivedCtorRegistry, 'create')
+
+        const actual = input.PayloadCtor.createDerivedCtorRegistry({
+          method,
+        })
+
+        expect(actual)
+          .toBeInstanceOf(RestMethodRestfulApiPayloadDerivedCtorRegistry)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(expectedArgs)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:method', () => {
     test('to throw Error', () => {
       const expected = 'this function must be inherited'
