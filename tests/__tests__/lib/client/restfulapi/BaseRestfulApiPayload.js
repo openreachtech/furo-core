@@ -1144,6 +1144,98 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.declareRestMethodCtor()', () => {
+    const BaseAppRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseApp'
+      }
+    }
+
+    const BaseExtraRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseExtra'
+      }
+    }
+
+    const inputCases = [
+      {
+        input: {
+          PayloadCtor: BaseRestfulApiPayload,
+        },
+        expected: {
+          fixedPrefix: 'Base',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseAppRestfulApiPayload,
+        },
+        expected: {
+          fixedPrefix: 'BaseApp',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseExtraRestfulApiPayload,
+        },
+        expected: {
+          fixedPrefix: 'BaseExtra',
+        },
+      },
+    ]
+
+    const cases = [
+      { method: RESTFUL_API_METHOD.GET },
+      { method: RESTFUL_API_METHOD.POST },
+      { method: RESTFUL_API_METHOD.PUT },
+      { method: RESTFUL_API_METHOD.PATCH },
+      { method: RESTFUL_API_METHOD.DELETE },
+      { method: RESTFUL_API_METHOD.HEAD },
+      { method: RESTFUL_API_METHOD.OPTIONS },
+      { method: RESTFUL_API_METHOD.TRACE },
+      { method: RESTFUL_API_METHOD.CONNECT },
+    ]
+
+    describe.each(inputCases)('PayloadCtor: $input.PayloadCtor.name', ({ input, expected }) => {
+      test.each(cases)('method: $method', ({ method }) => {
+        const expectedArgs = {
+          method,
+        }
+
+        const tallyRegistry = RestMethodRestfulApiPayloadDerivedCtorRegistry.create({
+          SuperCtor: input.PayloadCtor,
+          fixedPrefix: expected.fixedPrefix,
+          pool: DynamicDerivedCtorPool.create({
+            pool: new Map(),
+          }),
+          method,
+        })
+
+        const createDerivedCtorRegistrySpy = jest.spyOn(input.PayloadCtor, 'createDerivedCtorRegistry')
+          .mockReturnValue(tallyRegistry)
+        const obtainCtorSpy = jest.spyOn(tallyRegistry, 'obtainCtor')
+
+        const actual = input.PayloadCtor.declareRestMethodCtor({
+          method,
+        })
+
+        expect(actual.prototype)
+          .toBeInstanceOf(input.PayloadCtor)
+        expect(actual.method)
+          .toBe(method)
+
+        expect(createDerivedCtorRegistrySpy)
+          .toHaveBeenCalledWith(expectedArgs)
+        expect(obtainCtorSpy)
+          .toHaveBeenCalledWith()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:method', () => {
     test('to throw Error', () => {
       const expected = 'this function must be inherited'
