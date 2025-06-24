@@ -1265,7 +1265,7 @@ describe('BaseRestfulApiPayload', () => {
       },
     ]
 
-    describe.each(inputCases)('SuperCtor: $input.SuperCtor.name', ({ input }) => {
+    describe.each(inputCases)('PayloadCtor: $input.PayloadCtor.name', ({ input }) => {
       const cases = [
         { method: RESTFUL_API_METHOD.GET },
         { method: RESTFUL_API_METHOD.POST },
