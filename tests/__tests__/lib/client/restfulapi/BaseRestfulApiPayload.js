@@ -1076,6 +1076,74 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.get:asPostMethod', () => {
+    const BaseAppRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseApp'
+      }
+    }
+
+    const BaseExtraRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseExtra'
+      }
+    }
+
+    const cases = [
+      {
+        input: {
+          PayloadCtor: BaseRestfulApiPayload,
+          fixedPrefix: 'Base',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseAppRestfulApiPayload,
+          fixedPrefix: 'BaseApp',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseExtraRestfulApiPayload,
+          fixedPrefix: 'BaseExtra',
+        },
+      },
+    ]
+
+    test.each(cases)('PayloadCtor: $input.PayloadCtor.name', ({ input }) => {
+      const expectedArgs = {
+        method: RESTFUL_API_METHOD.POST,
+      }
+
+      const tallyRegistry = RestMethodRestfulApiPayloadDerivedCtorRegistry.create({
+        SuperCtor: input.PayloadCtor,
+        fixedPrefix: input.fixedPrefix,
+        pool: DynamicDerivedCtorPool.create({
+          pool: new Map(),
+        }),
+        method: RESTFUL_API_METHOD.POST,
+      })
+
+      jest.spyOn(input.PayloadCtor, 'createDerivedCtorRegistry')
+        .mockReturnValue(tallyRegistry)
+      const declareRestMethodCtorSpy = jest.spyOn(input.PayloadCtor, 'declareRestMethodCtor')
+
+      const actual = input.PayloadCtor.asPostMethod
+
+      expect(actual.prototype)
+        .toBeInstanceOf(input.PayloadCtor)
+      expect(actual.method)
+        .toBe(RESTFUL_API_METHOD.POST)
+
+      expect(declareRestMethodCtorSpy)
+        .toHaveBeenCalledWith(expectedArgs)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:method', () => {
     test('to throw Error', () => {
       const expected = 'this function must be inherited'
