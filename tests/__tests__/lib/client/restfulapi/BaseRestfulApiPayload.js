@@ -1135,6 +1135,7 @@ describe('BaseRestfulApiPayload', () => {
       const declareRestMethodCtorSpy = jest.spyOn(input.PayloadCtor, 'declareRestMethodCtor')
 
       const actual = input.PayloadCtor.asPostMethod
+      const secondActual = input.PayloadCtor.asPostMethod
 
       expect(actual.prototype)
         .toBeInstanceOf(input.PayloadCtor)
@@ -1143,6 +1144,9 @@ describe('BaseRestfulApiPayload', () => {
 
       expect(declareRestMethodCtorSpy)
         .toHaveBeenCalledWith(expectedArgs)
+
+      expect(actual)
+        .toBe(secondActual) // to be cached
     })
   })
 })
