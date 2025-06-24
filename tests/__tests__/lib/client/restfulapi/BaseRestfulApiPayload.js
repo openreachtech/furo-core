@@ -3,6 +3,8 @@ import {
 } from '~/lib/client/restfulapi/constants.js'
 
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
+import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry'
+import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
 
 describe('BaseRestfulApiPayload', () => {
   describe('constructor', () => {
@@ -1001,6 +1003,74 @@ describe('BaseRestfulApiPayload', () => {
 
       expect(actual)
         .toEqual(expected)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('.get:asGetMethod', () => {
+    const BaseAppRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseApp'
+      }
+    }
+
+    const BaseExtraRestfulApiPayload = class extends BaseRestfulApiPayload {
+      /** @override */
+      static get FIXED_CLASS_NAME_PREFIX () {
+        return 'BaseExtra'
+      }
+    }
+
+    const cases = [
+      {
+        input: {
+          PayloadCtor: BaseRestfulApiPayload,
+          fixedPrefix: 'Base',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseAppRestfulApiPayload,
+          fixedPrefix: 'BaseApp',
+        },
+      },
+      {
+        input: {
+          PayloadCtor: BaseExtraRestfulApiPayload,
+          fixedPrefix: 'BaseExtra',
+        },
+      },
+    ]
+
+    test.each(cases)('PayloadCtor: $input.PayloadCtor.name', ({ input }) => {
+      const expectedArgs = {
+        method: RESTFUL_API_METHOD.GET,
+      }
+
+      const tallyRegistry = RestMethodRestfulApiPayloadDerivedCtorRegistry.create({
+        SuperCtor: input.PayloadCtor,
+        fixedPrefix: input.fixedPrefix,
+        pool: DynamicDerivedCtorPool.create({
+          pool: new Map(),
+        }),
+        method: RESTFUL_API_METHOD.GET,
+      })
+
+      jest.spyOn(input.PayloadCtor, 'createDerivedCtorRegistry')
+        .mockReturnValue(tallyRegistry)
+      const declareRestMethodCtorSpy = jest.spyOn(input.PayloadCtor, 'declareRestMethodCtor')
+
+      const actual = input.PayloadCtor.asGetMethod
+
+      expect(actual.prototype)
+        .toBeInstanceOf(input.PayloadCtor)
+      expect(actual.method)
+        .toBe(RESTFUL_API_METHOD.GET)
+
+      expect(declareRestMethodCtorSpy)
+        .toHaveBeenCalledWith(expectedArgs)
     })
   })
 })
