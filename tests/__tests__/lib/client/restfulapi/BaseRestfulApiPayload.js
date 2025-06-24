@@ -993,6 +993,19 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.get:FIXED_CLASS_NAME_PREFIX', () => {
+    test('to throw Error', () => {
+      const expected = 'Base'
+
+      const actual = BaseRestfulApiPayload.FIXED_CLASS_NAME_PREFIX
+
+      expect(actual)
+        .toEqual(expected)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:method', () => {
     test('to throw Error', () => {
       const expected = 'this function must be inherited'
