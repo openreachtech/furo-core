@@ -996,7 +996,7 @@ describe('BaseRestfulApiPayload', () => {
 
 describe('BaseRestfulApiPayload', () => {
   describe('.get:FIXED_CLASS_NAME_PREFIX', () => {
-    test('to throw Error', () => {
+    test('to be fixed value', () => {
       const expected = 'Base'
 
       const actual = BaseRestfulApiPayload.FIXED_CLASS_NAME_PREFIX
