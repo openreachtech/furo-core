@@ -28,8 +28,6 @@ import type {
 
   RestfulApiLaunchRequestArgs as LaunchRequestArgs,
   RestfulApiLauncherHooks as LauncherHooks,
-
-  RestfulApiRequestArgs as RequestArgs,
 } from '../lib/client/restfulapi/BaseRestfulApiLauncher'
 
 type METHOD = 'GET'
@@ -77,7 +75,6 @@ declare global {
 
       LaunchRequestArgs,
       LauncherHooks,
-      RequestArgs,
 
       METHOD,
 
