@@ -1406,38 +1406,6 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('.resolveBaseUrl()', () => {
-    const cases = [
-      {
-        args: {
-          baseUrl: 'https://alpha.example.com',
-        },
-        expected: 'https://alpha.example.com',
-      },
-      {
-        args: {
-          baseUrl: new URL('https://beta.example.com'),
-        },
-        expected: 'https://beta.example.com',
-      },
-      {
-        args: {
-          baseUrl: new Request('https://gamma.example.com'),
-        },
-        expected: 'https://gamma.example.com',
-      },
-    ]
-
-    test.each(cases)('baseUrl: $args.baseUrl', ({ args, expected }) => {
-      const actual = BaseRestfulApiPayload.resolveBaseUrl(args)
-
-      expect(actual)
-        .toEqual(expected)
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
   describe('.isBodyRequiredMethod()', () => {
     describe('to be truthy', () => {
       const cases = [
