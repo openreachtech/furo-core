@@ -1724,87 +1724,160 @@ describe('BaseRestfulApiPayload', () => {
 describe('BaseRestfulApiPayload', () => {
   describe('#createRequestURL()', () => {
     describe('to return URL instance', () => {
-      /**
-       * @type {Array<{
-       *   args: {
-       *     baseUrl: string
-       *     query: Record<string, unknown>
-       *   }
-       *   tally: {
-       *     method: RestfulApiType.METHOD
-       *     pathname: string
-       *   }
-       *   expected: URL
-       * }>}
-       */
-      const cases = [
-        {
-          args: {
-            baseUrl: 'https://alpha.example.com',
-            query: {
-              alpha: 111,
-              beta: 222,
+      describe('with baseUrl as origin', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *   }
+         *   expected: string
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: 'https://alpha.example.com',
+              query: {
+                alpha: 111,
+                beta: 222,
+              },
             },
-          },
-          tally: {
-            method: 'GET',
-            pathname: '/alpha-endpoint',
-          },
-          expected: new URL(
-            '/alpha-endpoint?alpha=111&beta=222',
-            'https://alpha.example.com'
-          ),
-        },
-        {
-          args: {
-            baseUrl: 'https://beta.example.com',
-            query: {
-              gamma: 333,
-              delta: 444,
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
             },
+            expected: 'https://alpha.example.com/alpha-endpoint?alpha=111&beta=222',
           },
-          tally: {
-            method: 'POST',
-            pathname: '/beta-endpoint',
+          {
+            args: {
+              baseUrl: 'https://beta.example.com',
+              query: {
+                gamma: 333,
+                delta: 444,
+              },
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+            },
+            expected: 'https://beta.example.com/beta-endpoint?delta=444&gamma=333', // sorted query parameters
           },
-          expected: new URL(
-            '/beta-endpoint?gamma=333&delta=444',
-            'https://beta.example.com'
-          ),
-        },
-        {
-          args: {
-            baseUrl: 'https://gamma.example.com',
-            query: {},
+          {
+            args: {
+              baseUrl: 'https://gamma.example.com',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+            },
+            expected: 'https://gamma.example.com/gamma-endpoint',
           },
-          tally: {
-            method: 'GET',
-            pathname: '/gamma-endpoint',
-          },
-          expected: new URL(
-            '/gamma-endpoint',
-            'https://gamma.example.com'
-          ),
-        },
-      ]
+        ]
 
-      test.each(cases)('baseUrl: $args.baseUrl', ({ args, tally, expected }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
-          .mockReturnValue(tally.method)
-        jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
-          .mockReturnValue(tally.pathname)
+        test.each(cases)('baseUrl: $args.baseUrl', ({ args, tally, expected }) => {
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
 
-        const payload = new BaseRestfulApiPayload({
-          query: args.query,
-          body: {},
-          pathParameterHash: {},
-          options: {},
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          const actual = payload.createRequestURL(args)
+
+          expect(actual)
+            .toBeInstanceOf(URL)
+          expect(actual)
+            .toHaveProperty('href', expected)
         })
+      })
 
-        const actual = payload.createRequestURL(args)
+      describe('with baseUrl contains fixed pathname', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *   }
+         *   expected: string
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: 'https://alpha.example.com/v1',
+              query: {
+                alpha: 111,
+                beta: 222,
+              },
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
+            },
+            expected: 'https://alpha.example.com/v1/alpha-endpoint?alpha=111&beta=222',
+          },
+          {
+            args: {
+              baseUrl: 'https://beta.example.com/v2',
+              query: {
+                gamma: 333,
+                delta: 444,
+              },
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+            },
+            expected: 'https://beta.example.com/v2/beta-endpoint?delta=444&gamma=333', // sorted query parameters
+          },
+          {
+            args: {
+              baseUrl: 'https://gamma.example.com/v3',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+            },
+            expected: 'https://gamma.example.com/v3/gamma-endpoint',
+          },
+        ]
 
-        expect(actual)
-          .toEqual(expected)
+        test.each(cases)('baseUrl: $args.baseUrl', ({ args, tally, expected }) => {
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
+
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          const actual = payload.createRequestURL(args)
+
+          expect(actual)
+            .toBeInstanceOf(URL)
+          expect(actual)
+            .toHaveProperty('href', expected)
+        })
       })
     })
   })
