@@ -2409,3 +2409,65 @@ describe('BaseRestfulApiCapsule', () => {
     })
   })
 })
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('#generateResultErrorCode()', () => {
+    describe('should throw an error', () => {
+      const mockResponse = new Response()
+      const mockPayload = BaseRestfulApiPayload.create()
+
+      const cases = [
+        {
+          name: 'on result error',
+          input: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on network error',
+          input: {
+            rawResponse: null,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on JSON parse error',
+          input: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on status code error',
+          input: {
+            rawResponse: new Response(null, {
+              status: 400,
+              statusText: 'Bad Request',
+            }),
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+      ]
+
+      test.each(cases)('$name', ({ input }) => {
+        const expected = 'this feature must be inherited'
+
+        const capsule = new BaseRestfulApiCapsule(input)
+
+        expect(() => {
+          capsule.generateResultErrorCode()
+        })
+          .toThrow(expected)
+      })
+    })
+  })
+})
