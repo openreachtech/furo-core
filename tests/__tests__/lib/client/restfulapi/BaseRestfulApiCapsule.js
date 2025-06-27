@@ -1986,6 +1986,56 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
+  describe('#hasResultError()', () => {
+    const mockPayload = BaseRestfulApiPayload.create()
+
+    describe('to be fixed value', () => {
+      const cases = [
+        {
+          input: {
+            rawResponse: new Response('{}', {
+              status: 200,
+              statusText: 'OK',
+            }),
+            result: {
+              content: {
+                customer: {
+                  id: 10001,
+                },
+              },
+            },
+          },
+        },
+        {
+          input: {
+            rawResponse: new Response('{}', {
+              status: 201,
+              statusText: 'Created',
+            }),
+            result: {},
+          },
+        },
+      ]
+
+      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+        const args = {
+          rawResponse: input.rawResponse,
+          payload: mockPayload,
+          result: input.result,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasResultError()
+
+        expect(actual)
+          .toBeFalsy()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
   describe('#getErrorMessage()', () => {
     const mockResponse = new Response()
     const mockPayload = BaseRestfulApiPayload.create()
