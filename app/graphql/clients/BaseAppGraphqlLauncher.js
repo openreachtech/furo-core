@@ -3,7 +3,7 @@ import BaseGraphqlLauncher from '../../../lib/client/BaseGraphqlLauncher.js'
 import graphqlConfig from '../graphql.config.js'
 
 /**
- * Company sponsors query graphql launcher.
+ * Base class of GraphQL launcher for the app.
  *
  * @extends {BaseGraphqlLauncher}
  */

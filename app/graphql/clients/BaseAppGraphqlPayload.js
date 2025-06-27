@@ -7,7 +7,7 @@ import {
 } from '../../constants.js'
 
 /**
- * Company sponsors query graphql launcher.
+ * Base class of GraphQL payload for the app.
  *
  * @template {furo.GraphqlRequestVariables} SV
  * @extends {BaseGraphqlPayload<SV>}
