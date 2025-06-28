@@ -181,6 +181,15 @@ describe('BaseRestfulApiCapsule', () => {
 describe('BaseRestfulApiCapsule', () => {
   describe('.create()', () => {
     describe('to be instance of own class', () => {
+      /**
+       * @type {Array<{
+       *   input: {
+       *     rawResponse: Response | null
+       *     payload: BaseRestfulApiPayload | null
+       *     result: * | null
+       *   }
+       * }>}
+       */
       const cases = [
         {
           input: {
@@ -226,6 +235,16 @@ describe('BaseRestfulApiCapsule', () => {
 
     describe('to call constructor', () => {
       describe('with abortedReason', () => {
+        /**
+         * @type {Array<{
+         *   input: {
+         *     rawResponse: Response | null
+         *     payload: BaseRestfulApiPayload | null
+         *     result: * | null
+         *     abortedReason: LAUNCH_ABORTED_REASON
+         *   }
+         * }>}
+         */
         const cases = [
           {
             input: {
@@ -274,6 +293,15 @@ describe('BaseRestfulApiCapsule', () => {
       })
 
       describe('with no abortedReason', () => {
+        /**
+         * @type {Array<{
+         *   input: {
+         *     rawResponse: Response | null
+         *     payload: BaseRestfulApiPayload | null
+         *     result: * | null
+         *   }
+         * }>}
+         */
         const cases = [
           {
             input: {
