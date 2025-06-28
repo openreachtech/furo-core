@@ -2265,16 +2265,14 @@ describe('BaseRestfulApiCapsule', () => {
         })
       })
 
-      describe('on query error', () => {
+      describe('on result error', () => {
         const cases = [
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.G001.001',
-                },
+                errorCode: '200.G001.001',
               },
             },
             expected: '200.G001.001',
@@ -2284,9 +2282,7 @@ describe('BaseRestfulApiCapsule', () => {
               payload: PostRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.P001.001',
-                },
+                errorCode: '200.P001.001',
               },
             },
             expected: '200.P001.001',
@@ -2296,9 +2292,7 @@ describe('BaseRestfulApiCapsule', () => {
               payload: DeleteRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.D001.001',
-                },
+                errorCode: '200.D001.001',
               },
             },
             expected: '200.D001.001',
@@ -2313,6 +2307,11 @@ describe('BaseRestfulApiCapsule', () => {
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
           }
           const capsule = new BaseRestfulApiCapsule(args)
+
+          jest.spyOn(capsule, 'hasResultError')
+            .mockReturnValue(true)
+          jest.spyOn(capsule, 'generateResultErrorCode')
+            .mockReturnValue(input.result.errorCode)
 
           const actual = capsule.getErrorMessage()
 
@@ -2337,8 +2336,6 @@ describe('BaseRestfulApiCapsule', () => {
         ]
 
         test.each(cases)('payload: $input.payload.constructor.name', ({ input }) => {
-          const expected = '190.X000.001'
-
           const args = {
             rawResponse: input.rawResponse,
             payload: input.payload,
@@ -2350,7 +2347,7 @@ describe('BaseRestfulApiCapsule', () => {
           const actual = capsule.getErrorMessage()
 
           expect(actual)
-            .toBe(expected)
+            .toBeNull()
         })
       })
     })
