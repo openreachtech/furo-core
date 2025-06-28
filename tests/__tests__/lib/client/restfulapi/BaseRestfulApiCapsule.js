@@ -1112,42 +1112,72 @@ describe('BaseRestfulApiCapsule', () => {
 
     describe('to has error (truthy)', () => {
       const cases = [
-        // query error
         {
           input: {
-            rawResponse: mockResponse,
-            result: {
-              error: {
-                code: '190.X000.001',
-              },
-            },
+            hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
           },
         },
-        // network error
         {
           input: {
-            rawResponse: null,
-            result: null,
+            // hasInvalidParameterHashError: true,
+            hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
           },
         },
-        // JSON parse error
         {
           input: {
-            rawResponse: mockResponse,
-            result: null,
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
+          },
+        },
+        {
+          input: {
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            hasStatusCodeError: true,
+            // hasResultError: true,
+          },
+        },
+        {
+          input: {
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            hasResultError: true,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          rawResponse: mockResponse,
           payload: mockPayload,
-          result: input.result,
+          result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
         }
-
         const capsule = new BaseRestfulApiCapsule(args)
+
+        jest.spyOn(capsule, 'hasInvalidParameterHashError')
+          .mockReturnValue(input.hasInvalidParameterHashError)
+        jest.spyOn(capsule, 'hasNetworkError')
+          .mockReturnValue(input.hasNetworkError)
+        jest.spyOn(capsule, 'hasJsonParseError')
+          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasStatusCodeError')
+          .mockReturnValue(input.hasStatusCodeError)
+        jest.spyOn(capsule, 'hasResultError')
+          .mockReturnValue(input.hasResultError)
 
         const actual = capsule.hasError()
 
@@ -1160,33 +1190,35 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: mockResponse,
-            result: {
-              content: {
-                customer: {
-                  id: 10001,
-                },
-              },
-            },
-          },
-        },
-        {
-          input: {
-            rawResponse: mockResponse,
-            result: {},
+            hasInvalidParameterHashError: false,
+            hasNetworkError: false,
+            hasJsonParseError: false,
+            hasStatusCodeError: false,
+            hasResultError: false,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          rawResponse: mockResponse,
           payload: mockPayload,
-          result: input.result,
+          result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
         }
 
         const capsule = new BaseRestfulApiCapsule(args)
+
+        jest.spyOn(capsule, 'hasInvalidParameterHashError')
+          .mockReturnValue(input.hasInvalidParameterHashError)
+        jest.spyOn(capsule, 'hasNetworkError')
+          .mockReturnValue(input.hasNetworkError)
+        jest.spyOn(capsule, 'hasJsonParseError')
+          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasStatusCodeError')
+          .mockReturnValue(input.hasStatusCodeError)
+        jest.spyOn(capsule, 'hasResultError')
+          .mockReturnValue(input.hasResultError)
 
         const actual = capsule.hasError()
 
