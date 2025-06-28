@@ -181,6 +181,15 @@ describe('BaseRestfulApiCapsule', () => {
 describe('BaseRestfulApiCapsule', () => {
   describe('.create()', () => {
     describe('to be instance of own class', () => {
+      /**
+       * @type {Array<{
+       *   input: {
+       *     rawResponse: Response | null
+       *     payload: BaseRestfulApiPayload | null
+       *     result: * | null
+       *   }
+       * }>}
+       */
       const cases = [
         {
           input: {
@@ -226,6 +235,16 @@ describe('BaseRestfulApiCapsule', () => {
 
     describe('to call constructor', () => {
       describe('with abortedReason', () => {
+        /**
+         * @type {Array<{
+         *   input: {
+         *     rawResponse: Response | null
+         *     payload: BaseRestfulApiPayload | null
+         *     result: * | null
+         *     abortedReason: LAUNCH_ABORTED_REASON
+         *   }
+         * }>}
+         */
         const cases = [
           {
             input: {
@@ -274,6 +293,15 @@ describe('BaseRestfulApiCapsule', () => {
       })
 
       describe('with no abortedReason', () => {
+        /**
+         * @type {Array<{
+         *   input: {
+         *     rawResponse: Response | null
+         *     payload: BaseRestfulApiPayload | null
+         *     result: * | null
+         *   }
+         * }>}
+         */
         const cases = [
           {
             input: {
@@ -688,193 +716,6 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('#get:content', () => {
-    const mockResponse = new Response()
-    const mockPayload = BaseRestfulApiPayload.create()
-
-    describe('when has content', () => {
-      const cases = [
-        {
-          input: {
-            result: {
-              content: {
-                customer: {
-                  id: 10001,
-                },
-              },
-            },
-          },
-          expected: {
-            customer: {
-              id: 10001,
-            },
-          },
-        },
-        {
-          input: {
-            result: {
-              content: {
-                customer: {
-                  id: 10002,
-                },
-              },
-            },
-          },
-          expected: {
-            customer: {
-              id: 10002,
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('result: $input.result', ({ input, expected }) => {
-        const args = {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.content
-
-        expect(actual)
-          .toEqual(expected)
-      })
-    })
-
-    describe('when has no content (returns null)', () => {
-      const cases = [
-        // on network error
-        {
-          input: {
-            rawResponse: null,
-            result: null,
-          },
-        },
-        // on JSON parse error
-        {
-          input: {
-            rawResponse: mockResponse,
-            result: null,
-          },
-        },
-        // on query error
-        {
-          input: {
-            rawResponse: mockResponse,
-            result: {
-              error: {
-                code: '190.X000.001',
-              },
-            },
-          },
-        },
-        {
-          input: {
-            rawResponse: mockResponse,
-            result: {
-              error: {
-                code: null,
-              },
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
-        const args = {
-          rawResponse: input.rawResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.content
-
-        expect(actual)
-          .toBeNull()
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiCapsule', () => {
-  describe('#get:error', () => {
-    const mockResponse = new Response()
-    const mockPayload = BaseRestfulApiPayload.create()
-
-    const cases = [
-      {
-        input: {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: {
-            error: {
-              code: '190.X000.001',
-            },
-          },
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        },
-        expected: {
-          code: '190.X000.001',
-        },
-      },
-      {
-        input: {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: {
-            error: {
-              code: '190.X000.002',
-            },
-          },
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        },
-        expected: {
-          code: '190.X000.002',
-        },
-      },
-      {
-        input: {
-          rawResponse: null,
-          payload: mockPayload,
-          result: {
-            error: {
-              code: '190.X000.003',
-            },
-          },
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        },
-        expected: {
-          code: '190.X000.003',
-        },
-      },
-      {
-        input: {
-          rawResponse: null,
-          payload: null,
-          result: null,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        },
-        expected: null,
-      },
-    ]
-
-    test.each(cases)('result: $input.result', ({ input, expected }) => {
-      const capsule = new BaseRestfulApiCapsule(input)
-
-      const actual = capsule.error
-
-      expect(actual)
-        .toEqual(expected)
-    })
-  })
-})
-
-describe('BaseRestfulApiCapsule', () => {
   describe('#get:statusCode', () => {
     describe('with existing response', () => {
       const cases = [
@@ -1023,131 +864,78 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('#hasContent()', () => {
-    const mockResponse = new Response()
-    const mockPayload = BaseRestfulApiPayload.create()
-
-    describe('to has content (truthy)', () => {
-      const cases = [
-        {
-          input: {
-            result: {
-              content: {
-                customer: {
-                  id: 10001,
-                },
-              },
-            },
-          },
-        },
-        {
-          input: {
-            result: {
-              content: {
-                customer: {
-                  id: 10002,
-                },
-              },
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('result: $input.result', ({ input }) => {
-        const args = {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.hasContent()
-
-        expect(actual)
-          .toBeTruthy()
-      })
-    })
-
-    describe('to has no content (falsy)', () => {
-      const cases = [
-        {
-          input: {
-            result: {
-              error: {
-                code: '190.X000.001',
-              },
-            },
-          },
-        },
-        {
-          input: {
-            result: null, // network error or json parse error, etc.
-          },
-        },
-      ]
-
-      test.each(cases)('result: $input.result', ({ input }) => {
-        const args = {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.hasContent()
-
-        expect(actual)
-          .toBeFalsy()
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiCapsule', () => {
   describe('#hasError()', () => {
     const mockResponse = new Response()
     const mockPayload = BaseRestfulApiPayload.create()
 
     describe('to has error (truthy)', () => {
       const cases = [
-        // query error
         {
           input: {
-            rawResponse: mockResponse,
-            result: {
-              error: {
-                code: '190.X000.001',
-              },
-            },
+            hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
           },
         },
-        // network error
         {
           input: {
-            rawResponse: null,
-            result: null,
+            // hasInvalidParameterHashError: true,
+            hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
           },
         },
-        // JSON parse error
         {
           input: {
-            rawResponse: mockResponse,
-            result: null,
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            // hasResultError: true,
+          },
+        },
+        {
+          input: {
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            hasStatusCodeError: true,
+            // hasResultError: true,
+          },
+        },
+        {
+          input: {
+            // hasInvalidParameterHashError: true,
+            // hasNetworkError: true,
+            // hasJsonParseError: true,
+            // hasStatusCodeError: true,
+            hasResultError: true,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          rawResponse: mockResponse,
           payload: mockPayload,
-          result: input.result,
+          result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
         }
-
         const capsule = new BaseRestfulApiCapsule(args)
+
+        jest.spyOn(capsule, 'hasInvalidParameterHashError')
+          .mockReturnValue(input.hasInvalidParameterHashError)
+        jest.spyOn(capsule, 'hasNetworkError')
+          .mockReturnValue(input.hasNetworkError)
+        jest.spyOn(capsule, 'hasJsonParseError')
+          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasStatusCodeError')
+          .mockReturnValue(input.hasStatusCodeError)
+        jest.spyOn(capsule, 'hasResultError')
+          .mockReturnValue(input.hasResultError)
 
         const actual = capsule.hasError()
 
@@ -1160,33 +948,35 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: mockResponse,
-            result: {
-              content: {
-                customer: {
-                  id: 10001,
-                },
-              },
-            },
-          },
-        },
-        {
-          input: {
-            rawResponse: mockResponse,
-            result: {},
+            hasInvalidParameterHashError: false,
+            hasNetworkError: false,
+            hasJsonParseError: false,
+            hasStatusCodeError: false,
+            hasResultError: false,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          rawResponse: mockResponse,
           payload: mockPayload,
-          result: input.result,
+          result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
         }
 
         const capsule = new BaseRestfulApiCapsule(args)
+
+        jest.spyOn(capsule, 'hasInvalidParameterHashError')
+          .mockReturnValue(input.hasInvalidParameterHashError)
+        jest.spyOn(capsule, 'hasNetworkError')
+          .mockReturnValue(input.hasNetworkError)
+        jest.spyOn(capsule, 'hasJsonParseError')
+          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasStatusCodeError')
+          .mockReturnValue(input.hasStatusCodeError)
+        jest.spyOn(capsule, 'hasResultError')
+          .mockReturnValue(input.hasResultError)
 
         const actual = capsule.hasError()
 
@@ -1808,78 +1598,6 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('#hasQueryError()', () => {
-    const mockResponse = new Response()
-    const mockPayload = BaseRestfulApiPayload.create()
-
-    describe('to has error (truthy)', () => {
-      const cases = [
-        {
-          input: {
-            result: {
-              error: {
-                code: '190.X000.001',
-              },
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('result: $input.result', ({ input }) => {
-        const args = {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.hasQueryError()
-
-        expect(actual)
-          .toBeTruthy()
-      })
-    })
-
-    describe('to has no error (falsy)', () => {
-      const cases = [
-        {
-          input: {
-            result: {
-              content: {
-                customer: {
-                  id: 10001,
-                },
-              },
-            },
-          },
-        },
-        {
-          input: {
-            result: null, // network error or json parse error, etc.
-          },
-        },
-      ]
-
-      test.each(cases)('result: $input.result', ({ input }) => {
-        const args = {
-          rawResponse: mockResponse,
-          payload: mockPayload,
-          result: input.result,
-          abortedReason: LAUNCH_ABORTED_REASON.NONE,
-        }
-        const capsule = new BaseRestfulApiCapsule(args)
-
-        const actual = capsule.hasQueryError()
-
-        expect(actual)
-          .toBeFalsy()
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiCapsule', () => {
   describe('#hasStatusCodeError()', () => {
     const mockPayload = BaseRestfulApiPayload.create()
 
@@ -1977,6 +1695,56 @@ describe('BaseRestfulApiCapsule', () => {
         const capsule = new BaseRestfulApiCapsule(args)
 
         const actual = capsule.hasStatusCodeError()
+
+        expect(actual)
+          .toBeFalsy()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('#hasResultError()', () => {
+    const mockPayload = BaseRestfulApiPayload.create()
+
+    describe('to be fixed value', () => {
+      const cases = [
+        {
+          input: {
+            rawResponse: new Response('{}', {
+              status: 200,
+              statusText: 'OK',
+            }),
+            result: {
+              content: {
+                customer: {
+                  id: 10001,
+                },
+              },
+            },
+          },
+        },
+        {
+          input: {
+            rawResponse: new Response('{}', {
+              status: 201,
+              statusText: 'Created',
+            }),
+            result: {},
+          },
+        },
+      ]
+
+      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+        const args = {
+          rawResponse: input.rawResponse,
+          payload: mockPayload,
+          result: input.result,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasResultError()
 
         expect(actual)
           .toBeFalsy()
@@ -2215,16 +1983,14 @@ describe('BaseRestfulApiCapsule', () => {
         })
       })
 
-      describe('on query error', () => {
+      describe('on result error', () => {
         const cases = [
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.G001.001',
-                },
+                errorCode: '200.G001.001',
               },
             },
             expected: '200.G001.001',
@@ -2234,9 +2000,7 @@ describe('BaseRestfulApiCapsule', () => {
               payload: PostRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.P001.001',
-                },
+                errorCode: '200.P001.001',
               },
             },
             expected: '200.P001.001',
@@ -2246,9 +2010,7 @@ describe('BaseRestfulApiCapsule', () => {
               payload: DeleteRequestRestfulApiPayload.create(),
               rawResponse: mockResponse,
               result: {
-                error: {
-                  code: '200.D001.001',
-                },
+                errorCode: '200.D001.001',
               },
             },
             expected: '200.D001.001',
@@ -2263,6 +2025,11 @@ describe('BaseRestfulApiCapsule', () => {
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
           }
           const capsule = new BaseRestfulApiCapsule(args)
+
+          jest.spyOn(capsule, 'hasResultError')
+            .mockReturnValue(true)
+          jest.spyOn(capsule, 'generateResultErrorCode')
+            .mockReturnValue(input.result.errorCode)
 
           const actual = capsule.getErrorMessage()
 
@@ -2287,8 +2054,6 @@ describe('BaseRestfulApiCapsule', () => {
         ]
 
         test.each(cases)('payload: $input.payload.constructor.name', ({ input }) => {
-          const expected = '190.X000.001'
-
           const args = {
             rawResponse: input.rawResponse,
             payload: input.payload,
@@ -2300,7 +2065,7 @@ describe('BaseRestfulApiCapsule', () => {
           const actual = capsule.getErrorMessage()
 
           expect(actual)
-            .toBe(expected)
+            .toBeNull()
         })
       })
     })
@@ -2355,6 +2120,68 @@ describe('BaseRestfulApiCapsule', () => {
 
         expect(actual)
           .toBeNull()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('#generateResultErrorCode()', () => {
+    describe('should throw an error', () => {
+      const mockResponse = new Response()
+      const mockPayload = BaseRestfulApiPayload.create()
+
+      const cases = [
+        {
+          name: 'on result error',
+          input: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on network error',
+          input: {
+            rawResponse: null,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on JSON parse error',
+          input: {
+            rawResponse: mockResponse,
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        {
+          name: 'on status code error',
+          input: {
+            rawResponse: new Response(null, {
+              status: 400,
+              statusText: 'Bad Request',
+            }),
+            payload: mockPayload,
+            result: null,
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+      ]
+
+      test.each(cases)('$name', ({ input }) => {
+        const expected = 'this feature must be inherited'
+
+        const capsule = new BaseRestfulApiCapsule(input)
+
+        expect(() => {
+          capsule.generateResultErrorCode()
+        })
+          .toThrow(expected)
       })
     })
   })
