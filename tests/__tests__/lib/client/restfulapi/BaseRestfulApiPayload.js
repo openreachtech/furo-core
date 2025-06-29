@@ -1941,7 +1941,7 @@ describe('BaseRestfulApiPayload', () => {
       const cases = [
         {
           args: {
-            pathname: '/alpha-endpoint/:id',
+            pathname: '/alpha-endpoint/[id]',
             prefixPathname: '/v1',
             pathParameterHash: {
               id: 10001,
@@ -1951,7 +1951,7 @@ describe('BaseRestfulApiPayload', () => {
         },
         {
           args: {
-            pathname: '/beta-endpoint/:id/:name',
+            pathname: '/beta-endpoint/[id]/[name]',
             prefixPathname: '/v2',
             pathParameterHash: {
               id: 20002,
@@ -1986,7 +1986,7 @@ describe('BaseRestfulApiPayload', () => {
       const cases = [
         {
           args: {
-            pathname: '/alpha-endpoint/:id',
+            pathname: '/alpha-endpoint/[id]',
             prefixPathname: '/v1',
             query: {
               alpha: 111,
@@ -2000,7 +2000,7 @@ describe('BaseRestfulApiPayload', () => {
         },
         {
           args: {
-            pathname: '/beta-endpoint/:id/:name',
+            pathname: '/beta-endpoint/[id]/[name]',
             prefixPathname: '/v2',
             query: {
               gamma: 333,
@@ -2050,7 +2050,7 @@ describe('BaseRestfulApiPayload', () => {
       },
       {
         args: {
-          pathname: '/beta-endpoint/:id/:name',
+          pathname: '/beta-endpoint/[id]/[name]',
           prefixPathname: '/v2',
           pathParameterHash: {
             id: 10002,
@@ -2061,7 +2061,7 @@ describe('BaseRestfulApiPayload', () => {
       },
       {
         args: {
-          pathname: '/gamma-endpoint/:documentId/edit',
+          pathname: '/gamma-endpoint/[documentId]/edit',
           prefixPathname: '/v3',
           pathParameterHash: {
             documentId: 20003,
