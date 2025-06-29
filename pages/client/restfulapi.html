@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <link rel="icon" type="image/x-icon" href="../../static/favicon.ico">
+
+  <style>
+    .unit-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      border: 1rem red solid;
+
+      display: grid;
+      place-items: center;
+
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 3rem;
+    }
+
+    .unit-loading.hidden {
+      display: none;
+    }
+
+    /**************************************************************************/
+
+    .unit-layout.result-placeholder {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+
+    .unit-layout.result-placeholder > * {
+      width: 0;
+      min-height: 10rem;
+
+      padding-block: 0.25rem;
+      padding-inline: 0.5rem;
+
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .unit-layout.result-placeholder > * > .result-box {
+      flex-grow: 1;
+
+      margin-block: 0;
+      margin-inline: 0;
+
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+
+      background: white;
+      color: #333;
+    }
+
+    .unit-layout.result-placeholder > *:nth-child(1) {
+      flex: 4;
+    }
+
+    .unit-layout.result-placeholder > *:nth-child(2) {
+      flex: 3;
+    }
+
+    .unit-layout.result-placeholder > * > .result-box:empty::before {
+      content: 'No result';
+      color: #999;
+    }
+  </style>
+
+  <title>RESTful API client demo for Renchan</title>
+
+  <script type="module">
+    /**
+     * @type {GraphqlType.LauncherHooks}
+     */
+    const launcherHooks = {
+      async beforeRequest (payload) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.remove('hidden')
+
+        return false
+      },
+      async afterRequest (capsule) {
+        const loadingElement = document.getElementById('loading')
+        loadingElement.classList.add('hidden')
+      },
+    }
+
+    window.launcherHooks = launcherHooks
+
+    /***************************************************************************
+     * Alpha External Callback Success GET Renchan RESTful API Launcher
+     **************************************************************************/
+    import AlphaExternalCallbackSuccessGetRenchanRestfulApiLauncher from '../../app/restfulapi/renchan/get/alphaExternalCallbackSuccess/AlphaExternalCallbackSuccessGetRenchanRestfulApiLauncher.js'
+
+    // Expose the function to the global scope
+    window.invokeRequestAlphaExternalCallbackSuccessOnEvent = invokeRequestAlphaExternalCallbackSuccessOnEvent
+
+    // -------------------------------------------------------------------------
+
+    async function invokeRequestAlphaExternalCallbackSuccessOnEvent ({
+      query,
+      hooks,
+      options = {},
+    }) {
+      invokeRequestAlphaExternalCallbackSuccess({
+        query,
+        hooks,
+        options,
+      })
+    }
+
+    async function invokeRequestAlphaExternalCallbackSuccess ({
+      query,
+      hooks,
+      options = {},
+    }) {
+      const Launcher = AlphaExternalCallbackSuccessGetRenchanRestfulApiLauncher
+
+      const payload = Launcher.createPayload({
+        query,
+        options,
+      })
+
+      const launcher = Launcher.create()
+
+      const capsule = await launcher.launchRequest({
+        payload,
+        hooks,
+      })
+
+      showResult({
+        capsule,
+        id: 'placeholder-alpha-external-callback-success',
+      })
+    }
+
+    /***************************************************************************
+     * Beta External Callback Success POST Renchan RESTful API Launcher
+     **************************************************************************/
+    import BetaExternalCallbackSuccessPostRenchanRestfulApiLauncher from '../../app/restfulapi/renchan/post/betaExternalCallbackSuccess/BetaExternalCallbackSuccessPostRenchanRestfulApiLauncher.js'
+    import BetaExternalCallbackSuccessFormElementClerk from '../../app/domClerk/BetaExternalCallbackSuccessFormElementClerk.js'
+
+    // Expose the function to the global scope
+    window.submitFormBetaExternalCallbackSuccess = submitFormBetaExternalCallbackSuccess
+
+    // -------------------------------------------------------------------------
+
+    async function submitFormBetaExternalCallbackSuccess ({
+      submitEvent,
+    }) {
+      submitEvent.preventDefault()
+
+      const formElement = submitEvent.target
+
+      const formElementClerk = BetaExternalCallbackSuccessFormElementClerk.create({
+        formElement,
+      })
+
+      const body = formElementClerk.extractValueHash()
+
+      invokeRequestBetaExternalCallbackSuccess({
+        body: {
+          ...body,
+          'third.alpha': 1,
+          'third.beta': 2,
+        },
+        hooks: launcherHooks,
+      })
+
+      return false
+    }
+
+    async function invokeRequestBetaExternalCallbackSuccess ({
+      body,
+      hooks,
+      options = {},
+    }) {
+      const Launcher = BetaExternalCallbackSuccessPostRenchanRestfulApiLauncher
+
+      const payload = Launcher.createPayload({
+        body,
+        options,
+      })
+
+      const launcher = Launcher.create()
+
+      const capsule = await launcher.launchRequest({
+        payload,
+        hooks,
+      })
+
+      showResult({
+        capsule,
+        id: 'placeholder-beta-external-callback-success',
+      })
+    }
+
+    /***************************************************************************
+     * Path Parameter Hash GET Renchan RESTful API Launcher
+     **************************************************************************/
+    import PathParameterHashGetRenchanRestfulApiLauncher from '../../app/restfulapi/renchan/get/pathParameterHash/PathParameterHashGetRenchanRestfulApiLauncher.js'
+
+    // Expose the function to the global scope
+    window.invokeRequestPathParameterHashOnEvent = invokeRequestPathParameterHashOnEvent
+
+    document.addEventListener('DOMContentLoaded', () => {
+      invokeRequestPathParameterHashOnMounted()
+    })
+
+    // -------------------------------------------------------------------------
+
+    async function invokeRequestPathParameterHashOnEvent ({
+      pathParameterHash,
+      hooks,
+      options = {},
+    }) {
+      invokeRequestPathParameterHash({
+        pathParameterHash,
+        hooks,
+        options,
+      })
+    }
+
+    function invokeRequestPathParameterHashOnMounted () {
+      invokeRequestPathParameterHash({
+        pathParameterHash: {
+          id: 123,
+          name: 'JohnDoe',
+        },
+        hooks: launcherHooks,
+      })
+    }
+
+    async function invokeRequestPathParameterHash ({
+      pathParameterHash,
+      hooks,
+      options = {},
+    }) {
+      const Launcher = PathParameterHashGetRenchanRestfulApiLauncher
+
+      const payload = Launcher.createPayload({
+        pathParameterHash,
+        options,
+      })
+
+      const launcher = Launcher.create()
+
+      const capsule = await launcher.launchRequest({
+        payload,
+        hooks,
+      })
+
+      showResult({
+        capsule,
+        id: 'placeholder-path-parameter-hash',
+      })
+    }
+
+    /**************************************************************************/
+
+    function showResult ({
+      capsule,
+      id,
+    }) {
+      const placeholderElement = document.getElementById(id)
+
+      const successResultBox = placeholderElement.querySelector('#result-box-success')
+      const failureResultBox = placeholderElement.querySelector('#result-box-failure')
+
+      successResultBox.textContent = JSON.stringify(
+        capsule.content,
+        null,
+        2
+      )
+
+      failureResultBox.textContent = JSON.stringify(
+        {
+          statusCode: capsule.statusCode,
+          statusText: capsule.statusText,
+          error: capsule.error,
+        },
+        null,
+        2
+      )
+    }
+  </script>
+</head>
+<body>
+  <header>I am Header</header>
+
+  <main>
+    <h1>RESTFul API client demo for Renchan</h1>
+
+    <section>
+      <h2>Alpha External Callback Success GET</h2>
+
+      <button
+        onclick="
+          invokeRequestAlphaExternalCallbackSuccessOnEvent({
+            query: {
+              alpha: 111,
+              beta: 222,
+            },
+            hooks: launcherHooks,
+          })
+        "
+        style="
+          margin-block: 0.5rem;
+        "
+      >
+        ✅️ Fetch AlphaExternalCallbackSuccess with alpha=111&beta=222
+      </button>
+
+      <br>
+
+      <button
+        onclick="
+          invokeRequestAlphaExternalCallbackSuccessOnEvent({
+            query: {
+              // alpha: 111,
+              beta: 222,
+            },
+            hooks: launcherHooks,
+          })
+        "
+        style="
+          margin-block: 0.5rem;
+        "
+      >
+        ❌️ Fetch AlphaExternalCallbackSuccess with beta=222
+      </button>
+
+      <br>
+
+      <div
+        id="placeholder-alpha-external-callback-success"
+        class="unit-layout result-placeholder"
+      >
+        <div>
+          <h2>Content of Capsule</h2>
+          <pre
+            id="result-box-success"
+            class="result-box"
+          ></pre>
+        </div>
+        <div>
+          <h2>Metadata of Capsule</h2>
+          <pre
+            id="result-box-failure"
+            class="result-box"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ******************************************************************* -->
+
+    <hr>
+
+    <section>
+      <h2>Path Parameter Hash GET</h2>
+
+      <button
+        onclick="
+          invokeRequestPathParameterHashOnEvent({
+            pathParameterHash: {
+              id: 987,
+              name: 'JaneSmith',
+            },
+            hooks: launcherHooks,
+          })
+        "
+        style="
+          margin-block: 0.5rem;
+        "
+      >
+        Fetch PathParameterHash with id:987/name:JaneSmith
+      </button>
+
+      <br>
+
+      <div
+        id="placeholder-path-parameter-hash"
+        class="unit-layout result-placeholder"
+      >
+        <div>
+          <h2>Content of Capsule</h2>
+          <pre
+            id="result-box-success"
+            class="result-box"
+          ></pre>
+        </div>
+        <div>
+          <h2>Metadata of Capsule</h2>
+          <pre
+            id="result-box-failure"
+            class="result-box"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ******************************************************************* -->
+
+    <hr>
+
+    <section>
+      <h2>Beta External Callback Success POST</h2>
+
+      <form
+        onsubmit="submitFormBetaExternalCallbackSuccess({
+          submitEvent: event,
+        })"
+      >
+        <label>
+          <div>First Parameter</div>
+          <input
+            type="text"
+            name="first"
+            value="first value"
+          >
+        </label>
+        <label>
+          <div>Second Parameter</div>
+          <input
+            type="text"
+            name="second"
+            value="second value"
+          >
+        </label>
+
+        <br>
+        <br>
+        <button
+          class="standard"
+          type="submit"
+        >
+          Submit
+        </button>
+      </form>
+
+      <br>
+
+      <div
+        id="placeholder-beta-external-callback-success"
+        class="unit-layout result-placeholder"
+      >
+        <div>
+          <h2>Content of Capsule</h2>
+          <pre
+            id="result-box-success"
+            class="result-box"
+          ></pre>
+        </div>
+        <div>
+          <h2>Metadata of Capsule</h2>
+          <pre
+            id="result-box-failure"
+            class="result-box"
+          ></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ******************************************************************* -->
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div
+      id="loading"
+      class="unit-loading hidden"
+    >
+      Loading ...
+    </div>
+  </main>
+
+  <footer>I am Footer</footer>
+</body>
+</html>
