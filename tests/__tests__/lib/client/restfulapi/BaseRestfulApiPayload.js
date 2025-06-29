@@ -2050,7 +2050,7 @@ describe('BaseRestfulApiPayload', () => {
       },
       {
         args: {
-          pathname: '/beta-endpoint/:id/:name',
+          pathname: '/beta-endpoint/[id]/[name]',
           prefixPathname: '/v2',
           pathParameterHash: {
             id: 10002,
@@ -2061,7 +2061,7 @@ describe('BaseRestfulApiPayload', () => {
       },
       {
         args: {
-          pathname: '/gamma-endpoint/:documentId/edit',
+          pathname: '/gamma-endpoint/[documentId]/edit',
           prefixPathname: '/v3',
           pathParameterHash: {
             documentId: 20003,
