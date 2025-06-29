@@ -1,10 +1,6 @@
 import SignUpFormElementClerk from '~/app/domClerk/SignUpFormElementClerk.js'
 import BaseFormElementClerk from '~/lib/domClerks/BaseFormElementClerk.js'
 
-beforeEach(() => {
-  localStorage.clear()
-})
-
 describe('SignUpFormElementClerk', () => {
   describe('super class', () => {
     test('to be derived class of BaseGraphqlLauncher', () => {
