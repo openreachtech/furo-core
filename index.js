@@ -15,6 +15,23 @@ export { default as SubscriptionConnector } from './lib/client/graphql/Subscript
  */
 export { default as ProgressHttpFetcher } from './lib/tools/ProgressHttpFetcher.js'
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
+export { default as PathnameBuilder } from './lib/tools/PathnameBuilder.js'
+
+export { default as BaseResponseBodyParser } from './lib/tools/response-body-parser/BaseResponseBodyParser.js'
+export { default as JsonResponseBodyParser } from './lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
+
+/*
+ * RESTful API client
+ */
+export { default as BaseRestfulApiCapsule } from './lib/client/restfulapi/BaseRestfulApiCapsule.js'
+export { default as BaseRestfulApiLauncher } from './lib/client/restfulapi/BaseRestfulApiLauncher.js'
+export { default as BaseRestfulApiPayload } from './lib/client/restfulapi/BaseRestfulApiPayload.js'
+
+export { default as BaseRenchanRestfulApiCapsule } from './lib/client/restfulapi/renchan/BaseRenchanRestfulApiCapsule.js'
+export { default as BaseRenchanRestfulApiLauncher } from './lib/client/restfulapi/renchan/BaseRenchanRestfulApiLauncher.js'
+export { default as BaseRenchanRestfulApiPayload } from './lib/client/restfulapi/renchan/BaseRenchanRestfulApiPayload.js'
+
+export { RESTFUL_API_METHOD } from './lib/client/restfulapi/constants.js'
 
 /*
  * DOM tools
@@ -29,6 +46,15 @@ export { default as FieldValidator } from './lib/validator/FieldValidator.js'
 export { default as ValueHashValidator } from './lib/validator/ValueHashValidator.js'
 
 export { default as DomInflator } from './lib/tools/DomInflator.js'
+
+/*
+ * Dynamic class declaration tools
+ */
+export { default as AnonymousClassNameAssigner } from './lib/tools/AnonymousClassNameAssigner.js'
+export { default as DerivedClassNameGenerator } from './lib/tools/DerivedClassNameGenerator.js'
+export { default as DynamicDerivedCtorPool } from './lib/tools/DynamicDerivedCtorPool.js'
+export { default as BaseDerivedCtorRegistry } from './lib/tools/derived-ctor-registry/BaseDerivedCtorRegistry.js'
+export { default as RestMethodRestfulApiPayloadDerivedCtorRegistry } from './lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry.js'
 
 /*
  * Local storage
