@@ -84,7 +84,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
             result: null,
           },
         },
-        // on JSON parse error
+        // on response body parse error
         {
           input: {
             rawResponse: mockResponse,
@@ -265,7 +265,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         },
         {
           input: {
-            result: null, // network error or json parse error, etc.
+            result: null, // network error or response body parse error, etc.
           },
         },
       ]
@@ -337,7 +337,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         },
         {
           input: {
-            result: null, // network error or json parse error, etc.
+            result: null, // network error or response body parse error, etc.
           },
         },
       ]

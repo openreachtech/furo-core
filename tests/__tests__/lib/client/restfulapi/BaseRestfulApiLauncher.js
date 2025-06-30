@@ -1682,7 +1682,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('to return JSON parse error capsule', () => {
+    describe('to return response body parse error capsule', () => {
       const cases = [
         {
           input: {
@@ -2554,7 +2554,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('to return JSON parse error capsule on invalid JSON', () => {
+    describe('to return response body parse error capsule on invalid JSON', () => {
       const cases = [
         {
           input: {
@@ -2811,7 +2811,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('on JSON parsed error', () => {
+    describe('on response body parsed error', () => {
       const cases = [
         {
           input: {
