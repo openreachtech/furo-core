@@ -1,13 +1,9 @@
 import SignUpFormElementClerk from '~/app/domClerk/SignUpFormElementClerk.js'
 import BaseFormElementClerk from '~/lib/domClerks/BaseFormElementClerk.js'
 
-beforeEach(() => {
-  localStorage.clear()
-})
-
 describe('SignUpFormElementClerk', () => {
-  describe('super class', () => {
-    test('to be derived class of BaseGraphqlLauncher', () => {
+  describe('inheritance', () => {
+    test('to be derived class of BaseFormElementClerk', () => {
       const actual = SignUpFormElementClerk.prototype
 
       expect(actual)
@@ -18,7 +14,7 @@ describe('SignUpFormElementClerk', () => {
 
 describe('SignUpFormElementClerk', () => {
   describe('.get:rules', () => {
-    test('to be array', () => {
+    test('to return the correct validation rules', () => {
       const expected = [
         {
           field: 'email',
