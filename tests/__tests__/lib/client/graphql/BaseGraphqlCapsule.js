@@ -581,8 +581,8 @@ describe('BaseGraphqlCapsule', () => {
             }`,
             variables: {
               input: {
-                email: 'john001@example.com',
-                username: 'Eucen',
+                email: 'jane.smith@example.com',
+                username: 'JaneSmith',
                 password: 'password$01',
               },
             },
@@ -657,8 +657,8 @@ describe('BaseGraphqlCapsule', () => {
             }`,
             variables: {
               input: {
-                email: 'john001@example.com',
-                username: 'Eucen',
+                email: 'jane.smith@example.com',
+                username: 'JaneSmith',
                 password: 'password$01',
               },
             },
@@ -1452,7 +1452,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                email: 'eucen@example.com',
+                email: 'john.doe@example.com',
                 username: 'JohnDoe',
                 password: 'password$01',
                 'password-confirmation': 'password$01',
@@ -1464,7 +1464,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                email: 'eucen@example.com',
+                email: 'john.doe@example.com',
                 // username: 'JohnDoe',
                 password: 'password$01',
                 'password-confirmation': 'password$01',
@@ -1476,7 +1476,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                // email: 'eucen@example.com',
+                // email: 'john.doe@example.com',
                 // username: 'JohnDoe',
                 // password: 'password$01',
                 'password-confirmation': 'password$01',
@@ -1512,7 +1512,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                email: 'eucen@example.com',
+                email: 'john.doe@example.com',
                 username: 'JohnDoe',
                 password: 'password$01',
               },
@@ -1523,7 +1523,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                email: 'eucen@example.com',
+                email: 'john.doe@example.com',
                 // username: 'JohnDoe',
                 password: 'password$01',
               },
@@ -1534,7 +1534,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               input: {
-                // email: 'eucen@example.com',
+                // email: 'john.doe@example.com',
                 // username: 'JohnDoe',
                 // password: 'password$01',
               },
@@ -1545,7 +1545,7 @@ describe('BaseGraphqlCapsule', () => {
           params: {
             variables: {
               // input: {
-              //   email: 'eucen@example.com',
+              //   email: 'john.doe@example.com',
               //   username: 'JohnDoe',
               //   password: 'password$01',
               // },
