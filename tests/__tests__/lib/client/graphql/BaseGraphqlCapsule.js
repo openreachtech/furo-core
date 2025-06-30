@@ -215,7 +215,16 @@ describe('BaseGraphqlCapsule', () => {
 describe('BaseGraphqlCapsule', () => {
   describe('.create()', () => {
     describe('to be instance of own class', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     rawResponse: Response | null
+       *     payload: BaseGraphqlPayload
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             rawResponse: new Response(),
@@ -289,7 +298,7 @@ describe('BaseGraphqlCapsule', () => {
             },
           },
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const actual = BaseGraphqlCapsule.create(params)
@@ -301,7 +310,17 @@ describe('BaseGraphqlCapsule', () => {
 
     describe('to call constructor', () => {
       describe('with abortedReason', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     rawResponse: Response | null
+         *     payload: BaseGraphqlPayload
+         *     result: GraphqlType.Response | null
+         *     abortedReason: LAUNCH_ABORTED_REASON
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               rawResponse: new Response(),
@@ -377,7 +396,7 @@ describe('BaseGraphqlCapsule', () => {
               abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const DerivedClass = ConstructorSpy.create({ jest })
@@ -391,7 +410,16 @@ describe('BaseGraphqlCapsule', () => {
       })
 
       describe('with no abortedReason', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     rawResponse: Response | null
+         *     payload: BaseGraphqlPayload
+         *     result: GraphqlType.Response | null
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               rawResponse: new Response(),
@@ -465,7 +493,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const expected = {
