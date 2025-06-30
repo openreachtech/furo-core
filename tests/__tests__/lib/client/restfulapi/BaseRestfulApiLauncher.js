@@ -2585,7 +2585,7 @@ describe('BaseRestfulApiLauncher', () => {
           }
         }}`) // ERROR: last } is doubled
 
-        const capsuleTally = BaseRestfulApiCapsule.createAsJsonParseError({
+        const capsuleTally = BaseRestfulApiCapsule.createAsResponseBodyParseError({
           rawResponse: rawResponseTally,
           payload: input.payload,
         })
