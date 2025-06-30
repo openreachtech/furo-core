@@ -1477,7 +1477,7 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('#hasJsonParseError()', () => {
+  describe('#hasResponseBodyParseError()', () => {
     const mockResponse = new Response()
     const mockPayload = BaseRestfulApiPayload.create()
 
@@ -1500,7 +1500,7 @@ describe('BaseRestfulApiCapsule', () => {
           }
           const capsule = new BaseRestfulApiCapsule(args)
 
-          const actual = capsule.hasJsonParseError()
+          const actual = capsule.hasResponseBodyParseError()
 
           expect(actual)
             .toBeTruthy()
@@ -1540,7 +1540,7 @@ describe('BaseRestfulApiCapsule', () => {
           }
           const capsule = new BaseRestfulApiCapsule(args)
 
-          const actual = capsule.hasJsonParseError()
+          const actual = capsule.hasResponseBodyParseError()
 
           expect(actual)
             .toBeFalsy()
@@ -1587,7 +1587,7 @@ describe('BaseRestfulApiCapsule', () => {
           }
           const capsule = new BaseRestfulApiCapsule(args)
 
-          const actual = capsule.hasJsonParseError()
+          const actual = capsule.hasResponseBodyParseError()
 
           expect(actual)
             .toBeFalsy()
