@@ -1688,7 +1688,14 @@ describe('BaseGraphqlCapsule', () => {
       })
 
       describe('to has result (falsy)', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response | null
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: {
@@ -1732,7 +1739,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
@@ -1753,7 +1760,14 @@ describe('BaseGraphqlCapsule', () => {
 
     describe('when has no rawResponse', () => {
       describe('to be falsy always', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response | null
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: null,
@@ -1802,7 +1816,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
