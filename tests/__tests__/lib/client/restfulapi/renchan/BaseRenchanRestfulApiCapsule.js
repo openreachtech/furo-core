@@ -265,7 +265,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         },
         {
           input: {
-            result: null, // network error or json parse error, etc.
+            result: null, // network error or response body parse error, etc.
           },
         },
       ]
