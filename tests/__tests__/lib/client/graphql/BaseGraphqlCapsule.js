@@ -2236,7 +2236,15 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('when existing errors', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     result: GraphqlType.Response | null
+       *   }
+       *   expected: Array<GraphqlType.ResponseError>
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             result: {
@@ -2329,7 +2337,7 @@ describe('BaseGraphqlCapsule', () => {
             },
           ],
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params, expected }) => {
         const args = {
