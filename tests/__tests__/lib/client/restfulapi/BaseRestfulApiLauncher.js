@@ -11,6 +11,9 @@ import {
 
 import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher.js'
 
+import BaseResponseBodyParser from '~/lib/tools/response-body-parser/BaseResponseBodyParser'
+import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
+
 describe('BaseRestfulApiLauncher', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
@@ -149,6 +152,17 @@ describe('BaseRestfulApiLauncher', () => {
     test('to throw', () => {
       expect(() => BaseRestfulApiLauncher.Capsule)
         .toThrow('this function must be inherited')
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('.get:ResponseBodyParser', () => {
+    test('should be JsonResponseBodyParser', () => {
+      const actual = BaseRestfulApiLauncher.ResponseBodyParser
+
+      expect(actual)
+        .toBe(JsonResponseBodyParser) // same reference
     })
   })
 })
@@ -961,7 +975,7 @@ describe('BaseRestfulApiLauncher', () => {
 })
 
 describe('BaseRestfulApiLauncher', () => {
-  describe('.createCapsuleAsJsonParseError()', () => {
+  describe('.createCapsuleAsResponseBodyParseError()', () => {
     const capsuleCases = [
       {
         input: {
@@ -1014,7 +1028,7 @@ describe('BaseRestfulApiLauncher', () => {
         }
 
         test.each(cases)('payload: $args.payload', ({ args }) => {
-          const capsule = Launcher.createCapsuleAsJsonParseError(args)
+          const capsule = Launcher.createCapsuleAsResponseBodyParseError(args)
 
           expect(capsule)
             .toBeInstanceOf(input.Capsule)
@@ -1040,11 +1054,90 @@ describe('BaseRestfulApiLauncher', () => {
 
           const createSpy = jest.spyOn(input.Capsule, 'create')
 
-          Launcher.createCapsuleAsJsonParseError(args)
+          Launcher.createCapsuleAsResponseBodyParseError(args)
 
           expect(createSpy)
             .toHaveBeenCalledWith(expected)
         })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('.createResponseBodyParser()', () => {
+    const AlphaResponseBodyParser = class extends BaseResponseBodyParser {}
+    const BetaResponseBodyParser = class extends BaseResponseBodyParser {}
+
+    /**
+     * @type {Array<{
+     *   input: {
+     *     Launcher: typeof BaseRestfulApiLauncher,
+     *   }
+     *   expected: typeof BaseResponseBodyParser,
+     * }>}
+     */
+    const LauncherCases = [
+      {
+        input: {
+          Launcher: BaseRestfulApiLauncher,
+        },
+        expected: JsonResponseBodyParser, // default
+      },
+      {
+        input: {
+          Launcher: class AlphaRestfulApiLauncher extends BaseRestfulApiLauncher {
+            /** @override */
+            static get ResponseBodyParser () {
+              return AlphaResponseBodyParser
+            }
+          },
+        },
+        expected: AlphaResponseBodyParser,
+      },
+      {
+        input: {
+          Launcher: class BetaRestfulApiLauncher extends BaseRestfulApiLauncher {
+            /** @override */
+            static get ResponseBodyParser () {
+              return BetaResponseBodyParser
+            }
+          },
+        },
+        expected: BetaResponseBodyParser,
+      },
+    ]
+
+    describe.each(LauncherCases)('Launcher: $input.Launcher.name', ({ input, expected }) => {
+      const responseCases = [
+        {
+          response: new Response('{}', {
+            status: 200,
+            statusText: 'OK',
+          }),
+        },
+        {
+          response: new Response('{}', {
+            status: 201,
+            statusText: 'Created',
+          }),
+        },
+      ]
+
+      test.each(responseCases)('response: $response.response', ({ response }) => {
+        const args = {
+          response,
+        }
+
+        const createSpy = jest.spyOn(expected, 'create')
+
+        const actual = input.Launcher.createResponseBodyParser(args)
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(args)
       })
     })
   })
@@ -1589,7 +1682,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('to return JSON parse error capsule', () => {
+    describe('to return response body parse error capsule', () => {
       const cases = [
         {
           input: {
@@ -2461,7 +2554,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('to return JSON parse error capsule on invalid JSON', () => {
+    describe('to return response body parse error capsule on invalid JSON', () => {
       const cases = [
         {
           input: {
@@ -2492,7 +2585,7 @@ describe('BaseRestfulApiLauncher', () => {
           }
         }}`) // ERROR: last } is doubled
 
-        const capsuleTally = BaseRestfulApiCapsule.createAsJsonParseError({
+        const capsuleTally = BaseRestfulApiCapsule.createAsResponseBodyParseError({
           rawResponse: rawResponseTally,
           payload: input.payload,
         })
@@ -2502,7 +2595,7 @@ describe('BaseRestfulApiLauncher', () => {
           payload: input.payload,
         }
 
-        const createCapsuleAsJsonParseErrorSpy = jest.spyOn(BaseRestfulApiLauncher, 'createCapsuleAsJsonParseError')
+        const createCapsuleAsResponseBodyParseErrorSpy = jest.spyOn(BaseRestfulApiLauncher, 'createCapsuleAsResponseBodyParseError')
           .mockReturnValue(capsuleTally)
 
         const launcher = BaseRestfulApiLauncher.create({
@@ -2521,7 +2614,7 @@ describe('BaseRestfulApiLauncher', () => {
         expect(actual)
           .toEqual(capsuleTally)
 
-        expect(createCapsuleAsJsonParseErrorSpy)
+        expect(createCapsuleAsResponseBodyParseErrorSpy)
           .toHaveBeenCalledWith(expectedArgs)
       })
     })
@@ -2700,6 +2793,8 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('response: $input.response', async ({ input, expected }) => {
+        const createResponseBodyParserSpy = jest.spyOn(BaseRestfulApiLauncher, 'createResponseBodyParser')
+
         const launcher = BaseRestfulApiLauncher.create({
           config: {
             BASE_URL: 'http://example.com/graphql-customer',
@@ -2710,10 +2805,13 @@ describe('BaseRestfulApiLauncher', () => {
 
         expect(actual)
           .toEqual(expected)
+
+        expect(createResponseBodyParserSpy)
+          .toHaveBeenCalledWith(input)
       })
     })
 
-    describe('on JSON parsed error', () => {
+    describe('on response body parsed error', () => {
       const cases = [
         {
           input: {
