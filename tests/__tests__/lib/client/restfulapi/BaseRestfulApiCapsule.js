@@ -545,7 +545,7 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('.createAsJsonParseError()', () => {
+  describe('.createAsResponseBodyParseError()', () => {
     const cases = [
       {
         input: {
@@ -571,7 +571,7 @@ describe('BaseRestfulApiCapsule', () => {
 
     describe('to be instance of own class', () => {
       test.each(cases)('payload: $input.payload', ({ input }) => {
-        const actual = BaseRestfulApiCapsule.createAsJsonParseError(input)
+        const actual = BaseRestfulApiCapsule.createAsResponseBodyParseError(input)
 
         expect(actual)
           .toBeInstanceOf(BaseRestfulApiCapsule)
@@ -588,7 +588,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         const createSpy = jest.spyOn(BaseRestfulApiCapsule, 'create')
 
-        BaseRestfulApiCapsule.createAsJsonParseError(input)
+        BaseRestfulApiCapsule.createAsResponseBodyParseError(input)
 
         expect(createSpy)
           .toHaveBeenCalledWith(expected)
