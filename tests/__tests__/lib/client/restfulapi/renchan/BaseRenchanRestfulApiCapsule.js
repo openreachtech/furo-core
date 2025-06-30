@@ -84,7 +84,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
             result: null,
           },
         },
-        // on JSON parse error
+        // on response body parse error
         {
           input: {
             rawResponse: mockResponse,
