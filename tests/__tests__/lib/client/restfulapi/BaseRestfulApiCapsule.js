@@ -637,11 +637,11 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('.get:jsonParseErrorCode', () => {
+  describe('.get:responseBodyParseErrorCode', () => {
     test('to be fixed value', () => {
       const expected = '192.X000.002'
 
-      const actual = BaseRestfulApiCapsule.jsonParseErrorCode
+      const actual = BaseRestfulApiCapsule.responseBodyParseErrorCode
 
       expect(actual)
         .toBe(expected)
