@@ -874,7 +874,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             hasInvalidParameterHashError: true,
             // hasNetworkError: true,
-            // hasJsonParseError: true,
+            // hasResponseBodyParseError: true,
             // hasStatusCodeError: true,
             // hasResultError: true,
           },
@@ -883,7 +883,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             // hasInvalidParameterHashError: true,
             hasNetworkError: true,
-            // hasJsonParseError: true,
+            // hasResponseBodyParseError: true,
             // hasStatusCodeError: true,
             // hasResultError: true,
           },
@@ -892,7 +892,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             // hasInvalidParameterHashError: true,
             // hasNetworkError: true,
-            hasJsonParseError: true,
+            hasResponseBodyParseError: true,
             // hasStatusCodeError: true,
             // hasResultError: true,
           },
@@ -901,7 +901,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             // hasInvalidParameterHashError: true,
             // hasNetworkError: true,
-            // hasJsonParseError: true,
+            // hasResponseBodyParseError: true,
             hasStatusCodeError: true,
             // hasResultError: true,
           },
@@ -910,7 +910,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             // hasInvalidParameterHashError: true,
             // hasNetworkError: true,
-            // hasJsonParseError: true,
+            // hasResponseBodyParseError: true,
             // hasStatusCodeError: true,
             hasResultError: true,
           },
@@ -930,8 +930,8 @@ describe('BaseRestfulApiCapsule', () => {
           .mockReturnValue(input.hasInvalidParameterHashError)
         jest.spyOn(capsule, 'hasNetworkError')
           .mockReturnValue(input.hasNetworkError)
-        jest.spyOn(capsule, 'hasJsonParseError')
-          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasResponseBodyParseError')
+          .mockReturnValue(input.hasResponseBodyParseError)
         jest.spyOn(capsule, 'hasStatusCodeError')
           .mockReturnValue(input.hasStatusCodeError)
         jest.spyOn(capsule, 'hasResultError')
@@ -950,7 +950,7 @@ describe('BaseRestfulApiCapsule', () => {
           input: {
             hasInvalidParameterHashError: false,
             hasNetworkError: false,
-            hasJsonParseError: false,
+            hasResponseBodyParseError: false,
             hasStatusCodeError: false,
             hasResultError: false,
           },
@@ -971,8 +971,8 @@ describe('BaseRestfulApiCapsule', () => {
           .mockReturnValue(input.hasInvalidParameterHashError)
         jest.spyOn(capsule, 'hasNetworkError')
           .mockReturnValue(input.hasNetworkError)
-        jest.spyOn(capsule, 'hasJsonParseError')
-          .mockReturnValue(input.hasJsonParseError)
+        jest.spyOn(capsule, 'hasResponseBodyParseError')
+          .mockReturnValue(input.hasResponseBodyParseError)
         jest.spyOn(capsule, 'hasStatusCodeError')
           .mockReturnValue(input.hasStatusCodeError)
         jest.spyOn(capsule, 'hasResultError')
