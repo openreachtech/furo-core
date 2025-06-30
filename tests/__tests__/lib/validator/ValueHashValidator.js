@@ -110,7 +110,7 @@ describe('ValueHashValidator', () => {
             valueHash: {
               password: 'password$001',
               email: 'info@example.com',
-              bio: 'Because I am Stew Eucen.',
+              bio: 'Here I am.',
             },
             validators: args.validators,
           }
@@ -245,13 +245,13 @@ describe('ValueHashValidator', () => {
         args: {
           field: 'bio',
           valueHash: {
-            bio: 'Because I am Stew Eucen.',
+            bio: 'Here I am.',
           },
           rules: [],
         },
         expected: {
           valueHash: {
-            bio: 'Because I am Stew Eucen.',
+            bio: 'Here I am.',
           },
           validators: [],
         },
@@ -334,7 +334,7 @@ describe('ValueHashValidator', () => {
             username: 'Alice',
             password: 'password$001',
             email: 'info@example.com',
-            bio: 'Because I am Stew Eucen.',
+            bio: 'Here I am.',
           },
           rules: [
             {
