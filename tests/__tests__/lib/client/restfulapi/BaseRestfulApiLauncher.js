@@ -2793,6 +2793,8 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('response: $input.response', async ({ input, expected }) => {
+        const createResponseBodyParserSpy = jest.spyOn(BaseRestfulApiLauncher, 'createResponseBodyParser')
+
         const launcher = BaseRestfulApiLauncher.create({
           config: {
             BASE_URL: 'http://example.com/graphql-customer',
@@ -2803,6 +2805,9 @@ describe('BaseRestfulApiLauncher', () => {
 
         expect(actual)
           .toEqual(expected)
+
+        expect(createResponseBodyParserSpy)
+          .toHaveBeenCalledWith(input)
       })
     })
 
