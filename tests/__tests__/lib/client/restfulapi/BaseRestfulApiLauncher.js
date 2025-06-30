@@ -2595,7 +2595,7 @@ describe('BaseRestfulApiLauncher', () => {
           payload: input.payload,
         }
 
-        const createCapsuleAsJsonParseErrorSpy = jest.spyOn(BaseRestfulApiLauncher, 'createCapsuleAsJsonParseError')
+        const createCapsuleAsResponseBodyParseErrorSpy = jest.spyOn(BaseRestfulApiLauncher, 'createCapsuleAsResponseBodyParseError')
           .mockReturnValue(capsuleTally)
 
         const launcher = BaseRestfulApiLauncher.create({
@@ -2614,7 +2614,7 @@ describe('BaseRestfulApiLauncher', () => {
         expect(actual)
           .toEqual(capsuleTally)
 
-        expect(createCapsuleAsJsonParseErrorSpy)
+        expect(createCapsuleAsResponseBodyParseErrorSpy)
           .toHaveBeenCalledWith(expectedArgs)
       })
     })
