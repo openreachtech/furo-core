@@ -11,6 +11,8 @@ import {
 
 import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher.js'
 
+import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
+
 describe('BaseRestfulApiLauncher', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
@@ -149,6 +151,17 @@ describe('BaseRestfulApiLauncher', () => {
     test('to throw', () => {
       expect(() => BaseRestfulApiLauncher.Capsule)
         .toThrow('this function must be inherited')
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('.get:ResponseBodyParser', () => {
+    test('should be JsonResponseBodyParser', () => {
+      const actual = BaseRestfulApiLauncher.ResponseBodyParser
+
+      expect(actual)
+        .toBe(JsonResponseBodyParser) // same reference
     })
   })
 })
