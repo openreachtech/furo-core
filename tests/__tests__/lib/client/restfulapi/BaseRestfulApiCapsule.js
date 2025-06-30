@@ -1887,7 +1887,7 @@ describe('BaseRestfulApiCapsule', () => {
         })
       })
 
-      describe('on JSON parse error', () => {
+      describe('on response body parse error', () => {
         const cases = [
           {
             input: {
