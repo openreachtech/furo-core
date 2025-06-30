@@ -95,7 +95,14 @@ describe('BaseGraphqlCapsule', () => {
       })
 
       describe('#result', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: {
@@ -139,7 +146,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
@@ -208,7 +215,16 @@ describe('BaseGraphqlCapsule', () => {
 describe('BaseGraphqlCapsule', () => {
   describe('.create()', () => {
     describe('to be instance of own class', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     rawResponse: Response | null
+       *     payload: BaseGraphqlPayload
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             rawResponse: new Response(),
@@ -282,7 +298,7 @@ describe('BaseGraphqlCapsule', () => {
             },
           },
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const actual = BaseGraphqlCapsule.create(params)
@@ -294,7 +310,17 @@ describe('BaseGraphqlCapsule', () => {
 
     describe('to call constructor', () => {
       describe('with abortedReason', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     rawResponse: Response | null
+         *     payload: BaseGraphqlPayload
+         *     result: GraphqlType.Response | null
+         *     abortedReason: LAUNCH_ABORTED_REASON
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               rawResponse: new Response(),
@@ -370,7 +396,7 @@ describe('BaseGraphqlCapsule', () => {
               abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const DerivedClass = ConstructorSpy.create({ jest })
@@ -1102,7 +1128,20 @@ describe('BaseGraphqlCapsule', () => {
       variables: null,
     })
 
-    const cases = [
+    /**
+     * @type {Array<{
+     *   params: {
+     *     args: {
+     *       rawResponse: Response | null
+     *       payload: BaseGraphqlPayload
+     *       result: GraphqlType.Response | null
+     *       abortedReason: LAUNCH_ABORTED_REASON
+     *     }
+     *   }
+     *   expected: Array<GraphqlType.ResponseError>
+     * }>}
+     */
+    const cases = /** @type {Array<*>} */ ([
       {
         params: {
           args: {
@@ -1267,7 +1306,7 @@ describe('BaseGraphqlCapsule', () => {
         },
         expected: [],
       },
-    ]
+    ])
 
     test.each(cases)('result: $params.args.result', ({ params, expected }) => {
       const capsule = new BaseGraphqlCapsule(params.args)
@@ -1649,7 +1688,14 @@ describe('BaseGraphqlCapsule', () => {
       })
 
       describe('to has result (falsy)', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response | null
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: {
@@ -1693,7 +1739,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
@@ -1714,7 +1760,14 @@ describe('BaseGraphqlCapsule', () => {
 
     describe('when has no rawResponse', () => {
       describe('to be falsy always', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response | null
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: null,
@@ -1763,7 +1816,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
@@ -1799,7 +1852,14 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('to has errors (truthy)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             result: {
@@ -1841,7 +1901,7 @@ describe('BaseGraphqlCapsule', () => {
             },
           },
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
@@ -1912,7 +1972,16 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('to has error (truthy)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     rawResponse: Response | null
+       *     payload: BaseGraphqlPayload
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         // query error
         {
           params: {
@@ -1961,7 +2030,7 @@ describe('BaseGraphqlCapsule', () => {
             result: null,
           },
         },
-      ]
+      ])
 
       test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
         const args = {
@@ -2078,7 +2147,14 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('to has no content (falsy)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             result: {
@@ -2116,7 +2192,7 @@ describe('BaseGraphqlCapsule', () => {
             result: null, // network error or json parse error, etc.
           },
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
@@ -2151,7 +2227,15 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('when existing errors', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     result: GraphqlType.Response | null
+       *   }
+       *   expected: Array<GraphqlType.ResponseError>
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             result: {
@@ -2244,7 +2328,7 @@ describe('BaseGraphqlCapsule', () => {
             },
           ],
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params, expected }) => {
         const args = {
@@ -2595,7 +2679,15 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('when has no content (returns null)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     rawResponse: Response | null
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         // on network error
         {
           params: {
@@ -2638,7 +2730,7 @@ describe('BaseGraphqlCapsule', () => {
             result: {},
           },
         },
-      ]
+      ])
 
       test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
         const args = {
