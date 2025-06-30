@@ -10,6 +10,20 @@
 
   <link rel="icon" type="image/x-icon" href="static/favicon.ico">
 
+  <script type="module">
+    import {
+      STORAGE_KEY,
+    } from './app/constants.js'
+
+    import StorageClerk from './lib/storage/StorageClerk.js'
+
+    // Set the access token for demo purposes
+    window.setAccessToken = token => {
+      StorageClerk.createAsSession()
+        .set(STORAGE_KEY.ACCESS_TOKEN, token)
+    }
+  </script>
+
   <title>furo Sample Pages</title>
 </head>
 <body>
@@ -17,6 +31,13 @@
 
   <main>
     <h1>furo Sample Pages</h1>
+
+    <section>
+      <h2>Sign In as Demo</h2>
+
+      <div><button onclick="setAccessToken({ token: 'access-token-01-01' });">Sign In as User 01</button></div>
+      <div><button onclick="setAccessToken({ token: 'access-token-01-02' });">Sign In as User 02</button></div>
+    </section>
 
     <section>
       <h2>GraphQL client</h2>
