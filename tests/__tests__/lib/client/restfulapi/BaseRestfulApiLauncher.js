@@ -2811,7 +2811,7 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
-    describe('on JSON parsed error', () => {
+    describe('on response body parsed error', () => {
       const cases = [
         {
           input: {
