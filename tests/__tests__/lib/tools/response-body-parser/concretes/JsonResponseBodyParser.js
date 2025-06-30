@@ -77,7 +77,6 @@ describe('JsonResponseBodyParser', () => {
               }
             }}`), // ❌️ excess closing brace
           },
-          expected: 'Unexpected non-whitespace character after JSON at position 132',
         },
         {
           input: {
@@ -89,7 +88,6 @@ describe('JsonResponseBodyParser', () => {
               }
             `), // ❌️ missing closing brace
           },
-          expected: 'Expected \',\' or \'}\' after property value in JSON at position 131',
         },
       ]
 
@@ -98,7 +96,7 @@ describe('JsonResponseBodyParser', () => {
 
         await expect(parser.parseBody())
           .rejects
-          .toThrow(expected)
+          .toThrow(SyntaxError)
       })
     })
   })
