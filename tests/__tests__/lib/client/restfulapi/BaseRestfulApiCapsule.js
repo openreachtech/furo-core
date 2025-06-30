@@ -2151,7 +2151,7 @@ describe('BaseRestfulApiCapsule', () => {
           },
         },
         {
-          name: 'on JSON parse error',
+          name: 'on response body parse error',
           input: {
             rawResponse: mockResponse,
             payload: mockPayload,
