@@ -1972,7 +1972,16 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('to has error (truthy)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     rawResponse: Response | null
+       *     payload: BaseGraphqlPayload
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         // query error
         {
           params: {
@@ -2021,7 +2030,7 @@ describe('BaseGraphqlCapsule', () => {
             result: null,
           },
         },
-      ]
+      ])
 
       test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
         const args = {
