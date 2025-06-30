@@ -2147,7 +2147,14 @@ describe('BaseGraphqlCapsule', () => {
     })
 
     describe('to has no content (falsy)', () => {
-      const cases = [
+      /**
+       * @type {Array<{
+       *   params: {
+       *     result: GraphqlType.Response | null
+       *   }
+       * }>}
+       */
+      const cases = /** @type {Array<*>} */ ([
         {
           params: {
             result: {
@@ -2185,7 +2192,7 @@ describe('BaseGraphqlCapsule', () => {
             result: null, // network error or json parse error, etc.
           },
         },
-      ]
+      ])
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
