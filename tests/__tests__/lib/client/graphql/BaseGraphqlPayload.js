@@ -430,14 +430,14 @@ describe('BaseGraphqlPayload', () => {
           params: {
             valueHash: {
               id: 20002,
-              username: 'Eucen',
+              username: 'JohnDoe',
               password: 'password$001',
             },
           },
           expected: {
             input: {
               id: 20002,
-              username: 'Eucen',
+              username: 'JohnDoe',
               password: 'password$001',
             },
           },
@@ -756,7 +756,7 @@ describe('BaseGraphqlPayload', () => {
           params: {
             valueHash: {
               id: 20001,
-              username: 'Eucen',
+              username: 'JohnDoe',
             },
           },
         },
@@ -799,14 +799,14 @@ describe('BaseGraphqlPayload', () => {
           params: {
             valueHash: {
               id: 20001,
-              username: 'Eucen',
+              username: 'JohnDoe',
             },
           },
           expected: {
             variables: {
               input: {
                 id: 20001,
-                username: 'Eucen',
+                username: 'JohnDoe',
               },
             },
           },
@@ -854,7 +854,7 @@ describe('BaseGraphqlPayload', () => {
             params: {
               valueHash: {
                 id: 20001,
-                username: 'Eucen',
+                username: 'JohnDoe',
               },
             },
           },
@@ -916,7 +916,7 @@ describe('BaseGraphqlPayload', () => {
           params: {
             valueHash: {
               id: 20001,
-              username: 'Eucen',
+              username: 'JohnDoe',
             },
           },
         },
@@ -1000,21 +1000,21 @@ describe('BaseGraphqlPayload', () => {
           params: {
             valueHash: {
               id: 20001,
-              username: 'Eucen',
+              username: 'JohnDoe',
             },
           },
           expected: {
             buildFormBasedValueHashArgs: {
               valueHash: {
                 id: 20001,
-                username: 'Eucen',
+                username: 'JohnDoe',
               },
               extraValueHash: {},
             },
             createWithValueHashArgs: {
               valueHash: {
                 id: 20001,
-                username: 'Eucen',
+                username: 'JohnDoe',
               },
               options: mockOptions,
             },
@@ -1107,7 +1107,7 @@ describe('BaseGraphqlPayload', () => {
             params: {
               valueHash: {
                 id: 20001,
-                username: 'Eucen',
+                username: 'JohnDoe',
               },
             },
           },
@@ -2217,10 +2217,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
               },
             },
@@ -2228,10 +2228,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                // firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'jane.smith@example.com',
+                username: 'JaneSmith',
+                // firstName: 'Jane',
+                lastName: 'Smith',
                 password: 'password$001',
               },
             },
@@ -2239,10 +2239,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                // email: 'eucen@example.com',
-                // username: 'StewEucen',
-                // firstName: 'Eucen',
-                // lastName: 'Stew',
+                // email: 'charlie.brown@example.com',
+                // username: 'CharlieBrown',
+                // firstName: 'Charlie',
+                // lastName: 'Brown',
                 // password: 'password$001',
               },
             },
@@ -2250,10 +2250,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               // input: {
-              //   email: 'eucen@example.com',
-              //   username: 'StewEucen',
-              //   firstName: 'Eucen',
-              //   lastName: 'Stew',
+              //   email: 'alice.palmer@example.com',
+              //   username: 'AlicePalmer',
+              //   firstName: 'Alice',
+              //   lastName: 'Palmer',
               //   password: 'password$001',
               // },
             },
@@ -2263,10 +2263,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2275,10 +2275,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                // firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                // firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2287,10 +2287,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                // email: 'eucen@example.com',
-                // username: 'StewEucen',
-                // firstName: 'Eucen',
-                // lastName: 'Stew',
+                // email: 'john.doe@example.com',
+                // username: 'JohnDoe',
+                // firstName: 'John',
+                // lastName: 'Doe',
                 // password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2681,10 +2681,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2693,10 +2693,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                // firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                // firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2705,10 +2705,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                // email: 'eucen@example.com',
-                // username: 'StewEucen',
-                // firstName: 'Eucen',
-                // lastName: 'Stew',
+                // email: 'john.doe@example.com',
+                // username: 'JohnDoe',
+                // firstName: 'John',
+                // lastName: 'Doe',
                 // password: 'password$001',
                 extra: 'extra value', // ❌
               },
@@ -2719,10 +2719,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
               },
             },
@@ -2730,10 +2730,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                email: 'eucen@example.com',
-                username: 'StewEucen',
-                // firstName: 'Eucen',
-                lastName: 'Stew',
+                email: 'john.doe@example.com',
+                username: 'JohnDoe',
+                // firstName: 'John',
+                lastName: 'Doe',
                 password: 'password$001',
               },
             },
@@ -2741,10 +2741,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               input: {
-                // email: 'eucen@example.com',
-                // username: 'StewEucen',
-                // firstName: 'Eucen',
-                // lastName: 'Stew',
+                // email: 'john.doe@example.com',
+                // username: 'JohnDoe',
+                // firstName: 'John',
+                // lastName: 'Doe',
                 // password: 'password$001',
               },
             },
@@ -2752,10 +2752,10 @@ describe('BaseGraphqlPayload', () => {
           {
             variables: {
               // input: {
-              //   email: 'eucen@example.com',
-              //   username: 'StewEucen',
-              //   firstName: 'Eucen',
-              //   lastName: 'Stew',
+              //   email: 'john.doe@example.com',
+              //   username: 'JohnDoe',
+              //   firstName: 'John',
+              //   lastName: 'Doe',
               //   password: 'password$001',
               // },
             },
