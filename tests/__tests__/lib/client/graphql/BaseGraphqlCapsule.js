@@ -1137,7 +1137,20 @@ describe('BaseGraphqlCapsule', () => {
       variables: null,
     })
 
-    const cases = [
+    /**
+     * @type {Array<{
+     *   params: {
+     *     args: {
+     *       rawResponse: Response | null
+     *       payload: BaseGraphqlPayload
+     *       result: GraphqlType.Response | null
+     *       abortedReason: LAUNCH_ABORTED_REASON
+     *     }
+     *   }
+     *   expected: Array<GraphqlType.ResponseError>
+     * }>}
+     */
+    const cases = /** @type {Array<*>} */ ([
       {
         params: {
           args: {
@@ -1302,7 +1315,7 @@ describe('BaseGraphqlCapsule', () => {
         },
         expected: [],
       },
-    ]
+    ])
 
     test.each(cases)('result: $params.args.result', ({ params, expected }) => {
       const capsule = new BaseGraphqlCapsule(params.args)
