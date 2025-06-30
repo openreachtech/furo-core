@@ -2,8 +2,8 @@ import SignUpFormElementClerk from '~/app/domClerk/SignUpFormElementClerk.js'
 import BaseFormElementClerk from '~/lib/domClerks/BaseFormElementClerk.js'
 
 describe('SignUpFormElementClerk', () => {
-  describe('super class', () => {
-    test('to be derived class of BaseGraphqlLauncher', () => {
+  describe('inheritance', () => {
+    test('to be derived class of BaseFormElementClerk', () => {
       const actual = SignUpFormElementClerk.prototype
 
       expect(actual)
