@@ -14,7 +14,7 @@ describe('SignUpFormElementClerk', () => {
 
 describe('SignUpFormElementClerk', () => {
   describe('.get:rules', () => {
-    test('to be array', () => {
+    test('to return the correct validation rules', () => {
       const expected = [
         {
           field: 'email',
