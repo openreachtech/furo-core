@@ -975,7 +975,7 @@ describe('BaseRestfulApiLauncher', () => {
 })
 
 describe('BaseRestfulApiLauncher', () => {
-  describe('.createCapsuleAsJsonParseError()', () => {
+  describe('.createCapsuleAsResponseBodyParseError()', () => {
     const capsuleCases = [
       {
         input: {
@@ -1028,7 +1028,7 @@ describe('BaseRestfulApiLauncher', () => {
         }
 
         test.each(cases)('payload: $args.payload', ({ args }) => {
-          const capsule = Launcher.createCapsuleAsJsonParseError(args)
+          const capsule = Launcher.createCapsuleAsResponseBodyParseError(args)
 
           expect(capsule)
             .toBeInstanceOf(input.Capsule)
@@ -1054,7 +1054,7 @@ describe('BaseRestfulApiLauncher', () => {
 
           const createSpy = jest.spyOn(input.Capsule, 'create')
 
-          Launcher.createCapsuleAsJsonParseError(args)
+          Launcher.createCapsuleAsResponseBodyParseError(args)
 
           expect(createSpy)
             .toHaveBeenCalledWith(expected)
