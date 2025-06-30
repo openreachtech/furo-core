@@ -11,6 +11,7 @@ import {
 
 import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher.js'
 
+import BaseResponseBodyParser from '~/lib/tools/response-body-parser/BaseResponseBodyParser'
 import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
 
 describe('BaseRestfulApiLauncher', () => {
@@ -1058,6 +1059,85 @@ describe('BaseRestfulApiLauncher', () => {
           expect(createSpy)
             .toHaveBeenCalledWith(expected)
         })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('.createResponseBodyParser()', () => {
+    const AlphaResponseBodyParser = class extends BaseResponseBodyParser {}
+    const BetaResponseBodyParser = class extends BaseResponseBodyParser {}
+
+    /**
+     * @type {Array<{
+     *   input: {
+     *     Launcher: typeof BaseRestfulApiLauncher,
+     *   }
+     *   expected: typeof BaseResponseBodyParser,
+     * }>}
+     */
+    const LauncherCases = [
+      {
+        input: {
+          Launcher: BaseRestfulApiLauncher,
+        },
+        expected: JsonResponseBodyParser, // default
+      },
+      {
+        input: {
+          Launcher: class AlphaRestfulApiLauncher extends BaseRestfulApiLauncher {
+            /** @override */
+            static get ResponseBodyParser () {
+              return AlphaResponseBodyParser
+            }
+          },
+        },
+        expected: AlphaResponseBodyParser,
+      },
+      {
+        input: {
+          Launcher: class BetaRestfulApiLauncher extends BaseRestfulApiLauncher {
+            /** @override */
+            static get ResponseBodyParser () {
+              return BetaResponseBodyParser
+            }
+          },
+        },
+        expected: BetaResponseBodyParser,
+      },
+    ]
+
+    describe.each(LauncherCases)('Launcher: $input.Launcher.name', ({ input, expected }) => {
+      const responseCases = [
+        {
+          response: new Response('{}', {
+            status: 200,
+            statusText: 'OK',
+          }),
+        },
+        {
+          response: new Response('{}', {
+            status: 201,
+            statusText: 'Created',
+          }),
+        },
+      ]
+
+      test.each(responseCases)('response: $response.response', ({ response }) => {
+        const args = {
+          response,
+        }
+
+        const createSpy = jest.spyOn(expected, 'create')
+
+        const actual = input.Launcher.createResponseBodyParser(args)
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(args)
       })
     })
   })
