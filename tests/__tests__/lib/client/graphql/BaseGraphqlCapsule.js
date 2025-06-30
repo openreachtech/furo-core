@@ -95,7 +95,14 @@ describe('BaseGraphqlCapsule', () => {
       })
 
       describe('#result', () => {
-        const cases = [
+        /**
+         * @type {Array<{
+         *   params: {
+         *     result: GraphqlType.Response
+         *   }
+         * }>}
+         */
+        const cases = /** @type {Array<*>} */ ([
           {
             params: {
               result: {
@@ -139,7 +146,7 @@ describe('BaseGraphqlCapsule', () => {
               },
             },
           },
-        ]
+        ])
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
