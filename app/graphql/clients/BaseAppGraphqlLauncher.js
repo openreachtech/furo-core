@@ -1,9 +1,9 @@
-import BaseGraphqlLauncher from '../../../lib/client/BaseGraphqlLauncher.js'
+import BaseGraphqlLauncher from '../../../lib/client/graphql/BaseGraphqlLauncher.js'
 
 import graphqlConfig from '../graphql.config.js'
 
 /**
- * Company sponsors query graphql launcher.
+ * Base class of GraphQL launcher for the app.
  *
  * @extends {BaseGraphqlLauncher}
  */
@@ -15,5 +15,5 @@ export default class BaseAppGraphqlLauncher extends BaseGraphqlLauncher {
 }
 
 /**
- * @typedef {furo.BaseGraphqlLauncherFactoryParams} BaseAppGraphqlLauncherFactoryParams
+ * @typedef {GraphqlType.LauncherFactoryParams} BaseAppGraphqlLauncherFactoryParams
  */

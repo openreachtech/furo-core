@@ -1,7 +1,9 @@
 import BaseFormElementClerk from '../../lib/domClerks/BaseFormElementClerk.js'
 
 /**
- * @extends {BaseFormElementClerk<typeof UploadDeepPropertyImagesFormElementClerk, UploadDeepPropertyImagesFormValueHash, SchemaVariableHash>}
+ * Form element clerk of upload deep property images form element.
+ *
+ * @extends {BaseFormElementClerk<UploadDeepPropertyImagesFormValueHash>}
  */
 export default class UploadDeepPropertyImagesFormElementClerk extends BaseFormElementClerk {
   /** @override */
@@ -52,14 +54,4 @@ export default class UploadDeepPropertyImagesFormElementClerk extends BaseFormEl
  *   themeColor: string
  *   coverImage: File
  * }} UploadDeepPropertyImagesFormValueHash
- */
-
-/**
- * @typedef {{
- *   nickname: string
- *   bio: string
- *   avatarImage: File
- *   themeColor: string
- *   coverImage: File
- * }} SchemaVariableHash
  */

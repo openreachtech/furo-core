@@ -2,16 +2,27 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="
-    width=device-width,
-    initial-scale=1.0
-  ">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="assets/css/variables.css">
   <link rel="stylesheet" href="assets/css/reset.css">
   <link rel="stylesheet" href="assets/css/style.css">
 
   <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+
+  <script type="module">
+    import {
+      STORAGE_KEY,
+    } from './app/constants.js'
+
+    import StorageClerk from './lib/storage/StorageClerk.js'
+
+    // Set the access token for demo purposes
+    window.setAccessToken = token => {
+      StorageClerk.createAsSession()
+        .set(STORAGE_KEY.ACCESS_TOKEN, token)
+    }
+  </script>
 
   <title>furo Sample Pages</title>
 </head>
@@ -22,12 +33,25 @@
     <h1>furo Sample Pages</h1>
 
     <section>
+      <h2>Sign In as Demo</h2>
+
+      <div><button onclick="setAccessToken({ token: 'access-token-01-01' });">Sign In as User 01</button></div>
+      <div><button onclick="setAccessToken({ token: 'access-token-01-02' });">Sign In as User 02</button></div>
+    </section>
+
+    <section>
       <h2>GraphQL client</h2>
 
       <div><a href="pages/client/curriculums.html">Curriculums</a></div>
       <div><a href="pages/client/company-sponsors.html">Company Sponsors</a></div>
       <div><a href="pages/client/sign-up.html">Sign Up</a></div>
       <div><a href="pages/client/upload-image.html">Upload Image</a></div>
+    </section>
+
+    <section>
+      <h2>RESTful API client</h2>
+
+      <div><a href="pages/client/restfulapi.html">RESTful API client</a></div>
     </section>
 
     <section>

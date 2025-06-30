@@ -1,7 +1,7 @@
-import BaseGraphqlCapsule from '../../../lib/client/BaseGraphqlCapsule.js'
+import BaseGraphqlCapsule from '../../../lib/client/graphql/BaseGraphqlCapsule.js'
 
 /**
- * Company sponsors query graphql launcher.
+ * Base class of GraphQL capsule for the app.
  *
  * @template D - Type of content (data).
  * @extends {BaseGraphqlCapsule<D>}

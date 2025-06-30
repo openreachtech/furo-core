@@ -1,4 +1,4 @@
-import BaseSubscriptionGraphqlPayload from '../../../lib/client/BaseSubscriptionGraphqlPayload.js'
+import BaseSubscriptionGraphqlPayload from '../../../lib/client/graphql/BaseSubscriptionGraphqlPayload.js'
 import StorageClerk from '../../../lib/storage/StorageClerk.js'
 
 import {
@@ -9,7 +9,7 @@ import {
 /**
  * Base app subscription GraphQL payload.
  *
- * @template {furo.GraphqlRequestVariables} SV
+ * @template {GraphqlType.RequestVariables} SV
  * @extends {BaseSubscriptionGraphqlPayload<SV>}
  */
 export default class BaseAppSubscriptionGraphqlPayload extends BaseSubscriptionGraphqlPayload {
