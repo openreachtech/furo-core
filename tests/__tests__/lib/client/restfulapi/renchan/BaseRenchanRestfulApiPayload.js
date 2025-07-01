@@ -50,11 +50,7 @@ describe('BaseRenchanRestfulApiPayload', () => {
           accessTokenHeaderKey: 'x-app-renchan-access-token',
           accessToken: null,
         },
-        expected: [
-          {
-            'x-app-renchan-access-token': null,
-          },
-        ],
+        expected: [],
       },
     ]
 
