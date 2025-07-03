@@ -1,11 +1,8 @@
-import {
-  ConstructorSpy,
-} from '@openreachtech/jest-constructor-spy'
+import FormElementInspector from '~/lib/dom/FormElementInspector.js'
 
-import BaseFormElementClerk from '~/lib/domClerks/BaseFormElementClerk.js'
 import DomInflator from '~/lib/tools/DomInflator'
 
-describe('BaseFormElementClerk', () => {
+describe('FormElementInspector', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
       describe('#formElement', () => {
@@ -18,7 +15,7 @@ describe('BaseFormElementClerk', () => {
         ]
 
         test.each(cases)('formElement: $args.formElement', ({ args }) => {
-          const instance = new BaseFormElementClerk(args)
+          const instance = new FormElementInspector(args)
 
           expect(instance)
             .toHaveProperty('formElement', args.formElement)
@@ -28,7 +25,7 @@ describe('BaseFormElementClerk', () => {
   })
 })
 
-describe('BaseFormElementClerk', () => {
+describe('FormElementInspector', () => {
   describe('.create()', () => {
     describe('to create an instance of own class', () => {
       const cases = [
@@ -40,10 +37,10 @@ describe('BaseFormElementClerk', () => {
       ]
 
       test.each(cases)('formElement: $args.formElement', ({ args }) => {
-        const instance = BaseFormElementClerk.create(args)
+        const instance = FormElementInspector.create(args)
 
         expect(instance)
-          .toBeInstanceOf(BaseFormElementClerk)
+          .toBeInstanceOf(FormElementInspector)
       })
     })
 
@@ -57,8 +54,7 @@ describe('BaseFormElementClerk', () => {
       ]
 
       test.each(cases)('formElement: $args.formElement', ({ args }) => {
-        const DerivedClass = ConstructorSpy.create({ jest })
-          .spyOn(BaseFormElementClerk)
+        const DerivedClass = globalThis.constructorSpy.spyOn(FormElementInspector)
 
         DerivedClass.create(args)
 
@@ -69,227 +65,30 @@ describe('BaseFormElementClerk', () => {
   })
 })
 
-describe('BaseFormElementClerk', () => {
-  describe('.get:rules', () => {
-    test('to return fixed value', () => {
-      const actual = BaseFormElementClerk.rules
-
-      expect(actual)
-        .toBeInstanceOf(Array)
-      expect(actual)
-        .toHaveLength(0)
-    })
-  })
-})
-
-describe('BaseFormElementClerk', () => {
-  describe('#isValid()', () => {
-    /**
-     * @extends {BaseFormElementClerk<typeof TestFormElementClerk, *, *>}
-     */
-    class TestFormElementClerk extends BaseFormElementClerk {
-      /** @override */
-      static get rules () {
-        return [
-          {
-            field: 'alpha',
-            message: 'alpha message',
-            ok: () => true,
-          },
-          {
-            field: 'beta',
-            message: 'beta message',
-            ok: () => true,
-          },
-        ]
-      }
-    }
-
-    const formElement = document.createElement('form')
-
-    describe('to be truthy', () => {
-      /**
-       * @type {Array<{
-       *   args: {
-       *     validationHash: furo.ValidatorHashType
-       *   }
-       * }>}
-       */
+describe('FormElementInspector', () => {
+  describe('#get:Ctor', () => {
+    describe('should be a constructor of own class', () => {
       const cases = [
         {
-          args: {
-            validationHash: {
-              valid: {
-                alpha: true,
-                beta: true,
-              },
-              invalid: {
-                alpha: false,
-                beta: false,
-              },
-              messages: {
-                alpha: [],
-                beta: [],
-              },
-              message: {
-                alpha: null,
-                beta: null,
-              },
-            },
-          },
-        },
-        {
-          args: {
-            validationHash: {
-              valid: {
-                alpha: true,
-              },
-              invalid: {
-                alpha: false,
-              },
-              messages: {
-                alpha: [],
-              },
-              message: {
-                alpha: null,
-              },
-            },
-          },
-        },
-        {
-          args: {
-            validationHash: {
-              valid: {},
-              invalid: {},
-              messages: {},
-              message: {},
-            },
+          input: {
+            formElement: document.createElement('form'),
           },
         },
       ]
 
-      test.each(cases)('valid: $args.validationHash.valid', ({ args }) => {
-        const formElementClerk = TestFormElementClerk.create({
-          formElement,
-        })
+      test.each(cases)('formElement: $input.formElement', ({ input }) => {
+        const instance = new FormElementInspector(input)
 
-        const generateValidationHashSpy = jest.spyOn(formElementClerk, 'generateValidationHash')
-          .mockReturnValue(args.validationHash)
-
-        const actual = formElementClerk.isValid()
+        const actual = instance.Ctor
 
         expect(actual)
-          .toBeTruthy()
-
-        generateValidationHashSpy.mockRestore()
-      })
-    })
-
-    describe('to be falsy', () => {
-      /**
-       * @type {Array<{
-       *   args: {
-       *     validationHash: furo.ValidatorHashType
-       *   }
-       * }>}
-       */
-      const cases = [
-        {
-          args: {
-            validationHash: {
-              valid: {
-                alpha: false,
-                beta: true,
-              },
-              invalid: {
-                alpha: true,
-                beta: false,
-              },
-              messages: {
-                alpha: [
-                  'alpha message',
-                ],
-                beta: [],
-              },
-              message: {
-                alpha: 'alpha message',
-                beta: null,
-              },
-            },
-          },
-        },
-        {
-          args: {
-            validationHash: {
-              valid: {
-                alpha: true,
-                beta: false,
-              },
-              invalid: {
-                alpha: false,
-                beta: true,
-              },
-              messages: {
-                alpha: [],
-                beta: [
-                  'beta message',
-                ],
-              },
-              message: {
-                alpha: null,
-                beta: 'beta message',
-              },
-            },
-          },
-        },
-        {
-          args: {
-            validationHash: {
-              valid: {
-                alpha: false,
-                beta: false,
-              },
-              invalid: {
-                alpha: true,
-                beta: true,
-              },
-              messages: {
-                alpha: [
-                  'alpha message',
-                ],
-                beta: [
-                  'beta message',
-                ],
-              },
-              message: {
-                alpha: 'alpha message',
-                beta: 'beta message',
-              },
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('valid: $args.validationHash.valid', ({ args }) => {
-        const formElementClerk = TestFormElementClerk.create({
-          formElement,
-        })
-
-        const generateValidationHashSpy = jest.spyOn(formElementClerk, 'generateValidationHash')
-          .mockReturnValue(args.validationHash)
-
-        const actual = formElementClerk.isValid()
-
-        expect(actual)
-          .toBeFalsy()
-
-        generateValidationHashSpy.mockRestore()
+          .toBe(FormElementInspector) // same reference
       })
     })
   })
 })
 
-describe('BaseFormElementClerk', () => {
+describe('FormElementInspector', () => {
   describe('#extractValueHash()', () => {
     describe('with one word name', () => {
       describe('from <input> elements', () => {
@@ -344,7 +143,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -421,7 +220,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -586,7 +385,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -649,7 +448,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -751,7 +550,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -872,7 +671,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -932,7 +731,7 @@ describe('BaseFormElementClerk', () => {
         })
           .inflateElements()
 
-        const formElementClerk = BaseFormElementClerk.create({
+        const formElementClerk = FormElementInspector.create({
           formElement,
         })
 
@@ -992,7 +791,7 @@ describe('BaseFormElementClerk', () => {
         })
           .inflateElements()
 
-        const formElementClerk = BaseFormElementClerk.create({
+        const formElementClerk = FormElementInspector.create({
           formElement,
         })
 
@@ -1081,7 +880,7 @@ describe('BaseFormElementClerk', () => {
         })
           .inflateElements()
 
-        const formElementClerk = BaseFormElementClerk.create({
+        const formElementClerk = FormElementInspector.create({
           formElement,
         })
 
@@ -1170,7 +969,7 @@ describe('BaseFormElementClerk', () => {
         })
           .inflateElements()
 
-        const formElementClerk = BaseFormElementClerk.create({
+        const formElementClerk = FormElementInspector.create({
           formElement,
         })
 
@@ -1230,7 +1029,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1308,7 +1107,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1365,7 +1164,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1426,7 +1225,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1485,7 +1284,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1526,7 +1325,7 @@ describe('BaseFormElementClerk', () => {
           })
             .inflateElements()
 
-          const formElementClerk = BaseFormElementClerk.create({
+          const formElementClerk = FormElementInspector.create({
             formElement,
           })
 
@@ -1535,6 +1334,711 @@ describe('BaseFormElementClerk', () => {
           expect(actual)
             .toStrictEqual(expected)
         })
+      })
+    })
+  })
+})
+
+describe('FormElementInspector', () => {
+  describe('#extractEnabledElements()', () => {
+    describe('to extract all enabled control elements', () => {
+      const cases = [
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value">
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value" disabled>
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: [],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="radio" name="alpha" value="first value" checked>
+                <input type="radio" name="alpha" value="second value" disabled>
+                <input type="radio" name="alpha" value="third value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="checkbox" name="alpha" value="first value">
+                <input type="checkbox" name="alpha" value="second value">
+                <input type="checkbox" name="alpha" value="third value" disabled>
+                <input type="checkbox" name="alpha" value="fourth value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <textarea name="alpha">alpha value</textarea>
+                <textarea name="alpha" disabled>alpha value</textarea>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLTextAreaElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha">
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="beta" disabled>
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLSelectElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha" multiple>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="alpha" multiple disabled>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLSelectElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha[]" value="alpha value">
+                <input name="alpha[]" value="beta value" disabled>
+
+                <input name="beta[]" value="first value">
+                <input name="beta[]" value="second value" disabled>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <fieldset name="user[]">
+                  <input name="id" value="10001">
+                  <input name="username" value="John Doe" disabled>
+                </fieldset>
+                <fieldset name="user[]" disabled>
+                  <input name="id" value="10002">
+                  <input name="username" value="Jane Smith">
+                </fieldset>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLFieldSetElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+      ]
+
+      test.each(cases)('html: $args.html', ({ args, expected }) => {
+        const [formElement] = DomInflator.create({
+          html: args.html,
+        })
+          .inflateElements()
+
+        const formElementClerk = FormElementInspector.create({
+          formElement,
+        })
+
+        const actual = formElementClerk.extractEnabledElements()
+
+        expect(actual)
+          .toStrictEqual(expected)
+      })
+    })
+  })
+})
+
+describe('FormElementInspector', () => {
+  describe('#extractAllElements()', () => {
+    describe('to extract all control elements', () => {
+      const cases = [
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value">
+                <input name="beta" value="beta value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="radio" name="alpha" value="first value" checked>
+                <input type="radio" name="alpha" value="second value">
+                <input type="radio" name="alpha" value="third value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="checkbox" name="alpha" value="first value">
+                <input type="checkbox" name="alpha" value="second value">
+                <input type="checkbox" name="alpha" value="third value">
+                <input type="checkbox" name="alpha" value="fourth value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <textarea name="alpha">alpha value</textarea>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLTextAreaElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha">
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLSelectElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha" multiple>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLSelectElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="user.id" value="10001">
+                <input name="user.username" value="John Doe">
+                <input name="user.profile.bio" value="Hello, I am John Doe.">
+                <input name="user.profile.age" value="58">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha[]" value="alpha value">
+                <input name="alpha[]" value="beta value">
+
+                <input name="beta[]" value="first value">
+                <input name="beta[]" value="second value">
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <fieldset name="user[]">
+                  <input name="id" value="10001">
+                  <input name="username" value="John Doe">
+                </fieldset>
+                <fieldset name="user[]">
+                  <input name="id" value="10002">
+                  <input name="username" value="Jane Smith">
+                </fieldset>
+              </form>
+            `,
+          },
+          expected: [
+            expect.any(HTMLFieldSetElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLFieldSetElement),
+            expect.any(HTMLInputElement),
+            expect.any(HTMLInputElement),
+          ],
+        },
+      ]
+
+      test.each(cases)('html: $args.html', ({ args, expected }) => {
+        const [formElement] = DomInflator.create({
+          html: args.html,
+        })
+          .inflateElements()
+
+        const formElementClerk = FormElementInspector.create({
+          formElement,
+        })
+
+        const actual = formElementClerk.extractAllElements()
+
+        expect(actual)
+          .toStrictEqual(expected)
+      })
+    })
+  })
+})
+
+describe('FormElementInspector', () => {
+  describe('#extractControlElements()', () => {
+    describe('should be names of form control element', () => {
+      const cases = [
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value">
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(HTMLInputElement),
+            beta: expect.any(HTMLInputElement),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value" disabled>
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(HTMLInputElement),
+            beta: expect.any(HTMLInputElement),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="radio" name="alpha" value="first value" checked>
+                <input type="radio" name="alpha" value="second value" disabled>
+                <input type="radio" name="alpha" value="third value">
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(RadioNodeList),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="checkbox" name="alpha" value="first value">
+                <input type="checkbox" name="alpha" value="second value">
+                <input type="checkbox" name="alpha" value="third value" disabled>
+                <input type="checkbox" name="alpha" value="fourth value">
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(RadioNodeList),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <textarea name="alpha">alpha value</textarea>
+                <textarea name="alpha" disabled>alpha value</textarea>
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(RadioNodeList),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha">
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="beta" disabled>
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(HTMLSelectElement),
+            beta: expect.any(HTMLSelectElement),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha" multiple>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="alpha" multiple disabled>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: {
+            alpha: expect.any(RadioNodeList),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha[]" value="alpha value">
+                <input name="alpha[]" value="beta value" disabled>
+
+                <input name="beta[]" value="first value">
+                <input name="beta[]" value="second value" disabled>
+              </form>
+            `,
+          },
+          expected: {
+            'alpha[]': expect.any(RadioNodeList),
+            'beta[]': expect.any(RadioNodeList),
+          },
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <fieldset name="user[]">
+                  <input name="id" value="10001">
+                  <input name="username" value="John Doe" disabled>
+                </fieldset>
+                <fieldset name="user[]" disabled>
+                  <input name="id" value="10002">
+                  <input name="username" value="Jane Smith">
+                </fieldset>
+              </form>
+            `,
+          },
+          expected: {
+            'user[]': expect.any(RadioNodeList),
+            id: expect.any(RadioNodeList),
+            username: expect.any(RadioNodeList),
+          },
+        },
+      ]
+
+      test.each(cases)('html: $args.html', ({ args, expected }) => {
+        const [formElement] = DomInflator.create({
+          html: args.html,
+        })
+          .inflateElements()
+
+        const formElementClerk = FormElementInspector.create({
+          formElement,
+        })
+
+        const actual = formElementClerk.extractControlElements()
+
+        expect(actual)
+          .toStrictEqual(expected)
+      })
+    })
+  })
+})
+
+describe('FormElementInspector', () => {
+  describe('#extractNames()', () => {
+    describe('should be names of form control element', () => {
+      const cases = [
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value">
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+            'beta',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha" value="alpha value" disabled>
+                <input name="beta" value="beta value" disabled>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+            'beta',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="radio" name="alpha" value="first value" checked>
+                <input type="radio" name="alpha" value="second value" disabled>
+                <input type="radio" name="alpha" value="third value">
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input type="checkbox" name="alpha" value="first value">
+                <input type="checkbox" name="alpha" value="second value">
+                <input type="checkbox" name="alpha" value="third value" disabled>
+                <input type="checkbox" name="alpha" value="fourth value">
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <textarea name="alpha">alpha value</textarea>
+                <textarea name="alpha" disabled>alpha value</textarea>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha">
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="beta" disabled>
+                  <option value="first value">First</option><!-- default selected -->
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+            'beta',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <select name="alpha" multiple>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+                <select name="alpha" multiple disabled>
+                  <option value="first value">First</option>
+                  <option value="second value">Second</option>
+                  <option value="third value">Third</option>
+                </select>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <input name="alpha[]" value="alpha value">
+                <input name="alpha[]" value="beta value" disabled>
+
+                <input name="beta[]" value="first value">
+                <input name="beta[]" value="second value" disabled>
+              </form>
+            `,
+          },
+          expected: [
+            'alpha[]',
+            'beta[]',
+          ],
+        },
+        {
+          args: {
+            html: `
+              <form>
+                <fieldset name="user[]">
+                  <input name="id" value="10001">
+                  <input name="username" value="John Doe" disabled>
+                </fieldset>
+                <fieldset name="user[]" disabled>
+                  <input name="id" value="10002">
+                  <input name="username" value="Jane Smith">
+                </fieldset>
+              </form>
+            `,
+          },
+          expected: [
+            'user[]',
+            'id',
+            'username',
+          ],
+        },
+      ]
+
+      test.each(cases)('html: $args.html', ({ args, expected }) => {
+        const [formElement] = DomInflator.create({
+          html: args.html,
+        })
+          .inflateElements()
+
+        const formElementClerk = FormElementInspector.create({
+          formElement,
+        })
+
+        const actual = formElementClerk.extractNames()
+
+        expect(actual)
+          .toStrictEqual(expected)
       })
     })
   })
