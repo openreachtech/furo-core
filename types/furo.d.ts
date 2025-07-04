@@ -43,7 +43,7 @@ import {
   FormControlElementClerkFactoryParams,
   FormControlElementType,
   FormControlElementValueType,
-} from '../lib/domClerks/FormControlElementClerk'
+} from '../lib/domClerks/FormControlElementInspector.js'
 
 import {
   StorageClerkParams,

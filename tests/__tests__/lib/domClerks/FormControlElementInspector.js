@@ -2,7 +2,7 @@ import {
   ConstructorSpy,
 } from '@openreachtech/jest-constructor-spy'
 
-import FormControlElementClerk from '~/lib/domClerks/FormControlElementClerk.js'
+import FormControlElementClerk from '~/lib/domClerks/FormControlElementInspector.js'
 
 import DomInflator from '~/lib/tools/DomInflator.js'
 
