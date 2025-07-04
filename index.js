@@ -37,7 +37,7 @@ export { RESTFUL_API_METHOD } from './lib/client/restfulapi/constants.js'
  * DOM tools
  */
 export { default as BaseFormElementClerk } from './lib/domClerks/BaseFormElementClerk.js'
-export { default as FormControlElementClerk } from './lib/domClerks/FormControlElementInspector.js'
+export { default as FormControlElementInspector } from './lib/domClerks/FormControlElementInspector.js'
 export { default as HashBuilder } from './lib/domClerks/HashBuilder.js'
 export { default as UploadingPropertyPathBuilder } from './lib/domClerks/UploadingPropertyPathBuilder.js'
 export { default as BaseLegacyFormElementClerk } from './lib/domClerks/BaseLegacyFormElementClerk.js'
