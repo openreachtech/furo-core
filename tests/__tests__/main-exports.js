@@ -24,6 +24,8 @@ import {
   UploadingPropertyPathBuilder,
   BaseLegacyFormElementClerk,
 
+  FormControlElementClerk,
+
   StorageClerk,
 
   FieldValidator,
@@ -66,6 +68,8 @@ describe('Classes exported correctly', () => {
     { ExportedClass: HashBuilder },
     { ExportedClass: UploadingPropertyPathBuilder },
     { ExportedClass: BaseLegacyFormElementClerk },
+
+    { ExportedClass: FormControlElementClerk },
 
     { ExportedClass: StorageClerk },
 
