@@ -47,6 +47,9 @@ export { default as ValueHashValidator } from './lib/validator/ValueHashValidato
 
 export { default as DomInflator } from './lib/tools/DomInflator.js'
 
+// backward compatibility
+export { default as FormControlElementClerk } from './lib/dom/FormControlElementInspector.js'
+
 /*
  * Dynamic class declaration tools
  */
