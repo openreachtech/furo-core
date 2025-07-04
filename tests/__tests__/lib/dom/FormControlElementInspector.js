@@ -2,7 +2,7 @@ import {
   ConstructorSpy,
 } from '@openreachtech/jest-constructor-spy'
 
-import FormControlElementClerk from '~/lib/domClerks/FormControlElementClerk.js'
+import FormControlElementInspector from '~/lib/dom/FormControlElementInspector.js'
 
 import DomInflator from '~/lib/tools/DomInflator.js'
 
@@ -22,7 +22,7 @@ const [formElementMock] = DomInflator.create({
 /** @type {RadioNodeList} */
 const radioNodeListInstance = formElementMock.elements.namedItem('group')
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
       describe('#control', () => {
@@ -60,7 +60,7 @@ describe('FormControlElementClerk', () => {
         ]
 
         test.each(cases)('control: $args.control', ({ args }) => {
-          const instance = new FormControlElementClerk(args)
+          const instance = new FormControlElementInspector(args)
 
           expect(instance)
             .toHaveProperty('control', args.control)
@@ -70,7 +70,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('.create()', () => {
     describe('to create an instance of own class', () => {
       const cases = [
@@ -107,10 +107,10 @@ describe('FormControlElementClerk', () => {
       ]
 
       test.each(cases)('control: $args.control', ({ args }) => {
-        const instance = FormControlElementClerk.create(args)
+        const instance = FormControlElementInspector.create(args)
 
         expect(instance)
-          .toBeInstanceOf(FormControlElementClerk)
+          .toBeInstanceOf(FormControlElementInspector)
       })
     })
 
@@ -150,7 +150,7 @@ describe('FormControlElementClerk', () => {
 
       test.each(cases)('control: $args.control', ({ args }) => {
         const DerivedClass = ConstructorSpy.create({ jest })
-          .spyOn(FormControlElementClerk)
+          .spyOn(FormControlElementInspector)
 
         DerivedClass.create(args)
 
@@ -161,7 +161,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractFormControlValue()', () => {
     describe('without disabled controls', () => {
       describe('with <input>', () => {
@@ -190,7 +190,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: inputElement,
           })
 
@@ -278,7 +278,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: selectElement,
           })
 
@@ -332,7 +332,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: optionElement,
           })
 
@@ -387,7 +387,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: textareaElement,
           })
 
@@ -513,7 +513,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -569,7 +569,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: inputElement,
           })
 
@@ -646,7 +646,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: selectElement,
           })
 
@@ -698,7 +698,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: optionElement,
           })
 
@@ -751,7 +751,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: textareaElement,
           })
 
@@ -877,7 +877,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -908,7 +908,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromInputElement()', () => {
     describe('with <input type="file">', () => {
       const alphaFile = new File(['alpha-01'], 'alpha-01.txt', {
@@ -977,7 +977,7 @@ describe('FormControlElementClerk', () => {
           jest.spyOn(fileInputElement.files, 'item')
             .mockReturnValue(fileTally)
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: fileInputElement,
           })
 
@@ -1051,7 +1051,7 @@ describe('FormControlElementClerk', () => {
             },
           })
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: fulfilledInputElement,
           })
 
@@ -1180,7 +1180,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: inputElement,
           })
 
@@ -1280,7 +1280,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: inputElement,
           })
 
@@ -1408,7 +1408,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: inputElement,
         })
 
@@ -1423,7 +1423,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromFileTypeInputElement()', () => {
     const alphaFile = new File(['alpha-01'], 'alpha-01.txt', {
       type: 'text/plain',
@@ -1491,7 +1491,7 @@ describe('FormControlElementClerk', () => {
         jest.spyOn(fileInputElement.files, 'item')
           .mockReturnValue(fileTally)
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: fileInputElement,
         })
 
@@ -1564,7 +1564,7 @@ describe('FormControlElementClerk', () => {
           },
         })
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: fulfilledInputElement,
         })
 
@@ -1579,7 +1579,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromNumberTypeInputElement()', () => {
     describe('to convert valid string to number', () => {
       const cases = [
@@ -1695,7 +1695,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: inputElement,
         })
 
@@ -1795,7 +1795,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: inputElement,
         })
 
@@ -1810,7 +1810,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromSelectElement()', () => {
     describe('as single value', () => {
       const cases = [
@@ -1867,7 +1867,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: selectElement,
         })
 
@@ -1938,7 +1938,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: selectElement,
         })
 
@@ -1953,7 +1953,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromRadioNodes()', () => {
     describe('without disabled <input>', () => {
       describe('<input type="radio">', () => {
@@ -1990,7 +1990,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2046,7 +2046,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2118,7 +2118,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2167,7 +2167,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2223,7 +2223,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2295,7 +2295,7 @@ describe('FormControlElementClerk', () => {
             .inflateElements()
           const radioNodes = form.elements.namedItem('group')
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodes,
           })
 
@@ -2311,7 +2311,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromRadioInputElements()', () => {
     describe('without disabled <input>', () => {
       describe('checked', () => {
@@ -2351,7 +2351,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodeListInstance,
           })
 
@@ -2403,7 +2403,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodeListInstance,
           })
 
@@ -2452,7 +2452,7 @@ describe('FormControlElementClerk', () => {
           })
             .inflateElements()
 
-          const clerk = FormControlElementClerk.create({
+          const clerk = FormControlElementInspector.create({
             control: radioNodeListInstance,
           })
 
@@ -2468,7 +2468,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromCheckboxInputElements()', () => {
     describe('without disabled <input>', () => {
       const cases = [
@@ -2536,7 +2536,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: radioNodeListInstance,
         })
 
@@ -2601,7 +2601,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: radioNodeListInstance,
         })
 
@@ -2616,7 +2616,7 @@ describe('FormControlElementClerk', () => {
   })
 })
 
-describe('FormControlElementClerk', () => {
+describe('FormControlElementInspector', () => {
   describe('#extractValueFromMultipleInputElements()', () => {
     describe('without disabled <input>', () => {
       const cases = [
@@ -2654,7 +2654,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: radioNodeListInstance,
         })
 
@@ -2713,7 +2713,7 @@ describe('FormControlElementClerk', () => {
         })
           .inflateElements()
 
-        const clerk = FormControlElementClerk.create({
+        const clerk = FormControlElementInspector.create({
           control: radioNodeListInstance,
         })
 

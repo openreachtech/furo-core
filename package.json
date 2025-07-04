@@ -1,6 +1,6 @@
 {
   "name": "@openreachtech/furo",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Furo the frontend modules",
   "main": "index.js",
   "files": [
