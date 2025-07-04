@@ -37,7 +37,7 @@ export { RESTFUL_API_METHOD } from './lib/client/restfulapi/constants.js'
  * DOM tools
  */
 export { default as BaseFormElementClerk } from './lib/domClerks/BaseFormElementClerk.js'
-export { default as FormControlElementClerk } from './lib/domClerks/FormControlElementClerk.js'
+export { default as FormControlElementInspector } from './lib/dom/FormControlElementInspector.js'
 export { default as HashBuilder } from './lib/domClerks/HashBuilder.js'
 export { default as UploadingPropertyPathBuilder } from './lib/domClerks/UploadingPropertyPathBuilder.js'
 export { default as BaseLegacyFormElementClerk } from './lib/domClerks/BaseLegacyFormElementClerk.js'
@@ -46,6 +46,9 @@ export { default as FieldValidator } from './lib/validator/FieldValidator.js'
 export { default as ValueHashValidator } from './lib/validator/ValueHashValidator.js'
 
 export { default as DomInflator } from './lib/tools/DomInflator.js'
+
+// backward compatibility
+export { default as FormControlElementClerk } from './lib/dom/FormControlElementInspector.js'
 
 /*
  * Dynamic class declaration tools

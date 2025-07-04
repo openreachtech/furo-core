@@ -39,11 +39,11 @@ import {
 } from '../lib/domClerks/BaseFormElementClerk'
 
 import {
-  FormControlElementClerkParams,
-  FormControlElementClerkFactoryParams,
+  FormControlElementInspectorParams,
+  FormControlElementInspectorFactoryParams,
   FormControlElementType,
   FormControlElementValueType,
-} from '../lib/domClerks/FormControlElementClerk'
+} from '../lib/dom/FormControlElementInspector.js'
 
 import {
   StorageClerkParams,
@@ -94,9 +94,9 @@ declare global {
       FormControlElementType,
       FormValueHashType,
 
-      // from FormControlElementClerk
-      FormControlElementClerkParams,
-      FormControlElementClerkFactoryParams,
+      // from FormControlElementInspector
+      FormControlElementInspectorParams,
+      FormControlElementInspectorFactoryParams,
       FormControlElementType,
       FormControlElementValueType,
 
