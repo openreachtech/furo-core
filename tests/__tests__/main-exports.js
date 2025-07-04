@@ -19,7 +19,7 @@ import {
   BaseRenchanRestfulApiPayload,
 
   BaseFormElementClerk,
-  FormControlElementClerk,
+  FormControlElementInspector,
   HashBuilder,
   UploadingPropertyPathBuilder,
   BaseLegacyFormElementClerk,
@@ -62,7 +62,7 @@ describe('Classes exported correctly', () => {
     { ExportedClass: BaseRenchanRestfulApiPayload },
 
     { ExportedClass: BaseFormElementClerk },
-    { ExportedClass: FormControlElementClerk },
+    { ExportedClass: FormControlElementInspector },
     { ExportedClass: HashBuilder },
     { ExportedClass: UploadingPropertyPathBuilder },
     { ExportedClass: BaseLegacyFormElementClerk },
