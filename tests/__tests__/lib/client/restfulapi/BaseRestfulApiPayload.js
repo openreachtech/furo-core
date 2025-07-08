@@ -595,11 +595,7 @@ describe('BaseRestfulApiPayload', () => {
        *     extraValueHash?: Record<string, furo.FormControlElementValueType>
        *     options?: RequestInit
        *   }
-       *   generateRequestParameterHashTally: {
-       *     query?: Record<string, unknown>
-       *     body?: Record<string, unknown>
-       *     pathParameterHash?: Record<string, unknown>
-       *   }
+       *   generateRequestParameterHashTally: RestfulApiType.RequestValueHash
        *   expected: {
        *     buildFormBasedValueHashArgs: {
        *       valueHash: Record<string, furo.FormControlElementValueType>

@@ -41,6 +41,16 @@ type METHOD = 'GET'
   | 'CONNECT'
 type RequestUrl = RequestInfo | URL
 
+type RequestValueHash<
+  QP = RequestQuery,
+  BP = RequestBody,
+  PP = RequestPathParams
+> = {
+  query?: QP,
+  body?: BP,
+  pathParameterHash?: PP,
+}
+
 /**
  * Furo RESTful API types
  */
@@ -56,6 +66,8 @@ declare global {
       RequestQuery,
       RequestBody,
       RequestPathParams,
+
+      RequestValueHash,
 
       // Capsule
       CapsuleCtor,
