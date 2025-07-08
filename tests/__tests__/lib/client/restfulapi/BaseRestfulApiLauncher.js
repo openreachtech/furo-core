@@ -1072,7 +1072,7 @@ describe('BaseRestfulApiLauncher', () => {
     /**
      * @type {Array<{
      *   input: {
-     *     Launcher: typeof BaseRestfulApiLauncher,
+     *     Launcher: typeof BaseRestfulApiLauncher
      *   }
      *   expected: typeof BaseResponseBodyParser<*>
      * }>}
