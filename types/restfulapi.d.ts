@@ -30,6 +30,11 @@ import type {
   RestfulApiLauncherHooks as LauncherHooks,
 } from '../lib/client/restfulapi/BaseRestfulApiLauncher'
 
+import BaseResponseBodyParser from '../lib/tools/response-body-parser/BaseResponseBodyParser'
+
+type ResponseBodyParser = BaseResponseBodyParser
+type ResponseBodyParserCtor = typeof BaseResponseBodyParser
+
 type METHOD = 'GET'
   | 'POST'
   | 'PUT'
@@ -78,6 +83,10 @@ declare global {
       Response,
       ResponseContent,
       ResponseError,
+
+      // Response Body Parser
+      ResponseBodyParser,
+      ResponseBodyParserCtor,
 
       // Launcher
       LauncherCtor,
