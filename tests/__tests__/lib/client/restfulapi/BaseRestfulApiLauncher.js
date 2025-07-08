@@ -1074,7 +1074,7 @@ describe('BaseRestfulApiLauncher', () => {
      *   input: {
      *     Launcher: typeof BaseRestfulApiLauncher,
      *   }
-     *   expected: typeof BaseResponseBodyParser,
+     *   expected: typeof BaseResponseBodyParser<*>
      * }>}
      */
     const LauncherCases = [
