@@ -31,9 +31,11 @@ import type {
 } from '../lib/client/restfulapi/BaseRestfulApiLauncher'
 
 import BaseResponseBodyParser from '../lib/tools/response-body-parser/BaseResponseBodyParser'
+import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser'
 
 type ResponseBodyParser = BaseResponseBodyParser
 type ResponseBodyParserCtor = typeof BaseResponseBodyParser
+type JsonResponseBodyParserCtor = typeof JsonResponseBodyParser
 
 type METHOD = 'GET'
   | 'POST'
@@ -87,6 +89,9 @@ declare global {
       // Response Body Parser
       ResponseBodyParser,
       ResponseBodyParserCtor,
+
+      JsonResponseBodyParser,
+      JsonResponseBodyParserCtor,
 
       // Launcher
       LauncherCtor,
