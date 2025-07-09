@@ -1072,9 +1072,9 @@ describe('BaseRestfulApiLauncher', () => {
     /**
      * @type {Array<{
      *   input: {
-     *     Launcher: typeof BaseRestfulApiLauncher,
+     *     Launcher: typeof BaseRestfulApiLauncher
      *   }
-     *   expected: typeof BaseResponseBodyParser,
+     *   expected: typeof BaseResponseBodyParser<*>
      * }>}
      */
     const LauncherCases = [
@@ -1931,177 +1931,276 @@ describe('BaseRestfulApiLauncher', () => {
     })
 
     describe('with partial hooks', () => {
+      const beforeRequestHook = async () => false
+      const afterRequestHook = async () => {}
+      const onUploadProgressHook = () => {}
+      const onDownloadProgressHook = () => {}
+
       const partialCases = [
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              afterRequest: async () => {},
-              onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: afterRequestHook,
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              afterRequest: async () => {},
-              onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: afterRequestHook,
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: afterRequestHook,
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: expect.any(Function),
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              afterRequest: async () => {},
-              onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: afterRequestHook,
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: afterRequestHook,
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: expect.any(Function),
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: expect.any(Function),
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              afterRequest: async () => {},
-              onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: afterRequestHook,
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: afterRequestHook,
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: expect.any(Function),
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: beforeRequestHook,
+            afterRequest: expect.any(Function),
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: afterRequestHook,
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: expect.any(Function),
+            onUploadProgress: onUploadProgressHook,
+            onDownloadProgress: expect.any(Function),
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: expect.any(Function),
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: onDownloadProgressHook,
           },
         },
         {
           input: {
             hooks: {
-              // beforeRequest: async () => false,
-              // afterRequest: async () => {},
-              // onUploadProgress: () => {},
-              // onDownloadProgress: () => {},
+              // beforeRequest: beforeRequestHook,
+              // afterRequest: afterRequestHook,
+              // onUploadProgress: onUploadProgressHook,
+              // onDownloadProgress: onDownloadProgressHook,
             },
+          },
+          expected: {
+            beforeRequest: expect.any(Function),
+            afterRequest: expect.any(Function),
+            onUploadProgress: expect.any(Function),
+            onDownloadProgress: expect.any(Function),
           },
         },
       ]
 
-      test.each(partialCases)('with hooks: $input.hooks', ({ input }) => {
-        const expected = input.hooks
-
+      test.each(partialCases)('with hooks: $input.hooks', ({ input, expected }) => {
         const result = launcher.extendRequestHooks(input.hooks)
 
         // Verify the structure of returned hooks
         expect(result)
-          .toEqual(expected)
+          .toStrictEqual(expected)
       })
     })
   })
