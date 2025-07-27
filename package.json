@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
-    "@openreachtech/eslint-config": "^3.0.2",
+    "@openreachtech/eslint-config": "^4.1.1",
     "@openreachtech/jest-constructor-spy": "^1.1.0",
     "@openreachtech/renchan-test-tools": "^1.0.0",
     "@types/jest": "^29.5.14",
