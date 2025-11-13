@@ -187,14 +187,32 @@ export default class UploadImagePageGraphqlSubmitter {
 
     Array.from(validationElements)
       .forEach(element => {
-        const key = element.dataset.validationMessage
-          ?? ' '
-
-        // eslint-disable-next-line no-param-reassign
-        element.textContent =
-          validation.message[key]
-          ?? ' '
+        this.showValidationMessages({
+          element,
+          validation,
+        })
       })
+  }
+
+  /**
+   * Update validation messages.
+   *
+   * @param {{
+   *   element: HTMLElement
+   *   validation: furo.ValidatorHashType
+   * }} params - The parameters
+   * @returns {void} No return value
+   */
+  showValidationMessages ({
+    element,
+    validation,
+  }) {
+    const key = element.dataset.validationMessage
+      ?? ' '
+
+    element.textContent =
+      validation.message[key]
+      ?? ' '
   }
 
   /**

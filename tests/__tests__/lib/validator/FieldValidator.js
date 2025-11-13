@@ -317,13 +317,13 @@ describe('FieldValidator', () => {
      *     message?: string | null
      *   }
      *   truthyCases: Array<{
-     *     target: any
+     *     target?: any
      *     variables: {
      *       [key: string]: any
      *     }
      *   }>
      *   falsyCases: Array<{
-     *     target: any
+     *     target?: any
      *     variables: {
      *       [key: string]: any
      *     }
@@ -356,7 +356,7 @@ describe('FieldValidator', () => {
             variables: {},
           },
           {
-            target: undefined,
+            // target: undefined,
             variables: {},
           },
         ],
@@ -364,10 +364,10 @@ describe('FieldValidator', () => {
       {
         args: {
           field: 'password',
-          ok: (it, valueHash) =>
+          ok: (it, valueHash) => (
             it
             && it === valueHash.passwordConfirmation
-          ,
+          ),
         },
         truthyCases: [
           {
@@ -409,9 +409,9 @@ describe('FieldValidator', () => {
             },
           },
           {
-            target: undefined,
+            // target: undefined,
             variables: {
-              passwordConfirmation: undefined,
+              // passwordConfirmation: undefined,
             },
           },
         ],
@@ -462,13 +462,13 @@ describe('FieldValidator', () => {
      *     message?: string | null
      *   }
      *   truthyCases: Array<{
-     *     target: any
+     *     target?: any
      *     variables: {
      *       [key: string]: any
      *     }
      *   }>
      *   falsyCases: Array<{
-     *     target: any
+     *     target?: any
      *     variables: {
      *       [key: string]: any
      *     }
@@ -491,7 +491,7 @@ describe('FieldValidator', () => {
             variables: {},
           },
           {
-            target: undefined,
+            // target: undefined,
             variables: {},
           },
         ],
@@ -509,10 +509,10 @@ describe('FieldValidator', () => {
       {
         args: {
           field: 'password',
-          ok: (it, valueHash) =>
+          ok: (it, valueHash) => (
             it
             && it === valueHash.passwordConfirmation
-          ,
+          ),
         },
         truthyCases: [
           {
@@ -540,9 +540,9 @@ describe('FieldValidator', () => {
             },
           },
           {
-            target: undefined,
+            // target: undefined,
             variables: {
-              passwordConfirmation: undefined,
+              // passwordConfirmation: undefined,
             },
           },
         ],
