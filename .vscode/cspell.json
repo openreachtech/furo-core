@@ -12,6 +12,7 @@
     "linebreak",
     "scandir",
     "softprops",
+    "esac",
 
     "restfulapi",
     "dotenv"
