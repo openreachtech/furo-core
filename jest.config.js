@@ -12,7 +12,7 @@ export default {
     '<rootDir>/tests/setup.js',
   ],
   setupFilesAfterEnv: [
-    '@openreachtech/renchan-test-tools/lib/environment/setupAfterEnv.js',
+    '@openreachtech/jest-deep-containing/lib/setup-expect-deepContaining.js',
     '<rootDir>/tests/setup-after-env.js',
   ],
   testEnvironment: 'jest-environment-jsdom',
@@ -22,6 +22,9 @@ export default {
       'node-addons',
     ],
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!@openreachtech/(jest-deep-containing|mentsu-gene-chain-splicer))',
+  ],
   transform: {
     '^.+\\.js$': 'babel-jest',
   },
