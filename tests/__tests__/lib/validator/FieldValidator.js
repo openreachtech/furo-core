@@ -366,8 +366,7 @@ describe('FieldValidator', () => {
           field: 'password',
           ok: (it, valueHash) =>
             it
-            && it === valueHash.passwordConfirmation
-          ,
+            && it === valueHash.passwordConfirmation,
         },
         truthyCases: [
           {
@@ -511,8 +510,7 @@ describe('FieldValidator', () => {
           field: 'password',
           ok: (it, valueHash) =>
             it
-            && it === valueHash.passwordConfirmation
-          ,
+            && it === valueHash.passwordConfirmation,
         },
         truthyCases: [
           {
