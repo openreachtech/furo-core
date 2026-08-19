@@ -34,7 +34,7 @@
     "@babel/preset-env": "^7.27.2",
     "@openreachtech/eslint-config": "^3.0.2",
     "@openreachtech/jest-constructor-spy": "^1.1.0",
-    "@openreachtech/renchan-test-tools": "^1.0.0",
+    "@openreachtech/jest-deep-containing": "^1.0.2",
     "@types/jest": "^29.5.14",
     "babel-jest": "^29.7.0",
     "eslint": "^9.26.0",
