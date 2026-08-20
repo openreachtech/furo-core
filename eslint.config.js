@@ -65,4 +65,20 @@ export default [
       ],
     },
   },
+
+  {
+    // TODO: This turns off the rule entirely. Consider better way to handle the config.
+    // Allow assignment inside `Array#forEach()` for this file.
+    files: [
+      'app/contexts/UploadImagePageGraphqlSubmitter.js',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...coreRuleOptionHash['no-restricted-syntax']
+          .spreadOptions
+          .filter(it => !it.selector.includes(':has(* VariableDeclarator)')),
+      ],
+    },
+  },
 ]
