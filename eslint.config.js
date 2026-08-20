@@ -33,6 +33,26 @@ export default [
 
   {
     files: [
+      'lib/client/restfulapi/BaseRestfulApiPayload.js',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...coreRuleOptionHash['no-restricted-syntax']
+          .spreadOptions
+          .filter(it => !it.selector.includes('[callee.property.name="sort"]')),
+        {
+          // Allow `URLSearchParams#sort()`
+          selector: 'CallExpression[callee.type=MemberExpression][callee.property.name="sort"]'
+            + ':not([callee.object.name=queryBuilder])', // `queryBuilder` is an instance of `URLSearchParams` in target files.
+          message: 'Use Array#toSorted() instead of Array#sort()',
+        },
+      ],
+    },
+  },
+
+  {
+    files: [
       'tests/__tests__/lib/client/graphql/BaseGraphqlCapsule.js',
       'tests/__tests__/lib/client/graphql/BaseGraphqlLauncher.js',
     ],
