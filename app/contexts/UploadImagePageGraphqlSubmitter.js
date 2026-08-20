@@ -190,7 +190,6 @@ export default class UploadImagePageGraphqlSubmitter {
         const key = element.dataset.validationMessage
           ?? ' '
 
-        // eslint-disable-next-line no-param-reassign
         element.textContent =
           validation.message[key]
           ?? ' '
