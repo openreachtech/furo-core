@@ -3,7 +3,7 @@ import AnonymousClassNameAssigner from '~/lib/tools/AnonymousClassNameAssigner.j
 describe('AnonymousClassNameAssigner', () => {
   describe('constructor', () => {
     describe('to keep properties', () => {
-      class BaseClass {}
+      const BaseClass = class {}
 
       describe('#AnonymousCtor', () => {
         const cases = [
@@ -34,7 +34,7 @@ describe('AnonymousClassNameAssigner', () => {
 
 describe('AnonymousClassNameAssigner', () => {
   describe('.create()', () => {
-    class BaseClass {}
+    const BaseClass = class {}
 
     const cases = [
       {
@@ -75,7 +75,7 @@ describe('AnonymousClassNameAssigner', () => {
 
 describe('AnonymousClassNameAssigner', () => {
   describe('#assignClassName()', () => {
-    class BaseClass {}
+    const BaseClass = class {}
 
     const classCases = [
       {
