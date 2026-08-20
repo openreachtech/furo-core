@@ -1,4 +1,7 @@
-import openreachtechConfig from '@openreachtech/eslint-config'
+import {
+  default as openreachtechConfig,
+  coreRuleOptionHash,
+} from '@openreachtech/eslint-config'
 
 /**
  * ESLint Config
@@ -24,6 +27,21 @@ export default [
           ],
           ignorePropertyModificationsForRegex: [],
         },
+      ],
+    },
+  },
+
+  {
+    files: [
+      'tests/__tests__/lib/client/graphql/BaseGraphqlCapsule.js',
+      'tests/__tests__/lib/client/graphql/BaseGraphqlLauncher.js',
+    ],
+    rules: {
+      'id-denylist': [
+        'error',
+        ...coreRuleOptionHash['id-denylist']
+          .spreadOptions
+          .filter(it => it !== 'data'), // Allow `data` as GraphQL response property.
       ],
     },
   },
