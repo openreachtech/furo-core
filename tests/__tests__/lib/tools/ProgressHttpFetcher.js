@@ -239,16 +239,16 @@ describe('ProgressHttpFetcher', () => {
                 },
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
                 upload: {
                   addEventListener (
                     eventName,
-                    callback
+                    listener
                   ) {
-                    this[`on${eventName}`] = callback
+                    this[`on${eventName}`] = listener
                   },
                 },
                 open () {
@@ -273,16 +273,16 @@ describe('ProgressHttpFetcher', () => {
                 },
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
                 upload: {
                   addEventListener (
                     eventName,
-                    callback
+                    listener
                   ) {
-                    this[`on${eventName}`] = callback
+                    this[`on${eventName}`] = listener
                   },
                 },
                 open () {
@@ -378,16 +378,16 @@ describe('ProgressHttpFetcher', () => {
                 },
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
                 upload: {
                   addEventListener (
                     eventName,
-                    callback
+                    listener
                   ) {
-                    this[`on${eventName}`] = callback
+                    this[`on${eventName}`] = listener
                   },
                 },
                 open () {
@@ -413,16 +413,16 @@ describe('ProgressHttpFetcher', () => {
                 },
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
                 upload: {
                   addEventListener (
                     eventName,
-                    callback
+                    listener
                   ) {
-                    this[`on${eventName}`] = callback
+                    this[`on${eventName}`] = listener
                   },
                 },
                 open () {
@@ -448,16 +448,16 @@ describe('ProgressHttpFetcher', () => {
                 },
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
                 upload: {
                   addEventListener (
                     eventName,
-                    callback
+                    listener
                   ) {
-                    this[`on${eventName}`] = callback
+                    this[`on${eventName}`] = listener
                   },
                 },
                 open () {
@@ -552,16 +552,16 @@ describe('ProgressHttpFetcher', () => {
               },
               addEventListener (
                 eventName,
-                callback
+                listener
               ) {
-                this[`on${eventName}`] = callback
+                this[`on${eventName}`] = listener
               },
               upload: {
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
               },
               open () {
@@ -586,16 +586,16 @@ describe('ProgressHttpFetcher', () => {
               },
               addEventListener (
                 eventName,
-                callback
+                listener
               ) {
-                this[`on${eventName}`] = callback
+                this[`on${eventName}`] = listener
               },
               upload: {
                 addEventListener (
                   eventName,
-                  callback
+                  listener
                 ) {
-                  this[`on${eventName}`] = callback
+                  this[`on${eventName}`] = listener
                 },
               },
               open () {
@@ -709,16 +709,16 @@ describe('ProgressHttpFetcher', () => {
             },
             addEventListener (
               eventName,
-              callback
+              listener
             ) {
-              this[`on${eventName}`] = callback
+              this[`on${eventName}`] = listener
             },
             upload: {
               addEventListener (
                 eventName,
-                callback
+                listener
               ) {
-                this[`on${eventName}`] = callback
+                this[`on${eventName}`] = listener
               },
             },
             open () {
@@ -746,16 +746,16 @@ describe('ProgressHttpFetcher', () => {
             },
             addEventListener (
               eventName,
-              callback
+              listener
             ) {
-              this[`on${eventName}`] = callback
+              this[`on${eventName}`] = listener
             },
             upload: {
               addEventListener (
                 eventName,
-                callback
+                listener
               ) {
-                this[`on${eventName}`] = callback
+                this[`on${eventName}`] = listener
               },
             },
             open () {
