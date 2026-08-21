@@ -54,5 +54,5 @@ jobs:
 
       - name: 🧪 Jest
         env:
-          NODE_ENV: development
+          NODE_ENV: test
         run: npm test
