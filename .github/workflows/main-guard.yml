@@ -16,7 +16,7 @@ jobs:
   main-guard:
     name: Main Guard
 
-    runs-on: [self-hosted, light]
+    runs-on: ubuntu-latest
 
     timeout-minutes: 5
 

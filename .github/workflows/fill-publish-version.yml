@@ -22,7 +22,7 @@ jobs:
   fill:
     if: startsWith(github.event.issue.title, '🚀 Publish')
 
-    runs-on: [self-hosted, light]
+    runs-on: ubuntu-latest
 
     timeout-minutes: 5
 
