@@ -22,7 +22,7 @@
   ],
   "homepage": "https://github.com/openreachtech/furo-core#readme",
   "author": "Open Reach Tech Inc.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/openreachtech/furo-core/issues"
   },
