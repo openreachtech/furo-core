@@ -49,6 +49,7 @@
   },
   "allowScripts": {
     "fsevents": false,
-    "@parcel/watcher": false
+    "@parcel/watcher": false,
+    "unrs-resolver": false
   }
 }
