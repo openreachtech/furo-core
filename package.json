@@ -48,6 +48,7 @@
     "js-yaml": "^4.3.2"
   },
   "allowScripts": {
-    "fsevents": false
+    "fsevents": false,
+    "@parcel/watcher": false
   }
 }
