@@ -10,7 +10,7 @@
   "scripts": {
     "l": "npm run lint",
     "lint": "eslint .",
-    "test": "jest --maxWorkers=5"
+    "test": "jest"
   },
   "type": "module",
   "repository": {
