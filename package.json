@@ -46,5 +46,8 @@
   "overrides": {
     "@humanfs/node": "^0.16.8",
     "js-yaml": "^4.3.2"
+  },
+  "allowScripts": {
+    "fsevents": false
   }
 }
