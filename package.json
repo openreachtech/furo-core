@@ -30,7 +30,7 @@
     "graphql-ws": "^6.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^8.0.5",
     "@babel/preset-env": "^7.29.7",
     "@openreachtech/eslint-config": "^4.5.0",
     "@openreachtech/jest-constructor-spy": "^1.1.2",
