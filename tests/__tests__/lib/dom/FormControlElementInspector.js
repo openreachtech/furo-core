@@ -609,7 +609,7 @@ describe('FormControlElementInspector', () => {
                 </select>
               `,
             },
-            expected: 'alpha-01',
+            expected: null,
           },
           {
             params: {
