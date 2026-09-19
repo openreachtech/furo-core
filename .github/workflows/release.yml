@@ -1,7 +1,8 @@
 name: Create Semantic Version Tag and Release
 
 # When a pull request into main is merged, tag its merge commit with the version
-# in the title ("Release > Main as `x.x.x`") and publish a GitHub Release.
+# taken from the title ("Release `x.x.x` > Main") or the `release/x.x.x` head
+# branch, and create a GitHub Release. Nothing is published to npm here.
 #
 # NOTE: This workflow must work on both GitHub-hosted and self-hosted runners.
 # A self-hosted runner cannot be assumed to have gh or Python installed, so use
@@ -26,14 +27,16 @@ jobs:
     # Only run when PR is merged
     if: github.event.pull_request.merged == true
 
-    runs-on: ubuntu-latest
+    # private repository: self-hosted
+    # public repository: github-hosted
+    runs-on: ${{ fromJSON(github.event.repository.private && '["self-hosted", "light"]' || '["ubuntu-latest"]') }}
 
     timeout-minutes: 5
 
     steps:
       - name: ✂️ Extract the version from the PR title, or the release branch name
         id: extract_version
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             /*
@@ -82,7 +85,7 @@ jobs:
 
       - name: 🏷️ Create the version tag
         if: steps.extract_version.outputs.version != ''
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           VERSION: ${{ steps.extract_version.outputs.version }}
         with:
@@ -103,7 +106,7 @@ jobs:
 
       - name: 📢 Create GitHub Release
         if: steps.extract_version.outputs.version != ''
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           VERSION: ${{ steps.extract_version.outputs.version }}
         with:
