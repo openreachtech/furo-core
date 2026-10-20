@@ -38,8 +38,6 @@ Class members are written with the following notation.
 
 `RESTFUL_API_METHOD` is also exported: a hash of the HTTP method names `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE` and `CONNECT`.
 
-`RESTFUL_API_BODY_FORMAT` is exported as well: a hash of the request body formats `FORM_DATA` and `JSON`.
-
 ## Form Element Clerk
 
 | class | description |
@@ -78,6 +76,9 @@ Class members are written with the following notation.
 | [PathnameBuilder](./PathnameBuilder.md) | Interpolates `[name]` placeholders in a pathname. |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing a response body. |
 | [JsonResponseBodyParser](./JsonResponseBodyParser.md) | Parses a response body as JSON. |
+| [BaseRequestBodyConverter](./BaseRequestBodyConverter.md) | Base class for converting a request body. |
+| [FormDataRequestBodyConverter](./FormDataRequestBodyConverter.md) | Converts a request body into `FormData`. |
+| [JsonRequestBodyConverter](./JsonRequestBodyConverter.md) | Converts a request body into JSON text. |
 
 ## Dynamic Class Declaration
 

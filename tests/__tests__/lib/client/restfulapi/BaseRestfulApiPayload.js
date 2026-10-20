@@ -5,6 +5,9 @@ import {
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
 import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry'
 import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
+import BaseRequestBodyConverter from '~/lib/tools/request-body-converter/BaseRequestBodyConverter.js'
+import FormDataRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
+import JsonRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/JsonRequestBodyConverter.js'
 
 describe('BaseRestfulApiPayload', () => {
   describe('constructor', () => {
@@ -1359,14 +1362,12 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('.get:bodyFormat', () => {
-    describe('when called as is', () => {
-      test('should be fixed value', () => {
-        const received = BaseRestfulApiPayload.bodyFormat
+  describe('.get:RequestBodyConverter', () => {
+    test('should be FormDataRequestBodyConverter', () => {
+      const actual = BaseRestfulApiPayload.RequestBodyConverter
 
-        expect(received)
-          .toBe('FORM_DATA')
-      })
+      expect(actual)
+        .toBe(FormDataRequestBodyConverter) // same reference
     })
   })
 })
@@ -1493,27 +1494,78 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('.createFormDataInstance()', () => {
-    test('to return new FormData instance', () => {
-      const actual = BaseRestfulApiPayload.createFormDataInstance()
+  describe('.createRequestBodyConverter()', () => {
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
 
-      expect(actual)
-        .toBeInstanceOf(FormData)
-    })
+    /**
+     * @type {Array<{
+     *   input: {
+     *     Payload: typeof BaseRestfulApiPayload
+     *   }
+     *   expected: typeof BaseRequestBodyConverter<*>
+     * }>}
+     */
+    const PayloadCases = [
+      {
+        input: {
+          Payload: BaseRestfulApiPayload,
+        },
+        expected: FormDataRequestBodyConverter, // default
+      },
+      {
+        input: {
+          Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return AlphaRequestBodyConverter
+            }
+          },
+        },
+        expected: AlphaRequestBodyConverter,
+      },
+      {
+        input: {
+          Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return BetaRequestBodyConverter
+            }
+          },
+        },
+        expected: BetaRequestBodyConverter,
+      },
+    ]
 
-    test('to return independent instances', () => {
-      const formData1 = BaseRestfulApiPayload.createFormDataInstance()
-      const formData2 = BaseRestfulApiPayload.createFormDataInstance()
+    describe.each(PayloadCases)('Payload: $input.Payload.name', ({ input, expected }) => {
+      const bodyCases = [
+        {
+          args: {
+            body: {
+              first: 'first value',
+            },
+          },
+        },
+        {
+          args: {
+            body: {
+              second: 'second value',
+            },
+          },
+        },
+      ]
 
-      formData1.append('test', 'value')
+      test.each(bodyCases)('body: $args.body', ({ args }) => {
+        const createSpy = jest.spyOn(expected, 'create')
 
-      const actual1 = [...formData1.entries()]
-      const actual2 = [...formData2.entries()]
+        const actual = input.Payload.createRequestBodyConverter(args)
 
-      expect(actual1)
-        .toHaveLength(1)
-      expect(actual2)
-        .toHaveLength(0)
+        expect(actual)
+          .toBeInstanceOf(expected)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(args)
+      })
     })
   })
 })
@@ -2855,6 +2907,9 @@ describe('BaseRestfulApiPayload', () => {
       ]
 
       test.each(cases)('headers: $args.headers', ({ args }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -2996,6 +3051,9 @@ describe('BaseRestfulApiPayload', () => {
       test('without given headers', () => {
         const expected = new Headers()
 
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -3010,7 +3068,14 @@ describe('BaseRestfulApiPayload', () => {
       })
     })
 
-    describe('when body format is JSON', () => {
+    describe('when request body converter is JsonRequestBodyConverter', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverter () {
+          return JsonRequestBodyConverter
+        }
+      }
+
       describe('should set "content-type" as application/json', () => {
         const cases = [
           {
@@ -3040,12 +3105,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input, expected }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             options: {
               headers: input.headers,
             },
@@ -3101,14 +3164,12 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input, expected }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
           jest.spyOn(BaseRestfulApiPayload, 'collectBasedHeadersOptions')
             .mockReturnValue(input.basedHeadersOptions)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             options: {
               headers: input.headers,
             },
@@ -3136,12 +3197,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create()
+          const payload = JsonRestfulApiPayload.create()
 
           const received = payload.createMergedHeaders()
 
@@ -3154,40 +3213,179 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('#collectBodyFormatHeaderEntries()', () => {
-    describe('when body format is JSON and method sends a body', () => {
+  describe('#createRequestBodyConverter()', () => {
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+
+    describe('should be an instance of the declared request body converter', () => {
       const cases = [
         {
           input: {
-            method: RESTFUL_API_METHOD.POST,
+            Payload: BaseRestfulApiPayload,
+          },
+          expected: FormDataRequestBodyConverter, // default
+        },
+        {
+          input: {
+            Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
+              /** @override */
+              static get RequestBodyConverter () {
+                return AlphaRequestBodyConverter
+              }
+            },
+          },
+          expected: AlphaRequestBodyConverter,
+        },
+        {
+          input: {
+            Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
+              /** @override */
+              static get RequestBodyConverter () {
+                return BetaRequestBodyConverter
+              }
+            },
+          },
+          expected: BetaRequestBodyConverter,
+        },
+      ]
+
+      test.each(cases)('Payload: $input.Payload.name', ({ input, expected }) => {
+        const payload = input.Payload.create()
+
+        const actual = payload.createRequestBodyConverter()
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+      })
+    })
+
+    describe('should convert the filtered request body', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+              secret: 'first secret',
+            },
+          },
+          override: {
+            filteredBody: {
+              first: 'first value',
+            },
           },
         },
         {
           input: {
-            method: RESTFUL_API_METHOD.PUT,
+            body: {
+              second: 'second value',
+              secret: 'second secret',
+            },
           },
-        },
-        {
-          input: {
-            method: RESTFUL_API_METHOD.PATCH,
+          override: {
+            filteredBody: {
+              second: 'second value',
+            },
           },
         },
       ]
 
-      test.each(cases)('method: $input.method', ({ input }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-          .mockReturnValue('JSON')
-        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
-          .mockReturnValue(input.method)
+      test.each(cases)('body: $input.body', ({ input, override }) => {
+        const payload = BaseRestfulApiPayload.create(input)
 
-        const payload = BaseRestfulApiPayload.create()
+        jest.spyOn(payload, 'extractFilteredRequestBody')
+          .mockReturnValue(override.filteredBody)
 
-        const received = payload.collectBodyFormatHeaderEntries()
+        const createSpy = jest.spyOn(BaseRestfulApiPayload, 'createRequestBodyConverter')
 
-        expect(received)
-          .toStrictEqual([
+        payload.createRequestBodyConverter()
+
+        expect(createSpy)
+          .toHaveBeenCalledWith({
+            body: override.filteredBody,
+          })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('#collectRequestBodyHeaderEntries()', () => {
+    describe('when method sends a body', () => {
+      const cases = [
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.POST
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
             ['content-type', 'application/json'],
-          ])
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.PUT
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
+            ['content-type', 'application/json'],
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.PATCH
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
+            ['content-type', 'application/json'],
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.POST
+              }
+            },
+          },
+          expected: [], // FormDataRequestBodyConverter by default
+        },
+      ]
+
+      test.each(cases)('method: $input.Payload.method', ({ input, expected }) => {
+        const payload = input.Payload.create()
+
+        const actual = payload.collectRequestBodyHeaderEntries()
+
+        expect(actual)
+          .toStrictEqual(expected)
       })
     })
 
@@ -3195,61 +3393,42 @@ describe('BaseRestfulApiPayload', () => {
       const cases = [
         {
           input: {
-            method: RESTFUL_API_METHOD.GET,
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.GET
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
           },
         },
         {
           input: {
-            method: RESTFUL_API_METHOD.DELETE,
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.DELETE
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
           },
         },
       ]
 
-      test.each(cases)('method: $input.method', ({ input }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-          .mockReturnValue('JSON')
-        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
-          .mockReturnValue(input.method)
+      test.each(cases)('method: $input.Payload.method', ({ input }) => {
+        const payload = input.Payload.create()
 
-        const payload = BaseRestfulApiPayload.create()
+        const actual = payload.collectRequestBodyHeaderEntries()
 
-        const received = payload.collectBodyFormatHeaderEntries()
-
-        expect(received)
-          .toStrictEqual([])
-      })
-    })
-
-    describe('when body format is form data', () => {
-      const cases = [
-        {
-          input: {
-            method: RESTFUL_API_METHOD.POST,
-          },
-        },
-        {
-          input: {
-            method: RESTFUL_API_METHOD.PUT,
-          },
-        },
-        {
-          input: {
-            method: RESTFUL_API_METHOD.GET,
-          },
-        },
-      ]
-
-      test.each(cases)('method: $input.method', ({ input }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-          .mockReturnValue('FORM_DATA')
-        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
-          .mockReturnValue(input.method)
-
-        const payload = BaseRestfulApiPayload.create()
-
-        const received = payload.collectBodyFormatHeaderEntries()
-
-        expect(received)
+        expect(actual)
           .toStrictEqual([])
       })
     })
@@ -3389,134 +3568,14 @@ describe('BaseRestfulApiPayload', () => {
       })
     })
 
-    describe('for body not-required method', () => {
-      const cases = [
-        {
-          args: {
-            Payload: AlphaGetRestfulApiPayload,
-            body: {
-              unknown: 'unknown value',
-            },
-          },
-        },
-        {
-          args: {
-            Payload: DeltaDeleteRestfulApiPayload,
-            body: {
-              unknown: 'unknown value',
-            },
-          },
-        },
-      ]
+    describe('for a request body converter of JSON', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverter () {
+          return JsonRequestBodyConverter
+        }
+      }
 
-      test.each(cases)('Payload: $args.Payload.name', ({ args }) => {
-        const expected = []
-
-        const payload = new args.Payload({
-          query: {},
-          body: args.body,
-          pathParameterHash: {},
-          options: {},
-        })
-
-        const actual = payload.generateBodyEntry()
-
-        expect(actual)
-          .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
-  describe('#buildBody()', () => {
-    describe('when body format is JSON', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'first value',
-            },
-          },
-          tally: '{"first":"first value"}',
-        },
-        {
-          input: {
-            body: {
-              second: 'second value',
-            },
-          },
-          tally: '{"second":"second value"}',
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, tally }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-          .mockReturnValue('JSON')
-
-        const payload = BaseRestfulApiPayload.create(input)
-
-        const buildJsonBodySpy = jest.spyOn(payload, 'buildJsonBody')
-          .mockReturnValue(tally)
-        const buildFormDataBodySpy = jest.spyOn(payload, 'buildFormDataBody')
-
-        const received = payload.buildBody()
-
-        expect(received)
-          .toBe(tally)
-
-        expect(buildJsonBodySpy)
-          .toHaveBeenCalledWith()
-        expect(buildFormDataBodySpy)
-          .not
-          .toHaveBeenCalled()
-      })
-    })
-
-    describe('when body format is form data', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'first value',
-            },
-          },
-          tally: new FormData(),
-        },
-        {
-          input: {
-            body: {
-              second: 'second value',
-            },
-          },
-          tally: new FormData(),
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, tally }) => {
-        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-          .mockReturnValue('FORM_DATA')
-
-        const payload = BaseRestfulApiPayload.create(input)
-
-        const buildJsonBodySpy = jest.spyOn(payload, 'buildJsonBody')
-        const buildFormDataBodySpy = jest.spyOn(payload, 'buildFormDataBody')
-          .mockReturnValue(tally)
-
-        const received = payload.buildBody()
-
-        expect(received)
-          .toBe(tally) // same reference
-
-        expect(buildFormDataBodySpy)
-          .toHaveBeenCalledWith()
-        expect(buildJsonBodySpy)
-          .not
-          .toHaveBeenCalled()
-      })
-    })
-
-    describe('for JSON body format', () => {
       describe('with body required method', () => {
         const cases = [
           {
@@ -3556,12 +3615,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input, expected }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
-          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          jest.spyOn(JsonRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             body: input.body,
           })
 
@@ -3593,12 +3650,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
-          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          jest.spyOn(JsonRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             body: input.body,
           })
 
@@ -3609,142 +3664,104 @@ describe('BaseRestfulApiPayload', () => {
         })
       })
     })
-  })
-})
 
-describe('BaseRestfulApiPayload', () => {
-  describe('#buildFormDataBody()', () => {
-    describe('to create FormData with correct structure', () => {
-      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
-
-      const alphaFormDataHub = new FormData()
-      const betaFormDataHub = new FormData()
-
-      alphaFormDataHub.append('first', 'alpha value')
-      alphaFormDataHub.append('second', 'beta value')
-
-      betaFormDataHub.append('first', 'gamma value')
-      betaFormDataHub.append('second', 'delta value')
-      betaFormDataHub.append('file', alphaFile)
-
-      const cases = [
-        {
-          args: {
-            body: {
-              first: 'alpha value',
-              second: 'beta value',
-            },
-          },
-          expected: alphaFormDataHub,
-        },
-        {
-          args: {
-            body: {
-              first: 'gamma value',
-              second: 'delta value',
-              file: alphaFile,
-            },
-          },
-          expected: betaFormDataHub,
-        },
-      ]
-
-      test.each(cases)('first: $args.body.first', ({ args, expected }) => {
-        const constructorArgs = {
-          query: {},
-          body: args.body,
-          pathParameterHash: {},
-          options: {},
-        }
-        const payload = new BaseRestfulApiPayload(constructorArgs)
-
-        const actual = payload.buildFormDataBody()
-
-        expect(actual)
-          .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
-  describe('#buildJsonBody()', () => {
-    describe('should stringify the body', () => {
+    describe('for body required method, to delegate to the request body converter', () => {
       const cases = [
         {
           input: {
             body: {
-              first: 'alpha value',
-              second: 'beta value',
-            },
-          },
-          expected: '{"first":"alpha value","second":"beta value"}',
-        },
-        {
-          input: {
-            body: {
-              first: 'gamma value',
-              nested: {
-                numbers: [1, 2],
-              },
-            },
-          },
-          expected: '{"first":"gamma value","nested":{"numbers":[1,2]}}',
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, expected }) => {
-        const payload = BaseRestfulApiPayload.create(input)
-
-        const received = payload.buildJsonBody()
-
-        expect(received)
-          .toBe(expected)
-      })
-    })
-
-    describe('should stringify the filtered body', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-              secret: 'alpha secret',
+              first: 'first value',
+              secret: 'first secret',
             },
           },
           override: {
             filteredBody: {
-              first: 'alpha value',
+              first: 'first value',
             },
           },
-          expected: '{"first":"alpha value"}',
+          tally: 'first tally',
         },
         {
           input: {
             body: {
-              second: 'beta value',
-              secret: 'beta secret',
+              second: 'second value',
+              secret: 'second secret',
             },
           },
           override: {
             filteredBody: {
-              second: 'beta value',
+              second: 'second value',
             },
           },
-          expected: '{"second":"beta value"}',
+          tally: 'second tally',
         },
       ]
 
-      test.each(cases)('body: $input.body', ({ input, override, expected }) => {
+      test.each(cases)('body: $input.body', ({ input, override, tally }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.POST)
+
         const payload = BaseRestfulApiPayload.create(input)
 
         jest.spyOn(payload, 'extractFilteredRequestBody')
           .mockReturnValue(override.filteredBody)
 
-        const received = payload.buildJsonBody()
+        const converter = FormDataRequestBodyConverter.create({
+          body: override.filteredBody,
+        })
+        const createRequestBodyConverterSpy = jest.spyOn(payload, 'createRequestBodyConverter')
+          .mockReturnValue(converter)
+        const convertBodySpy = jest.spyOn(converter, 'convertBody')
+          .mockReturnValue(tally)
+
+        const received = payload.generateBodyEntry()
 
         expect(received)
-          .toBe(expected)
+          .toStrictEqual([
+            ['body', tally],
+          ])
+
+        expect(createRequestBodyConverterSpy)
+          .toHaveBeenCalledWith()
+        expect(convertBodySpy)
+          .toHaveBeenCalledWith()
+      })
+    })
+
+    describe('for body not-required method', () => {
+      const cases = [
+        {
+          args: {
+            Payload: AlphaGetRestfulApiPayload,
+            body: {
+              unknown: 'unknown value',
+            },
+          },
+        },
+        {
+          args: {
+            Payload: DeltaDeleteRestfulApiPayload,
+            body: {
+              unknown: 'unknown value',
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('Payload: $args.Payload.name', ({ args }) => {
+        const expected = []
+
+        const payload = new args.Payload({
+          query: {},
+          body: args.body,
+          pathParameterHash: {},
+          options: {},
+        })
+
+        const actual = payload.generateBodyEntry()
+
+        expect(actual)
+          .toEqual(expected)
       })
     })
   })

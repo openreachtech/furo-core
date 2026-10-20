@@ -58,12 +58,12 @@ export default class CurriculumGetRestfulApiPayload extends BaseRestfulApiPayloa
 
 ## JSON ボディの送信
 
-ペイロードは既定でボディを `FormData` として送信します。JSON として送信するには `bodyFormat` をオーバーライドします。
+ペイロードは既定でボディを `FormData` として送信します。JSON として送信するには `RequestBodyConverter` をオーバーライドします。
 
 ```javascript
 import {
   BaseRestfulApiPayload,
-  RESTFUL_API_BODY_FORMAT,
+  JsonRequestBodyConverter,
   RESTFUL_API_METHOD,
 } from '@openreachtech/furo'
 
@@ -79,13 +79,13 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
   }
 
   /** @override */
-  static get bodyFormat () {
-    return RESTFUL_API_BODY_FORMAT.JSON
+  static get RequestBodyConverter () {
+    return JsonRequestBodyConverter
   }
 }
 ```
 
-ボディは `application/json` としてサーバーへ届き、アップロードとダウンロードの進捗も引き続き通知されます。ペイロードがヘッダーで指定した `Content-Type` はそのまま保持されます。GraphQL クライアントは引き続き `multipart/form-data` を送信します。
+ボディは `application/json` としてサーバーへ届き、アップロードとダウンロードの進捗も引き続き通知されます。ペイロードがヘッダーで指定した `Content-Type` はそのまま保持されます。`GET` のようにボディを持たないメソッドには `Content-Type` が付きません。GraphQL クライアントは引き続き `multipart/form-data` を送信します。
 
 ## Renchan バックエンド
 

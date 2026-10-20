@@ -9,6 +9,9 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 | `PathnameBuilder` | Interpolates `[name]` placeholders in a pathname template. |
 | `BaseResponseBodyParser` | Base class for turning a `Response` body into a value. |
 | `JsonResponseBodyParser` | Parses a response body as JSON. |
+| `BaseRequestBodyConverter` | Base class for converting a request body into what a `Request` sends. |
+| `FormDataRequestBodyConverter` | Converts a request body into `FormData`. |
+| `JsonRequestBodyConverter` | Converts a request body into JSON text. |
 
 ## Progress-reporting fetch
 
@@ -36,7 +39,7 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-A body whose content type is absent, `multipart/form-data` or `application/x-www-form-urlencoded` is sent as `FormData`, and the `Content-Type` header is left to `XMLHttpRequest`. Any other body is sent as text with its `Content-Type` kept, so a JSON body reaches the server as `application/json`.
+The body goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`.
 
 The returned promise rejects with a `TypeError` when the request is aborted, fails, or times out — matching how `fetch()` reports the same conditions.
 
@@ -101,3 +104,30 @@ export default class TextResponseBodyParser extends BaseResponseBodyParser {
 ```
 
 Point a launcher at it through `ResponseBodyParser`. See [RESTful API Client](./restful-api-client.md).
+
+## Converting a request body
+
+`FormDataRequestBodyConverter` is the default converter for the RESTful API payload. Extend `BaseRequestBodyConverter` to send another content type. `#generateHeaderEntries()` returns the headers that content type requires.
+
+```javascript
+import {
+  BaseRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConverter {
+  /** @override */
+  convertBody () {
+    return new URLSearchParams(this.body)
+      .toString()
+  }
+
+  /** @override */
+  generateHeaderEntries () {
+    return [
+      ['content-type', 'application/x-www-form-urlencoded'],
+    ]
+  }
+}
+```
+
+Point a payload at it through `RequestBodyConverter`. See [RESTful API Client](./restful-api-client.md).

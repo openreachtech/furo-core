@@ -38,8 +38,6 @@
 
 `RESTFUL_API_METHOD` もエクスポートされています。これは HTTP メソッド名 `GET`・`POST`・`PUT`・`PATCH`・`DELETE`・`HEAD`・`OPTIONS`・`TRACE`・`CONNECT` のハッシュです。
 
-`RESTFUL_API_BODY_FORMAT` もエクスポートされています。これはリクエストボディの形式 `FORM_DATA` と `JSON` のハッシュです。
-
 ## フォーム要素クラーク
 
 | class | description |
@@ -78,6 +76,9 @@
 | [PathnameBuilder](./PathnameBuilder.ja.md) | パス名内の `[name]` プレースホルダーを補間します。 |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.ja.md) | レスポンスボディをパースするための基底クラスです。 |
 | [JsonResponseBodyParser](./JsonResponseBodyParser.ja.md) | レスポンスボディを JSON としてパースします。 |
+| [BaseRequestBodyConverter](./BaseRequestBodyConverter.ja.md) | リクエストボディを変換するための基底クラスです。 |
+| [FormDataRequestBodyConverter](./FormDataRequestBodyConverter.ja.md) | リクエストボディを `FormData` へ変換します。 |
+| [JsonRequestBodyConverter](./JsonRequestBodyConverter.ja.md) | リクエストボディを JSON テキストへ変換します。 |
 
 ## 動的クラス宣言
 
