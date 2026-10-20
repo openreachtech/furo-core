@@ -13,6 +13,7 @@ Declares the HTTP method and pathname of one endpoint, and builds the `Request` 
 | `.get:asPostMethod` | A derived payload constructor with the method fixed to `POST`. |
 | `.get:queryRequiredFields` | Query fields that must be present for the parameters to be valid. |
 | `.get:bodyRequiredFields` | Body fields that must be present for the parameters to be valid. |
+| `.get:bodyFormat` | The format of the request body: `RESTFUL_API_BODY_FORMAT.FORM_DATA` by default, or `RESTFUL_API_BODY_FORMAT.JSON`. |
 | `.get:pathParameterRequiredFields` | Path parameters that must be present for the parameters to be valid. |
 | `.generateRequestParameterHash()` | Converts a value hash into the request parts. Override to map form fields onto an endpoint. |
 | `.collectBasedHeadersOptions()` | Header hashes merged into every request. |
