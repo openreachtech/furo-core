@@ -965,7 +965,7 @@ describe('ProgressHttpFetcher', () => {
                 true, // OPENS_AS_ASYNC
               ],
               sendArgs: [
-                '{"name":"Alpha"}',
+                expect.any(Blob),
               ],
             },
           },
@@ -986,7 +986,7 @@ describe('ProgressHttpFetcher', () => {
                 true, // OPENS_AS_ASYNC
               ],
               sendArgs: [
-                expect.any(FormData),
+                expect.any(Blob),
               ],
             },
           },
@@ -1099,7 +1099,7 @@ describe('ProgressHttpFetcher', () => {
             },
             expected: {
               sendArgs: [
-                '{"name":"Alpha"}',
+                expect.any(Blob),
               ],
             },
           },
@@ -1118,13 +1118,13 @@ describe('ProgressHttpFetcher', () => {
             },
             expected: {
               sendArgs: [
-                '{"name":"Beta","tags":["beta"]}',
+                expect.any(Blob),
               ],
             },
           },
         ]
 
-        describe('should send the JSON text', () => {
+        describe('should send the body as a Blob', () => {
           test.each(cases)('URL: $input.request.url', async ({ input, expected }) => {
             const sendSpy = jest.spyOn(parser.httpRequest, 'send')
 
