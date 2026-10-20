@@ -3013,6 +3013,109 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('#collectBodyFormatHeaderEntries()', () => {
+    describe('when body format is JSON and method sends a body', () => {
+      const cases = [
+        {
+          input: {
+            method: RESTFUL_API_METHOD.POST,
+          },
+        },
+        {
+          input: {
+            method: RESTFUL_API_METHOD.PUT,
+          },
+        },
+        {
+          input: {
+            method: RESTFUL_API_METHOD.PATCH,
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.method', ({ input }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
+          .mockReturnValue('JSON')
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(input.method)
+
+        const payload = BaseRestfulApiPayload.create()
+
+        const received = payload.collectBodyFormatHeaderEntries()
+
+        expect(received)
+          .toStrictEqual([
+            ['content-type', 'application/json'],
+          ])
+      })
+    })
+
+    describe('when method does not send a body', () => {
+      const cases = [
+        {
+          input: {
+            method: RESTFUL_API_METHOD.GET,
+          },
+        },
+        {
+          input: {
+            method: RESTFUL_API_METHOD.DELETE,
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.method', ({ input }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
+          .mockReturnValue('JSON')
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(input.method)
+
+        const payload = BaseRestfulApiPayload.create()
+
+        const received = payload.collectBodyFormatHeaderEntries()
+
+        expect(received)
+          .toStrictEqual([])
+      })
+    })
+
+    describe('when body format is form data', () => {
+      const cases = [
+        {
+          input: {
+            method: RESTFUL_API_METHOD.POST,
+          },
+        },
+        {
+          input: {
+            method: RESTFUL_API_METHOD.PUT,
+          },
+        },
+        {
+          input: {
+            method: RESTFUL_API_METHOD.GET,
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.method', ({ input }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
+          .mockReturnValue('FORM_DATA')
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(input.method)
+
+        const payload = BaseRestfulApiPayload.create()
+
+        const received = payload.collectBodyFormatHeaderEntries()
+
+        expect(received)
+          .toStrictEqual([])
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#generateBodyEntry()', () => {
     const AlphaGetRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
