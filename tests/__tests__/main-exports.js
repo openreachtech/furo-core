@@ -41,6 +41,7 @@ import {
   RestMethodRestfulApiPayloadDerivedCtorRegistry,
 
   RESTFUL_API_METHOD,
+  RESTFUL_API_BODY_FORMAT,
 } from '~/index.js'
 
 describe('Classes exported correctly', () => {
@@ -109,6 +110,18 @@ describe('Constants exported correctly', () => {
       }
 
       expect(RESTFUL_API_METHOD)
+        .toEqual(expected)
+    })
+  })
+
+  describe('RESTFUL_API_BODY_FORMAT', () => {
+    test('should be fixed value', () => {
+      const expected = {
+        FORM_DATA: 'FORM_DATA',
+        JSON: 'JSON',
+      }
+
+      expect(RESTFUL_API_BODY_FORMAT)
         .toEqual(expected)
     })
   })
