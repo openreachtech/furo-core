@@ -38,6 +38,8 @@ Class members are written with the following notation.
 
 `RESTFUL_API_METHOD` is also exported: a hash of the HTTP method names `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE` and `CONNECT`.
 
+`RESTFUL_API_BODY_FORMAT` is exported as well: a hash of the request body formats `FORM_DATA` and `JSON`.
+
 ## Form Element Clerk
 
 | class | description |
