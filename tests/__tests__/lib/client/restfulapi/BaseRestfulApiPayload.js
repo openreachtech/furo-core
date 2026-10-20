@@ -5,6 +5,9 @@ import {
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
 import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry'
 import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
+import BaseRequestBodyConverter from '~/lib/tools/request-body-converter/BaseRequestBodyConverter.js'
+import FormDataRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
+import JsonRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/JsonRequestBodyConverter.js'
 
 describe('BaseRestfulApiPayload', () => {
   describe('constructor', () => {
@@ -1354,6 +1357,17 @@ describe('BaseRestfulApiPayload', () => {
 
       expect(actual)
         .toEqual(expected)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('.get:RequestBodyConverter', () => {
+    test('should be FormDataRequestBodyConverter', () => {
+      const actual = BaseRestfulApiPayload.RequestBodyConverter
+
+      expect(actual)
+        .toBe(FormDataRequestBodyConverter) // same reference
     })
   })
 })
