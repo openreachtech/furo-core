@@ -27,20 +27,20 @@
     "url": "https://github.com/openreachtech/furo-core/issues"
   },
   "dependencies": {
-    "graphql-ws": "^6.2.1"
+    "graphql-ws": "^6.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^8.0.5",
-    "@babel/preset-env": "^8.0.5",
+    "@babel/core": "^8.0.7",
+    "@babel/preset-env": "^8.0.7",
     "@openreachtech/eslint-config": "^4.5.0",
     "@openreachtech/jest-constructor-spy": "^1.1.2",
     "@openreachtech/jest-deep-containing": "^1.0.2",
     "@types/jest": "^30.0.0",
-    "babel-jest": "^30.5.1",
+    "babel-jest": "^30.5.2",
     "eslint": "^9.39.5",
-    "globals": "^17.12.0",
-    "jest": "^30.5.1",
-    "jest-environment-jsdom": "^30.5.1",
+    "globals": "^17.13.0",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
     "whatwg-fetch": "^3.6.20"
   },
   "overrides": {
