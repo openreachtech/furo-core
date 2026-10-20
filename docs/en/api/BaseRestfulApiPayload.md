@@ -20,8 +20,10 @@ Declares the HTTP method and pathname of one endpoint, and builds the `Request` 
 | `.collectBasedFetchOptions()` | Fetch option hashes merged into every request. |
 | `.isBodyRequiredMethod()` | Whether the declared method sends a request body. |
 | `.createRequestBodyConverter()` | Creates a converter of `.get:RequestBodyConverter`. |
+| `.createFormDataInstance()` | Creates the `FormData` instance of the default converter. Override to change the body sent. |
 | `#createFetchRequest()` | Builds the `Request` for this payload. |
 | `#createRequestBodyConverter()` | Creates a converter of the filtered request body. |
+| `#buildFormDataBody()` | Builds the `FormData` body of the default converter. Override to change the body sent. |
 | `#isValidAllParameterHash()` | Whether every required field is present. |
 | `#isInvalidAllParameterHash()` | Negation of `#isValidAllParameterHash()`. |
 
