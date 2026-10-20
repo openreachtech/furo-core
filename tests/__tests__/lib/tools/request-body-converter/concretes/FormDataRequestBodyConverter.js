@@ -111,6 +111,91 @@ describe('FormDataRequestBodyConverter', () => {
 })
 
 describe('FormDataRequestBodyConverter', () => {
+  describe('.create()', () => {
+    describe('should keep the callback which builds FormData', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'alpha value',
+            },
+            formDataBuilder: () => new FormData(),
+          },
+        },
+        {
+          input: {
+            body: {
+              second: 'beta value',
+            },
+            formDataBuilder: () => new FormData(),
+          },
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input }) => {
+        const converter = FormDataRequestBodyConverter.create(input)
+
+        expect(converter)
+          .toHaveProperty('formDataBuilder', input.formDataBuilder) // same reference
+      })
+    })
+  })
+})
+
+describe('FormDataRequestBodyConverter', () => {
+  describe('#appendBodyTo()', () => {
+    describe('should append every field of the body to the given FormData', () => {
+      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
+
+      const alphaFormDataHub = new FormData()
+      const betaFormDataHub = new FormData()
+
+      alphaFormDataHub.append('first', 'alpha value')
+      alphaFormDataHub.append('second', 'beta value')
+
+      betaFormDataHub.append('first', 'gamma value')
+      betaFormDataHub.append('file', alphaFile)
+
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'alpha value',
+              second: 'beta value',
+            },
+          },
+          expected: alphaFormDataHub,
+        },
+        {
+          input: {
+            body: {
+              first: 'gamma value',
+              file: alphaFile,
+            },
+          },
+          expected: betaFormDataHub,
+        },
+      ]
+
+      test.each(cases)('first: $input.body.first', ({ input, expected }) => {
+        const converter = FormDataRequestBodyConverter.create(input)
+        const formDataHub = new FormData()
+
+        const actual = converter.appendBodyTo({
+          formDataHub,
+        })
+
+        expect(actual)
+          .toBe(formDataHub) // same reference
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('FormDataRequestBodyConverter', () => {
   describe('#convertBody()', () => {
     describe('to create FormData with correct structure', () => {
       const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
@@ -190,6 +275,39 @@ describe('FormDataRequestBodyConverter', () => {
 
         expect(createFormDataInstanceSpy)
           .toHaveBeenCalledWith()
+      })
+    })
+
+    describe('to return what the callback builds', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'alpha value',
+            },
+          },
+          tally: new FormData(),
+        },
+        {
+          input: {
+            body: {
+              second: 'beta value',
+            },
+          },
+          tally: new FormData(),
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, tally }) => {
+        const converter = FormDataRequestBodyConverter.create({
+          ...input,
+          formDataBuilder: () => tally,
+        })
+
+        const actual = converter.convertBody()
+
+        expect(actual)
+          .toBe(tally) // same reference
       })
     })
   })
