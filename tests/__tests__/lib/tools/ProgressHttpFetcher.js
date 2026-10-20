@@ -589,6 +589,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onload()
                 },
@@ -621,6 +624,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -667,7 +673,7 @@ describe('ProgressHttpFetcher', () => {
             const formDataTally = new FormData()
             const responseTally = new Response()
 
-            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
+            const createRequestBodySpy = jest.spyOn(ProgressHttpFetcher, 'createRequestBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -680,7 +686,7 @@ describe('ProgressHttpFetcher', () => {
             expect(actual)
               .toBe(responseTally) // same reference
 
-            expect(createFormDataBodySpy)
+            expect(createRequestBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
@@ -728,6 +734,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onabort()
                 },
@@ -763,6 +772,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onerror()
                 },
@@ -796,6 +808,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -842,7 +857,7 @@ describe('ProgressHttpFetcher', () => {
 
             const formDataTally = new FormData()
 
-            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
+            const createRequestBodySpy = jest.spyOn(ProgressHttpFetcher, 'createRequestBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -853,7 +868,7 @@ describe('ProgressHttpFetcher', () => {
               .rejects
               .toThrow(expected)
 
-            expect(createFormDataBodySpy)
+            expect(createRequestBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
@@ -902,6 +917,9 @@ describe('ProgressHttpFetcher', () => {
               open () {
                 // noop
               },
+              setRequestHeader () {
+                // noop
+              },
               send () {
                 this.onload()
               },
@@ -936,6 +954,9 @@ describe('ProgressHttpFetcher', () => {
               open () {
                 // noop
               },
+              setRequestHeader () {
+                // noop
+              },
               send () {
                 this.onload()
               },
@@ -964,6 +985,9 @@ describe('ProgressHttpFetcher', () => {
                 'https://example.com/alpha',
                 true, // OPENS_AS_ASYNC
               ],
+              sendArgs: [
+                '{"name":"Alpha"}',
+              ],
             },
           },
           {
@@ -973,7 +997,7 @@ describe('ProgressHttpFetcher', () => {
                 name: 'Beta',
               }),
               headers: new Headers({
-                'Content-Type': 'multiple/form-data',
+                'Content-Type': 'multipart/form-data',
               }),
             }),
             expected: {
@@ -981,6 +1005,9 @@ describe('ProgressHttpFetcher', () => {
                 'POST',
                 'https://example.com/beta',
                 true, // OPENS_AS_ASYNC
+              ],
+              sendArgs: [
+                expect.any(FormData),
               ],
             },
           },
@@ -1014,7 +1041,168 @@ describe('ProgressHttpFetcher', () => {
             .toHaveBeenCalledWith('timeout', expect.any(Function))
 
           expect(sendSpy)
-            .toHaveBeenCalledWith(expect.any(FormData))
+            .toHaveBeenCalledWith(...expected.sendArgs)
+        })
+      })
+    })
+
+    describe('to send a JSON body as application/json', () => {
+      /**
+       * @type {Array<{
+       *   params: {
+       *     httpRequest: XMLHttpRequest
+       *   }
+       * }>}
+       */
+      const parserCases = /** @type {Array<*>} */ ([
+        {
+          params: {
+            httpRequest: {
+              status: 200,
+              statusText: 'OK',
+              responseText: JSON.stringify({
+                message: 'Success',
+              }),
+              getAllResponseHeaders () {
+                return 'Content-Type: application/json\r\n'
+              },
+              addEventListener (
+                eventName,
+                listener
+              ) {
+                this[`on${eventName}`] = listener
+              },
+              upload: {
+                addEventListener (
+                  eventName,
+                  listener
+                ) {
+                  this[`on${eventName}`] = listener
+                },
+              },
+              open () {
+                // noop
+              },
+              setRequestHeader () {
+                // noop
+              },
+              send () {
+                this.upload.onprogress({
+                  loaded: 10,
+                  total: 100,
+                })
+                this.onprogress({
+                  loaded: 50,
+                  total: 100,
+                })
+                this.onload()
+              },
+            },
+          },
+        },
+      ])
+
+      describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
+        const parser = ProgressHttpFetcher.create(params)
+
+        const cases = [
+          {
+            input: {
+              request: new Request('https://example.com/alpha', {
+                method: 'POST',
+                body: JSON.stringify({
+                  name: 'Alpha',
+                }),
+                headers: new Headers({
+                  'Content-Type': 'application/json',
+                }),
+              }),
+            },
+            expected: {
+              sendArgs: [
+                '{"name":"Alpha"}',
+              ],
+            },
+          },
+          {
+            input: {
+              request: new Request('https://example.com/beta', {
+                method: 'PUT',
+                body: JSON.stringify({
+                  name: 'Beta',
+                  tags: ['beta'],
+                }),
+                headers: new Headers({
+                  'Content-Type': 'application/json',
+                }),
+              }),
+            },
+            expected: {
+              sendArgs: [
+                '{"name":"Beta","tags":["beta"]}',
+              ],
+            },
+          },
+        ]
+
+        describe('should send the JSON text', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input, expected }) => {
+            const sendSpy = jest.spyOn(parser.httpRequest, 'send')
+
+            await parser.fetchRequest(input)
+
+            expect(sendSpy)
+              .toHaveBeenCalledWith(...expected.sendArgs)
+          })
+        })
+
+        describe('should keep the content type', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input }) => {
+            const setRequestHeaderSpy = jest.spyOn(parser.httpRequest, 'setRequestHeader')
+
+            await parser.fetchRequest(input)
+
+            expect(setRequestHeaderSpy)
+              .toHaveBeenCalledWith('content-type', 'application/json')
+          })
+        })
+
+        describe('should report upload and download progress', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input }) => {
+            const sink = {
+              onUploadProgress () {
+                // noop
+              },
+              onDownloadProgress () {
+                // noop
+              },
+            }
+
+            const onUploadProgressSpy = jest.spyOn(sink, 'onUploadProgress')
+            const onDownloadProgressSpy = jest.spyOn(sink, 'onDownloadProgress')
+
+            await parser.fetchRequest({
+              request: input.request,
+              sink,
+            })
+
+            expect(onUploadProgressSpy)
+              .toHaveBeenCalledWith({
+                request: input.request,
+                progressEvent: {
+                  loaded: 10,
+                  total: 100,
+                },
+              })
+            expect(onDownloadProgressSpy)
+              .toHaveBeenCalledWith({
+                request: input.request,
+                progressEvent: {
+                  loaded: 50,
+                  total: 100,
+                },
+              })
+          })
         })
       })
     })
