@@ -5,7 +5,7 @@ export default {
     'json',
   ],
   moduleNameMapper: {
-    '^(@.*)$': '<rootDir>/node_modules/$1',
+    '^(@openreachtech/.*)$': '<rootDir>/node_modules/$1',
     '^~/(.*)$': '<rootDir>/$1',
   },
   setupFiles: [
