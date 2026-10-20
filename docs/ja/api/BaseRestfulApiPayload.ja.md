@@ -13,6 +13,7 @@
 | `.get:asPostMethod` | メソッドを `POST` に固定した派生ペイロードコンストラクタ。 |
 | `.get:queryRequiredFields` | パラメータが妥当であるために必須となるクエリフィールド。 |
 | `.get:bodyRequiredFields` | パラメータが妥当であるために必須となるボディフィールド。 |
+| `.get:bodyFormat` | リクエストボディの形式。既定は `RESTFUL_API_BODY_FORMAT.FORM_DATA` で、`RESTFUL_API_BODY_FORMAT.JSON` を宣言することもできます。 |
 | `.get:pathParameterRequiredFields` | パラメータが妥当であるために必須となるパスパラメータ。 |
 | `.generateRequestParameterHash()` | 値ハッシュをリクエストの各部へ変換します。フォームのフィールドをエンドポイントへ対応づけるためにオーバーライドします。 |
 | `.collectBasedHeadersOptions()` | すべてのリクエストにマージされるヘッダーハッシュ。 |

@@ -56,6 +56,37 @@ export default class CurriculumGetRestfulApiPayload extends BaseRestfulApiPayloa
 
 Override `prefixPathname` on a shared base payload when every endpoint sits under a common prefix such as `/v1`.
 
+## Sending a JSON body
+
+A payload sends its body as `FormData` by default. Override `bodyFormat` to send it as JSON instead.
+
+```javascript
+import {
+  BaseRestfulApiPayload,
+  RESTFUL_API_BODY_FORMAT,
+  RESTFUL_API_METHOD,
+} from '@openreachtech/furo'
+
+export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPayload {
+  /** @override */
+  static get method () {
+    return RESTFUL_API_METHOD.POST
+  }
+
+  /** @override */
+  static get pathname () {
+    return '/curriculums'
+  }
+
+  /** @override */
+  static get bodyFormat () {
+    return RESTFUL_API_BODY_FORMAT.JSON
+  }
+}
+```
+
+The body reaches the server as `application/json`, and upload and download progress are still reported. A `Content-Type` the payload sets through its headers is kept as it is. The GraphQL client keeps sending `multipart/form-data`.
+
 ## Renchan backends
 
 `BaseRenchanRestfulApiPayload` reads an access token from **session storage** and sends it as a header. Both keys are abstract, so a shared base payload must declare them.

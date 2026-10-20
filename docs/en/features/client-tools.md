@@ -36,6 +36,8 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
+A body whose content type is absent, `multipart/form-data` or `application/x-www-form-urlencoded` is sent as `FormData`, and the `Content-Type` header is left to `XMLHttpRequest`. Any other body is sent as text with its `Content-Type` kept, so a JSON body reaches the server as `application/json`.
+
 The returned promise rejects with a `TypeError` when the request is aborted, fails, or times out — matching how `fetch()` reports the same conditions.
 
 ## Parsing headers
