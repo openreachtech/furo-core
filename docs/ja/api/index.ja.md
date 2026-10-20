@@ -38,8 +38,6 @@
 
 `RESTFUL_API_METHOD` もエクスポートされています。これは HTTP メソッド名 `GET`・`POST`・`PUT`・`PATCH`・`DELETE`・`HEAD`・`OPTIONS`・`TRACE`・`CONNECT` のハッシュです。
 
-`RESTFUL_API_BODY_FORMAT` もエクスポートされています。これはリクエストボディの形式 `FORM_DATA` と `JSON` のハッシュです。
-
 ## フォーム要素クラーク
 
 | class | description |
