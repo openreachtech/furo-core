@@ -1507,6 +1507,83 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.createRequestBodyConverter()', () => {
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+
+    /**
+     * @type {Array<{
+     *   input: {
+     *     Payload: typeof BaseRestfulApiPayload
+     *   }
+     *   expected: typeof BaseRequestBodyConverter<*>
+     * }>}
+     */
+    const PayloadCases = [
+      {
+        input: {
+          Payload: BaseRestfulApiPayload,
+        },
+        expected: FormDataRequestBodyConverter, // default
+      },
+      {
+        input: {
+          Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return AlphaRequestBodyConverter
+            }
+          },
+        },
+        expected: AlphaRequestBodyConverter,
+      },
+      {
+        input: {
+          Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return BetaRequestBodyConverter
+            }
+          },
+        },
+        expected: BetaRequestBodyConverter,
+      },
+    ]
+
+    describe.each(PayloadCases)('Payload: $input.Payload.name', ({ input, expected }) => {
+      const bodyCases = [
+        {
+          args: {
+            body: {
+              first: 'first value',
+            },
+          },
+        },
+        {
+          args: {
+            body: {
+              second: 'second value',
+            },
+          },
+        },
+      ]
+
+      test.each(bodyCases)('body: $args.body', ({ args }) => {
+        const createSpy = jest.spyOn(expected, 'create')
+
+        const actual = input.Payload.createRequestBodyConverter(args)
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(args)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.createFormDataInstance()', () => {
     test('to return new FormData instance', () => {
       const actual = BaseRestfulApiPayload.createFormDataInstance()
