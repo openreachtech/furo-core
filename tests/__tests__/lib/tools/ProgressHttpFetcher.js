@@ -91,6 +91,135 @@ describe('ProgressHttpFetcher', () => {
 })
 
 describe('ProgressHttpFetcher', () => {
+  describe('.createRequestBody()', () => {
+    describe('when method does not send a body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'GET',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'DELETE',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/gamma', {
+              method: 'HEAD',
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.request.method', async ({ input }) => {
+        const received = await ProgressHttpFetcher.createRequestBody(input)
+
+        expect(received)
+          .toBeNull()
+      })
+    })
+
+    describe('when content type is form data', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: 'alpha',
+              headers: new Headers({
+                'Content-Type': 'multipart/form-data; boundary=----alpha',
+              }),
+            }),
+          },
+          tally: new FormData(),
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'PUT',
+              body: 'beta',
+              headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              }),
+            }),
+          },
+          tally: new FormData(),
+        },
+      ]
+
+      test.each(cases)('method: $input.request.method', async ({ input, tally }) => {
+        const createFormDataFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataFromRequest')
+          .mockResolvedValue(tally)
+        const createTextFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createTextFromRequest')
+
+        const received = await ProgressHttpFetcher.createRequestBody(input)
+
+        expect(received)
+          .toBe(tally) // same reference
+
+        expect(createFormDataFromRequestSpy)
+          .toHaveBeenCalledWith(input)
+        expect(createTextFromRequestSpy)
+          .not
+          .toHaveBeenCalled()
+      })
+    })
+
+    describe('when content type is not form data', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: '{"name":"Alpha"}',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+          tally: '{"name":"Alpha"}',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'PATCH',
+              body: '{"name":"Beta"}',
+              headers: new Headers({
+                'Content-Type': 'application/vnd.api+json',
+              }),
+            }),
+          },
+          tally: '{"name":"Beta"}',
+        },
+      ]
+
+      test.each(cases)('method: $input.request.method', async ({ input, tally }) => {
+        const createFormDataFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataFromRequest')
+        const createTextFromRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createTextFromRequest')
+          .mockResolvedValue(tally)
+
+        const received = await ProgressHttpFetcher.createRequestBody(input)
+
+        expect(received)
+          .toBe(tally)
+
+        expect(createTextFromRequestSpy)
+          .toHaveBeenCalledWith(input)
+        expect(createFormDataFromRequestSpy)
+          .not
+          .toHaveBeenCalled()
+      })
+    })
+  })
+})
+
+describe('ProgressHttpFetcher', () => {
   describe('.createFormDataFromRequest()', () => {
     const cases = [
       {
