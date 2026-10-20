@@ -9,6 +9,9 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 | `PathnameBuilder` | パス名テンプレート内の `[name]` プレースホルダーを補間します。 |
 | `BaseResponseBodyParser` | `Response` のボディを値へ変換するための基底クラスです。 |
 | `JsonResponseBodyParser` | レスポンスボディを JSON としてパースします。 |
+| `BaseRequestBodyConverter` | リクエストボディを `Request` が送信する形へ変換するための基底クラスです。 |
+| `FormDataRequestBodyConverter` | リクエストボディを `FormData` へ変換します。 |
+| `JsonRequestBodyConverter` | リクエストボディを JSON テキストへ変換します。 |
 
 ## 進捗を通知する fetch
 
@@ -36,7 +39,7 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-Content-Type が未指定、`multipart/form-data`、`application/x-www-form-urlencoded` のいずれかであるボディは `FormData` として送信され、`Content-Type` ヘッダーは `XMLHttpRequest` に任せます。それ以外のボディは `Content-Type` を保持したままテキストとして送信されるため、JSON ボディは `application/json` としてサーバーへ届きます。
+ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
 
 返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
 
@@ -101,3 +104,30 @@ export default class TextResponseBodyParser extends BaseResponseBodyParser {
 ```
 
 ランチャーからは `ResponseBodyParser` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
+
+## リクエストボディの変換
+
+`FormDataRequestBodyConverter` は RESTful API ペイロードの既定のコンバーターです。別のコンテンツタイプを送信する場合は `BaseRequestBodyConverter` を継承してください。`#generateHeaderEntries()` はそのコンテンツタイプが必要とするヘッダーを返します。
+
+```javascript
+import {
+  BaseRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConverter {
+  /** @override */
+  convertBody () {
+    return new URLSearchParams(this.body)
+      .toString()
+  }
+
+  /** @override */
+  generateHeaderEntries () {
+    return [
+      ['content-type', 'application/x-www-form-urlencoded'],
+    ]
+  }
+}
+```
+
+ペイロードからは `RequestBodyConverter` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
