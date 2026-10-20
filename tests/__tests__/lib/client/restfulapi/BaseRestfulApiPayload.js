@@ -1584,32 +1584,6 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('.createFormDataInstance()', () => {
-    test('to return new FormData instance', () => {
-      const actual = BaseRestfulApiPayload.createFormDataInstance()
-
-      expect(actual)
-        .toBeInstanceOf(FormData)
-    })
-
-    test('to return independent instances', () => {
-      const formData1 = BaseRestfulApiPayload.createFormDataInstance()
-      const formData2 = BaseRestfulApiPayload.createFormDataInstance()
-
-      formData1.append('test', 'value')
-
-      const actual1 = [...formData1.entries()]
-      const actual2 = [...formData2.entries()]
-
-      expect(actual1)
-        .toHaveLength(1)
-      expect(actual2)
-        .toHaveLength(0)
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
   describe('#get:Ctor', () => {
     describe('to be own class', () => {
       /**
