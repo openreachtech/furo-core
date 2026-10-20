@@ -20,8 +20,10 @@
 | `.collectBasedFetchOptions()` | すべてのリクエストにマージされる fetch オプションハッシュ。 |
 | `.isBodyRequiredMethod()` | 宣言されたメソッドがリクエストボディを送信するかどうか。 |
 | `.createRequestBodyConverter()` | `.get:RequestBodyConverter` のコンバーターを生成します。 |
+| `.createFormDataInstance()` | 既定のコンバーターが使用する `FormData` インスタンスを生成します。送信されるボディを変えるにはオーバーライドします。 |
 | `#createFetchRequest()` | このペイロードに対応する `Request` を構築します。 |
 | `#createRequestBodyConverter()` | フィルタ済みのリクエストボディのコンバーターを生成します。 |
+| `#buildFormDataBody()` | 既定のコンバーターが使用する `FormData` ボディを構築します。送信されるボディを変えるにはオーバーライドします。 |
 | `#isValidAllParameterHash()` | 必須フィールドがすべて存在するかどうか。 |
 | `#isInvalidAllParameterHash()` | `#isValidAllParameterHash()` の否定。 |
 

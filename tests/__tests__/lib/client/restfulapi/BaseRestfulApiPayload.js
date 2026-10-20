@@ -1571,6 +1571,89 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.createFormDataInstance()', () => {
+    test('to return new FormData instance', () => {
+      const actual = BaseRestfulApiPayload.createFormDataInstance()
+
+      expect(actual)
+        .toBeInstanceOf(FormData)
+    })
+
+    test('to return independent instances', () => {
+      const formData1 = BaseRestfulApiPayload.createFormDataInstance()
+      const formData2 = BaseRestfulApiPayload.createFormDataInstance()
+
+      formData1.append('test', 'value')
+
+      const actual1 = [...formData1.entries()]
+      const actual2 = [...formData2.entries()]
+
+      expect(actual1)
+        .toHaveLength(1)
+      expect(actual2)
+        .toHaveLength(0)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('.createFormDataInstance()', () => {
+    describe('when a subclass overrides it, for a payload of the default converter', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+            injected: 'alpha',
+          },
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+            injected: 'beta',
+          },
+        },
+      ]
+
+      test.each(cases)('injected: $input.injected', ({ input }) => {
+        const InjectingRestfulApiPayload = class extends BaseRestfulApiPayload {
+          /** @override */
+          static get method () {
+            return RESTFUL_API_METHOD.POST
+          }
+
+          /** @override */
+          static createFormDataInstance () {
+            const formDataHub = new FormData()
+
+            formDataHub.append('injected', input.injected)
+
+            return formDataHub
+          }
+        }
+
+        const payload = InjectingRestfulApiPayload.create({
+          body: input.body,
+        })
+
+        const [[, body]] = payload.generateBodyEntry()
+
+        expect(body.get('injected'))
+          .toBe(input.injected)
+        expect(Object.fromEntries(body.entries()))
+          .toStrictEqual({
+            injected: input.injected,
+            ...input.body,
+          })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#get:Ctor', () => {
     describe('to be own class', () => {
       /**
@@ -3302,6 +3385,7 @@ describe('BaseRestfulApiPayload', () => {
         expect(createSpy)
           .toHaveBeenCalledWith({
             body: override.filteredBody,
+            formDataBuilder: expect.any(Function),
           })
       })
     })
@@ -3762,6 +3846,111 @@ describe('BaseRestfulApiPayload', () => {
 
         expect(actual)
           .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('#buildFormDataBody()', () => {
+    describe('to create FormData with correct structure', () => {
+      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
+
+      const alphaFormDataHub = new FormData()
+      const betaFormDataHub = new FormData()
+
+      alphaFormDataHub.append('first', 'alpha value')
+      alphaFormDataHub.append('second', 'beta value')
+
+      betaFormDataHub.append('first', 'gamma value')
+      betaFormDataHub.append('second', 'delta value')
+      betaFormDataHub.append('file', alphaFile)
+
+      const cases = [
+        {
+          args: {
+            body: {
+              first: 'alpha value',
+              second: 'beta value',
+            },
+          },
+          expected: alphaFormDataHub,
+        },
+        {
+          args: {
+            body: {
+              first: 'gamma value',
+              second: 'delta value',
+              file: alphaFile,
+            },
+          },
+          expected: betaFormDataHub,
+        },
+      ]
+
+      test.each(cases)('first: $args.body.first', ({ args, expected }) => {
+        const constructorArgs = {
+          query: {},
+          body: args.body,
+          pathParameterHash: {},
+          options: {},
+        }
+        const payload = new BaseRestfulApiPayload(constructorArgs)
+
+        const actual = payload.buildFormDataBody()
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('#buildFormDataBody()', () => {
+    describe('when a subclass overrides it, for a payload of the default converter', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+          },
+          tally: new FormData(),
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+          },
+          tally: new FormData(),
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, tally }) => {
+        const OverridingRestfulApiPayload = class extends BaseRestfulApiPayload {
+          /** @override */
+          static get method () {
+            return RESTFUL_API_METHOD.POST
+          }
+
+          /** @override */
+          buildFormDataBody () {
+            return tally
+          }
+        }
+
+        const payload = OverridingRestfulApiPayload.create(input)
+
+        const received = payload.generateBodyEntry()
+
+        expect(received)
+          .toStrictEqual([
+            ['body', tally],
+          ])
+        expect(received[0][1])
+          .toBe(tally) // same reference
       })
     })
   })
