@@ -178,7 +178,9 @@ describe('ProgressHttpFetcher', () => {
         test.each(cases)('method: $input.request.method', async ({ input, expected }) => {
           const received = await ProgressHttpFetcher.createRequestBody(input)
 
-          await expect(new Response(received).text())
+          const response = new Response(received)
+
+          await expect(response.text())
             .resolves
             .toBe(expected)
         })
