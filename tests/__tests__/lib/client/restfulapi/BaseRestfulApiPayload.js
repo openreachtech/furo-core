@@ -2946,6 +2946,9 @@ describe('BaseRestfulApiPayload', () => {
       ]
 
       test.each(cases)('headers: $args.headers', ({ args }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -3087,6 +3090,9 @@ describe('BaseRestfulApiPayload', () => {
       test('without given headers', () => {
         const expected = new Headers()
 
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -3101,7 +3107,14 @@ describe('BaseRestfulApiPayload', () => {
       })
     })
 
-    describe('when body format is JSON', () => {
+    describe('when request body converter is JsonRequestBodyConverter', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverter () {
+          return JsonRequestBodyConverter
+        }
+      }
+
       describe('should set "content-type" as application/json', () => {
         const cases = [
           {
@@ -3131,12 +3144,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input, expected }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             options: {
               headers: input.headers,
             },
@@ -3192,14 +3203,12 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input, expected }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
           jest.spyOn(BaseRestfulApiPayload, 'collectBasedHeadersOptions')
             .mockReturnValue(input.basedHeadersOptions)
 
-          const payload = BaseRestfulApiPayload.create({
+          const payload = JsonRestfulApiPayload.create({
             options: {
               headers: input.headers,
             },
@@ -3227,12 +3236,10 @@ describe('BaseRestfulApiPayload', () => {
         ]
 
         test.each(cases)('method: $input.method', ({ input }) => {
-          jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
-            .mockReturnValue('JSON')
           jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
             .mockReturnValue(input.method)
 
-          const payload = BaseRestfulApiPayload.create()
+          const payload = JsonRestfulApiPayload.create()
 
           const received = payload.createMergedHeaders()
 
