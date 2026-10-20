@@ -1359,6 +1359,19 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.get:bodyFormat', () => {
+    describe('when called as is', () => {
+      test('should be fixed value', () => {
+        const received = BaseRestfulApiPayload.bodyFormat
+
+        expect(received)
+          .toBe('FORM_DATA')
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:pathParameterRequiredFields', () => {
     test('to be fixed value', () => {
       const expected = []
