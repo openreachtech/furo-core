@@ -3429,6 +3429,96 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('#buildBody()', () => {
+    describe('when body format is JSON', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+          },
+          tally: '{"first":"first value"}',
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+          },
+          tally: '{"second":"second value"}',
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, tally }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
+          .mockReturnValue('JSON')
+
+        const payload = BaseRestfulApiPayload.create(input)
+
+        const buildJsonBodySpy = jest.spyOn(payload, 'buildJsonBody')
+          .mockReturnValue(tally)
+        const buildFormDataBodySpy = jest.spyOn(payload, 'buildFormDataBody')
+
+        const received = payload.buildBody()
+
+        expect(received)
+          .toBe(tally)
+
+        expect(buildJsonBodySpy)
+          .toHaveBeenCalledWith()
+        expect(buildFormDataBodySpy)
+          .not
+          .toHaveBeenCalled()
+      })
+    })
+
+    describe('when body format is form data', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+          },
+          tally: new FormData(),
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+          },
+          tally: new FormData(),
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, tally }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'bodyFormat', 'get')
+          .mockReturnValue('FORM_DATA')
+
+        const payload = BaseRestfulApiPayload.create(input)
+
+        const buildJsonBodySpy = jest.spyOn(payload, 'buildJsonBody')
+        const buildFormDataBodySpy = jest.spyOn(payload, 'buildFormDataBody')
+          .mockReturnValue(tally)
+
+        const received = payload.buildBody()
+
+        expect(received)
+          .toBe(tally) // same reference
+
+        expect(buildFormDataBodySpy)
+          .toHaveBeenCalledWith()
+        expect(buildJsonBodySpy)
+          .not
+          .toHaveBeenCalled()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#buildFormDataBody()', () => {
     describe('to create FormData with correct structure', () => {
       const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
