@@ -36,6 +36,8 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
+Content-Type が未指定、`multipart/form-data`、`application/x-www-form-urlencoded` のいずれかであるボディは `FormData` として送信され、`Content-Type` ヘッダーは `XMLHttpRequest` に任せます。それ以外のボディは `Content-Type` を保持したままテキストとして送信されるため、JSON ボディは `application/json` としてサーバーへ届きます。
+
 返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
 
 ## ヘッダーのパース
