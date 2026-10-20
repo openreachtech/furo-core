@@ -3807,61 +3807,6 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('#buildFormDataBody()', () => {
-    describe('to create FormData with correct structure', () => {
-      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
-
-      const alphaFormDataHub = new FormData()
-      const betaFormDataHub = new FormData()
-
-      alphaFormDataHub.append('first', 'alpha value')
-      alphaFormDataHub.append('second', 'beta value')
-
-      betaFormDataHub.append('first', 'gamma value')
-      betaFormDataHub.append('second', 'delta value')
-      betaFormDataHub.append('file', alphaFile)
-
-      const cases = [
-        {
-          args: {
-            body: {
-              first: 'alpha value',
-              second: 'beta value',
-            },
-          },
-          expected: alphaFormDataHub,
-        },
-        {
-          args: {
-            body: {
-              first: 'gamma value',
-              second: 'delta value',
-              file: alphaFile,
-            },
-          },
-          expected: betaFormDataHub,
-        },
-      ]
-
-      test.each(cases)('first: $args.body.first', ({ args, expected }) => {
-        const constructorArgs = {
-          query: {},
-          body: args.body,
-          pathParameterHash: {},
-          options: {},
-        }
-        const payload = new BaseRestfulApiPayload(constructorArgs)
-
-        const actual = payload.buildFormDataBody()
-
-        expect(actual)
-          .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
   describe('#extractFilteredRequestBody()', () => {
     const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
 
