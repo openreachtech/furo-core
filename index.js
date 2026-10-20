@@ -34,10 +34,7 @@ export { default as BaseRenchanRestfulApiCapsule } from './lib/client/restfulapi
 export { default as BaseRenchanRestfulApiLauncher } from './lib/client/restfulapi/renchan/BaseRenchanRestfulApiLauncher.js'
 export { default as BaseRenchanRestfulApiPayload } from './lib/client/restfulapi/renchan/BaseRenchanRestfulApiPayload.js'
 
-export {
-  RESTFUL_API_METHOD,
-  RESTFUL_API_BODY_FORMAT,
-} from './lib/client/restfulapi/constants.js'
+export { RESTFUL_API_METHOD } from './lib/client/restfulapi/constants.js'
 
 /*
  * DOM tools
