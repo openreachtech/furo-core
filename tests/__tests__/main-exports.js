@@ -9,6 +9,9 @@ import {
 
   BaseResponseBodyParser,
   JsonResponseBodyParser,
+  BaseRequestBodyConverter,
+  FormDataRequestBodyConverter,
+  JsonRequestBodyConverter,
 
   BaseRestfulApiCapsule,
   BaseRestfulApiLauncher,
@@ -56,6 +59,9 @@ describe('Classes exported correctly', () => {
 
     { ExportedClass: BaseResponseBodyParser },
     { ExportedClass: JsonResponseBodyParser },
+    { ExportedClass: BaseRequestBodyConverter },
+    { ExportedClass: FormDataRequestBodyConverter },
+    { ExportedClass: JsonRequestBodyConverter },
 
     { ExportedClass: BaseRestfulApiCapsule },
     { ExportedClass: BaseRestfulApiLauncher },
