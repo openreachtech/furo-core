@@ -46,6 +46,8 @@ type METHOD = 'GET'
   | 'OPTIONS'
   | 'TRACE'
   | 'CONNECT'
+type BODY_FORMAT = 'FORM_DATA'
+  | 'JSON'
 type RequestUrl = RequestInfo | URL
 
 type RequestValueHash<
@@ -103,6 +105,7 @@ declare global {
       LauncherHooks,
 
       METHOD,
+      BODY_FORMAT,
 
       // Additional types
       RequestUrl
