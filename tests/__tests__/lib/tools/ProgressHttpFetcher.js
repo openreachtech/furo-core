@@ -1314,73 +1314,7 @@ describe('ProgressHttpFetcher', () => {
       })
     })
 
-    describe('to setup headers except for "content-type" of a form data request', () => {
-      describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
-        const parser = ProgressHttpFetcher.create(params)
-
-        const cases = [
-          {
-            request: new Request('https://example.com/alpha', {
-              method: 'POST',
-              body: JSON.stringify({
-                name: 'Alpha',
-              }),
-              headers: new Headers({
-                'Content-Type': 'multipart/form-data; boundary=----alpha', // ❌️
-                'Content-Length': '10000',
-                'User-Agent': 'Mozilla/5.0',
-                'Accept-Language': 'ja-JP',
-              }),
-            }),
-            expected: {
-              times: 3,
-              firstArgs: ['content-length', '10000'],
-              secondArgs: ['user-agent', 'Mozilla/5.0'],
-              thirdArgs: ['accept-language', 'ja-JP'],
-            },
-          },
-          {
-            request: new Request('https://example.com/beta', {
-              method: 'POST',
-              body: JSON.stringify({
-                name: 'Beta',
-              }),
-              headers: new Headers({
-                'Accept-Language': 'vi_VN',
-                'Content-Length': '20000',
-                'content-type': 'multipart/form-data', // ❌️
-                'User-Agent': 'WebKit/537.36',
-              }),
-            }),
-            expected: {
-              times: 3,
-              firstArgs: ['accept-language', 'vi_VN'],
-              secondArgs: ['content-length', '20000'],
-              thirdArgs: ['user-agent', 'WebKit/537.36'],
-            },
-          },
-        ]
-
-        test.each(cases)('URL: $request.url', async ({ request, expected }) => {
-          const setRequestHeaderSpy = jest.spyOn(parser.httpRequest, 'setRequestHeader')
-
-          parser.setupRequestHeaders({
-            request,
-          })
-
-          expect(setRequestHeaderSpy)
-            .toHaveBeenCalledTimes(expected.times)
-          expect(setRequestHeaderSpy)
-            .toHaveBeenNthCalledWith(1, ...expected.firstArgs)
-          expect(setRequestHeaderSpy)
-            .toHaveBeenNthCalledWith(2, ...expected.secondArgs)
-          expect(setRequestHeaderSpy)
-            .toHaveBeenNthCalledWith(3, ...expected.thirdArgs)
-        })
-      })
-    })
-
-    describe('to setup headers including "content-type" of a non form data request', () => {
+    describe('to setup all headers including "content-type"', () => {
       describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
         const parser = ProgressHttpFetcher.create(params)
 
@@ -1425,6 +1359,25 @@ describe('ProgressHttpFetcher', () => {
               secondArgs: ['content-length', '20000'],
               thirdArgs: ['content-type', 'application/vnd.api+json'],
               fourthArgs: ['user-agent', 'WebKit/537.36'],
+            },
+          },
+          {
+            request: new Request('https://example.com/gamma', {
+              method: 'POST',
+              body: '--gamma--',
+              headers: new Headers({
+                'Accept-Language': 'en-US',
+                'Content-Length': '30000',
+                'content-type': 'multipart/form-data; boundary=gamma',
+                'User-Agent': 'Gecko/20100101',
+              }),
+            }),
+            expected: {
+              times: 4,
+              firstArgs: ['accept-language', 'en-US'],
+              secondArgs: ['content-length', '30000'],
+              thirdArgs: ['content-type', 'multipart/form-data; boundary=gamma'],
+              fourthArgs: ['user-agent', 'Gecko/20100101'],
             },
           },
         ]
