@@ -4,7 +4,8 @@ Converts a request body into `FormData`. This is the converter a RESTful API pay
 
 | member | description |
 | :-- | :-- |
-| `.create()` | Inherited factory method. Takes the `body` hash to convert. |
+| `.create()` | Factory method. Takes the `body` hash to convert and an optional `formDataBuilder`. A payload passes `#buildFormDataBody()` there. |
 | `.createFormDataInstance()` | Creates the `FormData` instance the body is appended to. |
-| `#convertBody()` | Appends every field of the body to a `FormData` instance. |
+| `#convertBody()` | Returns the `FormData` of the optional `formDataBuilder`, or the body appended to a new `FormData` instance. |
+| `#appendBodyTo()` | Appends every field of the body to the given `FormData` instance. |
 | `#generateHeaderEntries()` | Generates no entries, because the `Request` sets `multipart/form-data` with its boundary. |
