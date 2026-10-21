@@ -7,6 +7,7 @@
 | `.create()` | ファクトリメソッド。任意の `httpRequest` を受け取ります。既定値は新しい `XMLHttpRequest` です。 |
 | `.createXMLHttpRequest()` | リクエストに使用する `XMLHttpRequest` を生成します。 |
 | `.createFormDataBody()` | `Request` のボディを `FormData` インスタンスとして読み取ります。 |
+| `.createRequestBody()` | `Request` のボディを `Blob` として読み取ります。ボディを持たないメソッドでは `null` になります。 |
 | `.createFormDataFromRequest()` | `Request` から `FormData` インスタンスを構築します。 |
 | `.isBodyRequiredMethod()` | リクエストのメソッドがボディを送信するかどうか。 |
 | `#fetchRequest()` | `request` を送信し、任意の `sink` を通じて進捗を通知して `Response` へ解決します。 |
