@@ -187,7 +187,7 @@ describe('BaseRequestBodyConverter', () => {
         const converter = BaseRequestBodyConverter.create(input)
 
         expect(() => converter.convertBody())
-          .toThrow('this method must be inherited in subclass')
+          .toThrow('BaseRequestBodyConverter#convertBody() must be inherited')
       })
     })
   })
@@ -198,7 +198,7 @@ describe('BaseRequestBodyConverter', () => {
     describe('should throw an error', () => {
       test('to be inherited in subclass', () => {
         expect(() => BaseRequestBodyConverter.collectHeaderEntries())
-          .toThrow('this method must be inherited in subclass')
+          .toThrow('BaseRequestBodyConverter.collectHeaderEntries() must be inherited')
       })
     })
   })
