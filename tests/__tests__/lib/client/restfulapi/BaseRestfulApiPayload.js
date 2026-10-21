@@ -2990,6 +2990,9 @@ describe('BaseRestfulApiPayload', () => {
       ]
 
       test.each(cases)('headers: $args.headers', ({ args }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -3131,6 +3134,9 @@ describe('BaseRestfulApiPayload', () => {
       test('without given headers', () => {
         const expected = new Headers()
 
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.GET)
+
         const payload = new BaseRestfulApiPayload({
           query: {},
           body: {},
@@ -3142,6 +3148,148 @@ describe('BaseRestfulApiPayload', () => {
 
         expect(actual)
           .toEqual(expected)
+      })
+    })
+
+    describe('when request body converter is JsonRequestBodyConverter', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverter () {
+          return JsonRequestBodyConverter
+        }
+      }
+
+      describe('should set "content-type" as application/json', () => {
+        const cases = [
+          {
+            input: {
+              method: RESTFUL_API_METHOD.POST,
+              headers: new Headers({
+                'X-APP-KEY': 'alpha',
+              }),
+            },
+            expected: new Headers({
+              'Content-Type': 'application/json',
+              'X-APP-KEY': 'alpha',
+            }),
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.PATCH,
+              headers: new Headers({
+                'X-APP-KEY': 'beta',
+              }),
+            },
+            expected: new Headers({
+              'Content-Type': 'application/json',
+              'X-APP-KEY': 'beta',
+            }),
+          },
+        ]
+
+        test.each(cases)('method: $input.method', ({ input, expected }) => {
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(input.method)
+
+          const payload = JsonRestfulApiPayload.create({
+            options: {
+              headers: input.headers,
+            },
+          })
+
+          const received = payload.createMergedHeaders()
+
+          expect(received)
+            .toEqual(expected)
+        })
+      })
+
+      describe('should keep "content-type" which the payload sets', () => {
+        const cases = [
+          {
+            input: {
+              method: RESTFUL_API_METHOD.POST,
+              basedHeadersOptions: [
+                { 'Content-Type': 'application/vnd.api+json' },
+              ],
+              headers: new Headers(),
+            },
+            expected: new Headers({
+              'Content-Type': 'application/vnd.api+json',
+            }),
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.PUT,
+              basedHeadersOptions: [],
+              headers: new Headers({
+                'Content-Type': 'application/json; charset=utf-8',
+              }),
+            },
+            expected: new Headers({
+              'Content-Type': 'application/json; charset=utf-8',
+            }),
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.PATCH,
+              basedHeadersOptions: [
+                { 'Content-Type': 'application/vnd.api+json' },
+              ],
+              headers: new Headers({
+                'Content-Type': 'application/merge-patch+json',
+              }),
+            },
+            expected: new Headers({
+              'Content-Type': 'application/merge-patch+json',
+            }),
+          },
+        ]
+
+        test.each(cases)('method: $input.method', ({ input, expected }) => {
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(input.method)
+          jest.spyOn(BaseRestfulApiPayload, 'collectBasedHeadersOptions')
+            .mockReturnValue(input.basedHeadersOptions)
+
+          const payload = JsonRestfulApiPayload.create({
+            options: {
+              headers: input.headers,
+            },
+          })
+
+          const received = payload.createMergedHeaders()
+
+          expect(received)
+            .toEqual(expected)
+        })
+      })
+
+      describe('should not set "content-type" for a method without a body', () => {
+        const cases = [
+          {
+            input: {
+              method: RESTFUL_API_METHOD.GET,
+            },
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.DELETE,
+            },
+          },
+        ]
+
+        test.each(cases)('method: $input.method', ({ input }) => {
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(input.method)
+
+          const payload = JsonRestfulApiPayload.create()
+
+          const received = payload.createMergedHeaders()
+
+          expect(received)
+            .toEqual(new Headers())
+        })
       })
     })
   })
