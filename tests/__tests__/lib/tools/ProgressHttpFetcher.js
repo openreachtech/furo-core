@@ -91,6 +91,116 @@ describe('ProgressHttpFetcher', () => {
 })
 
 describe('ProgressHttpFetcher', () => {
+  describe('.createRequestBody()', () => {
+    describe('when method does not send a body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'GET',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'DELETE',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/gamma', {
+              method: 'HEAD',
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.request.method', async ({ input }) => {
+        const received = await ProgressHttpFetcher.createRequestBody(input)
+
+        expect(received)
+          .toBeNull()
+      })
+    })
+
+    describe('when method sends a body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: '{"name":"Alpha"}',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+          expected: '{"name":"Alpha"}',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'PUT',
+              body: 'name=Beta',
+              headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              }),
+            }),
+          },
+          expected: 'name=Beta',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/gamma', {
+              method: 'PATCH',
+              body: '--alpha--',
+              headers: new Headers({
+                'Content-Type': 'multipart/form-data; boundary=alpha',
+              }),
+            }),
+          },
+          expected: '--alpha--',
+        },
+      ]
+
+      describe('should resolve to a Blob', () => {
+        test.each(cases)('method: $input.request.method', async ({ input }) => {
+          const received = await ProgressHttpFetcher.createRequestBody(input)
+
+          expect(received)
+            .toBeInstanceOf(Blob)
+        })
+      })
+
+      describe('should resolve to the bytes of the body', () => {
+        test.each(cases)('method: $input.request.method', async ({ input, expected }) => {
+          const received = await ProgressHttpFetcher.createRequestBody(input)
+
+          const response = new Response(received)
+
+          await expect(response.text())
+            .resolves
+            .toBe(expected)
+        })
+      })
+
+      describe('should leave the given request unread', () => {
+        test.each(cases)('method: $input.request.method', async ({ input }) => {
+          await ProgressHttpFetcher.createRequestBody(input)
+
+          const received = input.request.bodyUsed
+
+          expect(received)
+            .toBe(false)
+        })
+      })
+    })
+  })
+})
+
+describe('ProgressHttpFetcher', () => {
   describe('.createFormDataFromRequest()', () => {
     const cases = [
       {
