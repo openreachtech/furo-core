@@ -1,6 +1,6 @@
 # FormDataRequestBodyConverter
 
-Converts a request body into `FormData`. This is the converter a RESTful API payload uses unless `.get:RequestBodyConverter` says otherwise.
+Converts a request body into `FormData`. This is the converter a RESTful API payload uses unless `.get:RequestBodyConverterCtor` says otherwise.
 
 | member | description |
 | :-- | :-- |

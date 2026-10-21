@@ -58,7 +58,7 @@ Override `prefixPathname` on a shared base payload when every endpoint sits unde
 
 ## Sending a JSON body
 
-A payload sends its body as `FormData` by default. Override `RequestBodyConverter` to send it as JSON instead.
+A payload sends its body as `FormData` by default. Override `RequestBodyConverterCtor` to send it as JSON instead.
 
 ```javascript
 import {
@@ -79,7 +79,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
   }
 
   /** @override */
-  static get RequestBodyConverter () {
+  static get RequestBodyConverterCtor () {
     return JsonRequestBodyConverter
   }
 }
@@ -89,7 +89,7 @@ The body reaches the server as `application/json`, and upload and download progr
 
 ## Customizing the FormData body
 
-To customize the `FormData` a payload sends, extend `FormDataRequestBodyConverter` and return the subclass from `RequestBodyConverter`. Override `static createFormDataInstance()` or `appendBodyTo()` in the subclass. See [Client Tools](./client-tools.md).
+To customize the `FormData` a payload sends, extend `FormDataRequestBodyConverter` and return the subclass from `RequestBodyConverterCtor`. Override `static createFormDataInstance()` or `appendBodyTo()` in the subclass. See [Client Tools](./client-tools.md).
 
 ```javascript
 import {
@@ -121,7 +121,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
   }
 
   /** @override */
-  static get RequestBodyConverter () {
+  static get RequestBodyConverterCtor () {
     return SignedFormDataRequestBodyConverter
   }
 }

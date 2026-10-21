@@ -1362,9 +1362,9 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
-  describe('.get:RequestBodyConverter', () => {
+  describe('.get:RequestBodyConverterCtor', () => {
     test('should be FormDataRequestBodyConverter', () => {
-      const actual = BaseRestfulApiPayload.RequestBodyConverter
+      const actual = BaseRestfulApiPayload.RequestBodyConverterCtor
 
       expect(actual)
         .toBe(FormDataRequestBodyConverter) // same reference
@@ -1527,7 +1527,7 @@ describe('BaseRestfulApiPayload', () => {
         input: {
           Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
             /** @override */
-            static get RequestBodyConverter () {
+            static get RequestBodyConverterCtor () {
               return AlphaRequestBodyConverter
             }
           },
@@ -1538,7 +1538,7 @@ describe('BaseRestfulApiPayload', () => {
         input: {
           Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
             /** @override */
-            static get RequestBodyConverter () {
+            static get RequestBodyConverterCtor () {
               return BetaRequestBodyConverter
             }
           },
@@ -3081,7 +3081,7 @@ describe('BaseRestfulApiPayload', () => {
     describe('when request body converter is JsonRequestBodyConverter', () => {
       const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
         /** @override */
-        static get RequestBodyConverter () {
+        static get RequestBodyConverterCtor () {
           return JsonRequestBodyConverter
         }
       }
@@ -3249,7 +3249,7 @@ describe('BaseRestfulApiPayload', () => {
           input: {
             Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return AlphaRequestBodyConverter
               }
             },
@@ -3260,7 +3260,7 @@ describe('BaseRestfulApiPayload', () => {
           input: {
             Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return BetaRequestBodyConverter
               }
             },
@@ -3341,7 +3341,7 @@ describe('BaseRestfulApiPayload', () => {
               }
 
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return JsonRequestBodyConverter
               }
             },
@@ -3359,7 +3359,7 @@ describe('BaseRestfulApiPayload', () => {
               }
 
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return JsonRequestBodyConverter
               }
             },
@@ -3377,7 +3377,7 @@ describe('BaseRestfulApiPayload', () => {
               }
 
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return JsonRequestBodyConverter
               }
             },
@@ -3420,7 +3420,7 @@ describe('BaseRestfulApiPayload', () => {
               }
 
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return JsonRequestBodyConverter
               }
             },
@@ -3435,7 +3435,7 @@ describe('BaseRestfulApiPayload', () => {
               }
 
               /** @override */
-              static get RequestBodyConverter () {
+              static get RequestBodyConverterCtor () {
                 return JsonRequestBodyConverter
               }
             },
@@ -3591,7 +3591,7 @@ describe('BaseRestfulApiPayload', () => {
     describe('for a request body converter of JSON', () => {
       const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
         /** @override */
-        static get RequestBodyConverter () {
+        static get RequestBodyConverterCtor () {
           return JsonRequestBodyConverter
         }
       }

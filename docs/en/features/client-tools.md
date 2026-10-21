@@ -130,7 +130,7 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
 }
 ```
 
-Point a payload at it through `RequestBodyConverter`. See [RESTful API Client](./restful-api-client.md).
+Point a payload at it through `RequestBodyConverterCtor`. See [RESTful API Client](./restful-api-client.md).
 
 ### Customizing the FormData
 
