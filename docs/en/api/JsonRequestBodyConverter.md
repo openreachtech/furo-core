@@ -6,4 +6,4 @@ Converts a request body into JSON text. Declare it through `.get:RequestBodyConv
 | :-- | :-- |
 | `.create()` | Inherited factory method. Takes the `body` hash to convert. |
 | `#convertBody()` | Converts the body into JSON text. |
-| `#generateHeaderEntries()` | Generates the `content-type: application/json` entry. |
+| `.collectHeaderEntries()` | Collects the `content-type: application/json` entry. |
