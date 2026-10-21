@@ -254,6 +254,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onload()
                 },
@@ -286,6 +289,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -393,6 +399,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onabort()
                 },
@@ -428,6 +437,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onerror()
                 },
@@ -461,6 +473,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -567,6 +582,9 @@ describe('ProgressHttpFetcher', () => {
               open () {
                 // noop
               },
+              setRequestHeader () {
+                // noop
+              },
               send () {
                 this.onload()
               },
@@ -599,6 +617,9 @@ describe('ProgressHttpFetcher', () => {
                 },
               },
               open () {
+                // noop
+              },
+              setRequestHeader () {
                 // noop
               },
               send () {
@@ -812,7 +833,7 @@ describe('ProgressHttpFetcher', () => {
       })
     })
 
-    describe('to setup headers except for "content-type"', () => {
+    describe('to setup all headers including "content-type"', () => {
       describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
         const parser = ProgressHttpFetcher.create(params)
 
@@ -824,37 +845,58 @@ describe('ProgressHttpFetcher', () => {
                 name: 'Alpha',
               }),
               headers: new Headers({
-                'Content-Type': 'application/json', // ❌️
-                'Content-Length': '10000',
-                'User-Agent': 'Mozilla/5.0',
                 'Accept-Language': 'ja-JP',
+                'Content-Length': '10000',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0',
               }),
             }),
             expected: {
-              times: 3,
-              firstArgs: ['content-length', '10000'],
-              secondArgs: ['user-agent', 'Mozilla/5.0'],
-              thirdArgs: ['accept-language', 'ja-JP'],
+              times: 4,
+              firstArgs: ['accept-language', 'ja-JP'],
+              secondArgs: ['content-length', '10000'],
+              thirdArgs: ['content-type', 'application/json'],
+              fourthArgs: ['user-agent', 'Mozilla/5.0'],
             },
           },
           {
             request: new Request('https://example.com/beta', {
-              method: 'POST',
+              method: 'PATCH',
               body: JSON.stringify({
                 name: 'Beta',
               }),
               headers: new Headers({
                 'Accept-Language': 'vi_VN',
                 'Content-Length': '20000',
-                'content-type': 'multiple/form-data', // ❌️
+                'content-type': 'application/vnd.api+json',
                 'User-Agent': 'WebKit/537.36',
               }),
             }),
             expected: {
-              times: 3,
+              times: 4,
               firstArgs: ['accept-language', 'vi_VN'],
               secondArgs: ['content-length', '20000'],
-              thirdArgs: ['user-agent', 'WebKit/537.36'],
+              thirdArgs: ['content-type', 'application/vnd.api+json'],
+              fourthArgs: ['user-agent', 'WebKit/537.36'],
+            },
+          },
+          {
+            request: new Request('https://example.com/gamma', {
+              method: 'POST',
+              body: '--gamma--',
+              headers: new Headers({
+                'Accept-Language': 'en-US',
+                'Content-Length': '30000',
+                'content-type': 'multipart/form-data; boundary=gamma',
+                'User-Agent': 'Gecko/20100101',
+              }),
+            }),
+            expected: {
+              times: 4,
+              firstArgs: ['accept-language', 'en-US'],
+              secondArgs: ['content-length', '30000'],
+              thirdArgs: ['content-type', 'multipart/form-data; boundary=gamma'],
+              fourthArgs: ['user-agent', 'Gecko/20100101'],
             },
           },
         ]
@@ -874,6 +916,8 @@ describe('ProgressHttpFetcher', () => {
             .toHaveBeenNthCalledWith(2, ...expected.secondArgs)
           expect(setRequestHeaderSpy)
             .toHaveBeenNthCalledWith(3, ...expected.thirdArgs)
+          expect(setRequestHeaderSpy)
+            .toHaveBeenNthCalledWith(4, ...expected.fourthArgs)
         })
       })
     })
