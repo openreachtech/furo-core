@@ -5,6 +5,7 @@ import {
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
 import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry'
 import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
+import BaseRequestBodyConverter from '~/lib/tools/request-body-converter/BaseRequestBodyConverter.js'
 import FormDataRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
 
 describe('BaseRestfulApiPayload', () => {
@@ -1486,6 +1487,83 @@ describe('BaseRestfulApiPayload', () => {
 
         expect(actual)
           .toBeFalsy()
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('.createRequestBodyConverter()', () => {
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+
+    /**
+     * @type {Array<{
+     *   input: {
+     *     Payload: typeof BaseRestfulApiPayload
+     *   }
+     *   expected: typeof BaseRequestBodyConverter<*>
+     * }>}
+     */
+    const PayloadCases = [
+      {
+        input: {
+          Payload: BaseRestfulApiPayload,
+        },
+        expected: FormDataRequestBodyConverter, // default
+      },
+      {
+        input: {
+          Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return AlphaRequestBodyConverter
+            }
+          },
+        },
+        expected: AlphaRequestBodyConverter,
+      },
+      {
+        input: {
+          Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
+            /** @override */
+            static get RequestBodyConverter () {
+              return BetaRequestBodyConverter
+            }
+          },
+        },
+        expected: BetaRequestBodyConverter,
+      },
+    ]
+
+    describe.each(PayloadCases)('Payload: $input.Payload.name', ({ input, expected }) => {
+      const bodyCases = [
+        {
+          args: {
+            body: {
+              first: 'first value',
+            },
+          },
+        },
+        {
+          args: {
+            body: {
+              second: 'second value',
+            },
+          },
+        },
+      ]
+
+      test.each(bodyCases)('body: $args.body', ({ args }) => {
+        const createSpy = jest.spyOn(expected, 'create')
+
+        const actual = input.Payload.createRequestBodyConverter(args)
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(args)
       })
     })
   })
