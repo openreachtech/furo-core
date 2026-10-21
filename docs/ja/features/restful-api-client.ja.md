@@ -56,6 +56,37 @@ export default class CurriculumGetRestfulApiPayload extends BaseRestfulApiPayloa
 
 すべてのエンドポイントが `/v1` のような共通のプレフィックス配下にある場合は、共有の基底ペイロードで `prefixPathname` をオーバーライドしてください。
 
+## JSON ボディの送信
+
+ペイロードは既定でボディを `FormData` として送信します。JSON として送信するには `RequestBodyConverter` をオーバーライドします。
+
+```javascript
+import {
+  BaseRestfulApiPayload,
+  JsonRequestBodyConverter,
+  RESTFUL_API_METHOD,
+} from '@openreachtech/furo'
+
+export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPayload {
+  /** @override */
+  static get method () {
+    return RESTFUL_API_METHOD.POST
+  }
+
+  /** @override */
+  static get pathname () {
+    return '/curriculums'
+  }
+
+  /** @override */
+  static get RequestBodyConverter () {
+    return JsonRequestBodyConverter
+  }
+}
+```
+
+ボディは `application/json` としてサーバーへ届き、アップロードとダウンロードの進捗も引き続き通知されます。ペイロードがヘッダーで指定した `Content-Type` はそのまま保持されます。`GET` のようにボディを持たないメソッドには `Content-Type` が付きません。GraphQL クライアントは引き続き `multipart/form-data` を送信します。
+
 ## Renchan バックエンド
 
 `BaseRenchanRestfulApiPayload` は **セッションストレージ** からアクセストークンを読み出し、ヘッダーとして送信します。どちらのキーも abstract であるため、共有の基底ペイロードで宣言する必要があります。
