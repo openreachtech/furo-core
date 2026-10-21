@@ -19,6 +19,9 @@ export { default as PathnameBuilder } from './lib/tools/PathnameBuilder.js'
 
 export { default as BaseResponseBodyParser } from './lib/tools/response-body-parser/BaseResponseBodyParser.js'
 export { default as JsonResponseBodyParser } from './lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
+export { default as BaseRequestBodyConverter } from './lib/tools/request-body-converter/BaseRequestBodyConverter.js'
+export { default as FormDataRequestBodyConverter } from './lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
+export { default as JsonRequestBodyConverter } from './lib/tools/request-body-converter/concretes/JsonRequestBodyConverter.js'
 
 /*
  * RESTful API client
