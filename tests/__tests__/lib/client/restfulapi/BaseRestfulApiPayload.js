@@ -5,6 +5,7 @@ import {
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
 import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-ctor-registry/concretes/RestMethodRestfulApiPayloadDerivedCtorRegistry'
 import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
+import FormDataRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
 
 describe('BaseRestfulApiPayload', () => {
   describe('constructor', () => {
@@ -1501,6 +1502,63 @@ describe('BaseRestfulApiPayload', () => {
         .toHaveLength(1)
       expect(actual2)
         .toHaveLength(0)
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('.createFormDataInstance()', () => {
+    describe('when a subclass overrides it, for a payload of the default converter', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+            injected: 'alpha',
+          },
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+            injected: 'beta',
+          },
+        },
+      ]
+
+      test.each(cases)('injected: $input.injected', ({ input }) => {
+        const InjectingRestfulApiPayload = class extends BaseRestfulApiPayload {
+          /** @override */
+          static get method () {
+            return RESTFUL_API_METHOD.POST
+          }
+
+          /** @override */
+          static createFormDataInstance () {
+            const formDataHub = new FormData()
+
+            formDataHub.append('injected', input.injected)
+
+            return formDataHub
+          }
+        }
+
+        const payload = InjectingRestfulApiPayload.create({
+          body: input.body,
+        })
+
+        const [[, body]] = payload.generateBodyEntry()
+
+        expect(body.get('injected'))
+          .toBe(input.injected)
+        expect(Object.fromEntries(body.entries()))
+          .toStrictEqual({
+            injected: input.injected,
+            ...input.body,
+          })
+      })
     })
   })
 })
