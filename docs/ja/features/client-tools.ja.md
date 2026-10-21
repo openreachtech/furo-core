@@ -107,7 +107,7 @@ export default class TextResponseBodyParser extends BaseResponseBodyParser {
 
 ## リクエストボディの変換
 
-`FormDataRequestBodyConverter` は RESTful API ペイロードの既定のコンバーターです。別のコンテンツタイプを送信する場合は `BaseRequestBodyConverter` を継承してください。`#generateHeaderEntries()` はそのコンテンツタイプが必要とするヘッダーを返します。
+`FormDataRequestBodyConverter` は RESTful API ペイロードの既定のコンバーターです。別のコンテンツタイプを送信する場合は `BaseRequestBodyConverter` を継承してください。`.collectHeaderEntries()` はそのコンテンツタイプが必要とするヘッダーを返します。
 
 ```javascript
 import {
@@ -122,7 +122,7 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
   }
 
   /** @override */
-  generateHeaderEntries () {
+  static collectHeaderEntries () {
     return [
       ['content-type', 'application/x-www-form-urlencoded'],
     ]

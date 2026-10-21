@@ -314,15 +314,32 @@ describe('FormDataRequestBodyConverter', () => {
 })
 
 describe('FormDataRequestBodyConverter', () => {
-  describe('#generateHeaderEntries()', () => {
-    describe('should be empty, so that the Request sets the multipart content type', () => {
+  describe('.collectHeaderEntries()', () => {
+    test('to be empty, so that the Request sets the multipart content type', () => {
+      const actual = FormDataRequestBodyConverter.collectHeaderEntries()
+
+      expect(actual)
+        .toStrictEqual([])
+    })
+  })
+})
+
+describe('FormDataRequestBodyConverter', () => {
+  describe('.create()', () => {
+    describe('should keep headerEntries', () => {
       const cases = [
         {
           input: {
             body: {
               first: 'alpha value',
             },
+            headerEntries: [
+              ['x-alpha', 'alpha value'],
+            ],
           },
+          expected: [
+            ['x-alpha', 'alpha value'],
+          ],
         },
         {
           input: {
@@ -330,16 +347,15 @@ describe('FormDataRequestBodyConverter', () => {
               second: 'beta value',
             },
           },
+          expected: [],
         },
       ]
 
-      test.each(cases)('body: $input.body', ({ input }) => {
+      test.each(cases)('body: $input.body', ({ input, expected }) => {
         const converter = FormDataRequestBodyConverter.create(input)
 
-        const actual = converter.generateHeaderEntries()
-
-        expect(actual)
-          .toStrictEqual([])
+        expect(converter)
+          .toHaveProperty('headerEntries', expected)
       })
     })
   })

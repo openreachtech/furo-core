@@ -1495,8 +1495,18 @@ describe('BaseRestfulApiPayload', () => {
 
 describe('BaseRestfulApiPayload', () => {
   describe('.createRequestBodyConverter()', () => {
-    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
-    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {
+      /** @override */
+      static collectHeaderEntries () {
+        return []
+      }
+    }
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {
+      /** @override */
+      static collectHeaderEntries () {
+        return []
+      }
+    }
 
     /**
      * @type {Array<{
@@ -3297,8 +3307,18 @@ describe('BaseRestfulApiPayload', () => {
 
 describe('BaseRestfulApiPayload', () => {
   describe('#createRequestBodyConverter()', () => {
-    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
-    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {
+      /** @override */
+      static collectHeaderEntries () {
+        return []
+      }
+    }
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {
+      /** @override */
+      static collectHeaderEntries () {
+        return []
+      }
+    }
 
     describe('should be an instance of the declared request body converter', () => {
       const cases = [

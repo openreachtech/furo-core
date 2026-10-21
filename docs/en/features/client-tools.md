@@ -107,7 +107,7 @@ Point a launcher at it through `ResponseBodyParser`. See [RESTful API Client](./
 
 ## Converting a request body
 
-`FormDataRequestBodyConverter` is the default converter for the RESTful API payload. Extend `BaseRequestBodyConverter` to send another content type. `#generateHeaderEntries()` returns the headers that content type requires.
+`FormDataRequestBodyConverter` is the default converter for the RESTful API payload. Extend `BaseRequestBodyConverter` to send another content type. `.collectHeaderEntries()` returns the headers that content type requires.
 
 ```javascript
 import {
@@ -122,7 +122,7 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
   }
 
   /** @override */
-  generateHeaderEntries () {
+  static collectHeaderEntries () {
     return [
       ['content-type', 'application/x-www-form-urlencoded'],
     ]

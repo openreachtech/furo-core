@@ -10,6 +10,7 @@ describe('BaseRequestBodyConverter', () => {
               body: {
                 first: 'alpha value',
               },
+              headerEntries: [],
             },
           },
           {
@@ -20,6 +21,7 @@ describe('BaseRequestBodyConverter', () => {
                   numbers: [1, 2],
                 },
               },
+              headerEntries: [],
             },
           },
         ]
@@ -29,6 +31,36 @@ describe('BaseRequestBodyConverter', () => {
 
           expect(converter)
             .toHaveProperty('body', input.body)
+        })
+      })
+
+      describe('#headerEntries', () => {
+        const cases = [
+          {
+            input: {
+              body: {
+                first: 'alpha value',
+              },
+              headerEntries: [],
+            },
+          },
+          {
+            input: {
+              body: {
+                second: 'beta value',
+              },
+              headerEntries: [
+                ['content-type', 'text/plain'],
+              ],
+            },
+          },
+        ]
+
+        test.each(cases)('headerEntries: $input.headerEntries', ({ input }) => {
+          const converter = new BaseRequestBodyConverter(input)
+
+          expect(converter)
+            .toHaveProperty('headerEntries', input.headerEntries) // same reference
         })
       })
     })
@@ -43,6 +75,7 @@ describe('BaseRequestBodyConverter', () => {
           body: {
             first: 'alpha value',
           },
+          headerEntries: [],
         },
       },
       {
@@ -50,6 +83,9 @@ describe('BaseRequestBodyConverter', () => {
           body: {
             second: 'beta value',
           },
+          headerEntries: [
+            ['content-type', 'text/plain'],
+          ],
         },
       },
     ]
@@ -73,6 +109,55 @@ describe('BaseRequestBodyConverter', () => {
           .toHaveBeenCalledWith(input)
       })
     })
+
+    describe('should default headerEntries to .collectHeaderEntries()', () => {
+      const AlphaConverter = class extends BaseRequestBodyConverter {
+        /** @override */
+        static collectHeaderEntries () {
+          return [
+            ['content-type', 'alpha/type'],
+          ]
+        }
+      }
+      const BetaConverter = class extends BaseRequestBodyConverter {
+        /** @override */
+        static collectHeaderEntries () {
+          return []
+        }
+      }
+
+      const subCases = [
+        {
+          input: {
+            Converter: AlphaConverter,
+            body: {
+              first: 'alpha value',
+            },
+          },
+          expected: [
+            ['content-type', 'alpha/type'],
+          ],
+        },
+        {
+          input: {
+            Converter: BetaConverter,
+            body: {
+              second: 'beta value',
+            },
+          },
+          expected: [],
+        },
+      ]
+
+      test.each(subCases)('Converter: $input.Converter.name', ({ input, expected }) => {
+        const converter = input.Converter.create({
+          body: input.body,
+        })
+
+        expect(converter)
+          .toHaveProperty('headerEntries', expected)
+      })
+    })
   })
 })
 
@@ -85,6 +170,7 @@ describe('BaseRequestBodyConverter', () => {
             body: {
               first: 'alpha value',
             },
+            headerEntries: [],
           },
         },
         {
@@ -92,6 +178,7 @@ describe('BaseRequestBodyConverter', () => {
             body: {
               second: 'beta value',
             },
+            headerEntries: [],
           },
         },
       ]
@@ -107,29 +194,10 @@ describe('BaseRequestBodyConverter', () => {
 })
 
 describe('BaseRequestBodyConverter', () => {
-  describe('#generateHeaderEntries()', () => {
+  describe('.collectHeaderEntries()', () => {
     describe('should throw an error', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-            },
-          },
-        },
-        {
-          input: {
-            body: {
-              second: 'beta value',
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input }) => {
-        const converter = BaseRequestBodyConverter.create(input)
-
-        expect(() => converter.generateHeaderEntries())
+      test('to be inherited in subclass', () => {
+        expect(() => BaseRequestBodyConverter.collectHeaderEntries())
           .toThrow('this method must be inherited in subclass')
       })
     })

@@ -58,8 +58,21 @@ describe('JsonRequestBodyConverter', () => {
 })
 
 describe('JsonRequestBodyConverter', () => {
-  describe('#generateHeaderEntries()', () => {
-    describe('should be the content type of JSON', () => {
+  describe('.collectHeaderEntries()', () => {
+    test('to be the content type of JSON', () => {
+      const actual = JsonRequestBodyConverter.collectHeaderEntries()
+
+      expect(actual)
+        .toStrictEqual([
+          ['content-type', 'application/json'],
+        ])
+    })
+  })
+})
+
+describe('JsonRequestBodyConverter', () => {
+  describe('.create()', () => {
+    describe('should default headerEntries to the content type of JSON', () => {
       const cases = [
         {
           input: {
@@ -67,27 +80,21 @@ describe('JsonRequestBodyConverter', () => {
               first: 'alpha value',
             },
           },
-          expected: [
-            ['content-type', 'application/json'],
-          ],
         },
         {
           input: {
             body: {},
           },
-          expected: [
-            ['content-type', 'application/json'],
-          ],
         },
       ]
 
-      test.each(cases)('body: $input.body', ({ input, expected }) => {
+      test.each(cases)('body: $input.body', ({ input }) => {
         const converter = JsonRequestBodyConverter.create(input)
 
-        const actual = converter.generateHeaderEntries()
-
-        expect(actual)
-          .toStrictEqual(expected)
+        expect(converter)
+          .toHaveProperty('headerEntries', [
+            ['content-type', 'application/json'],
+          ])
       })
     })
   })
