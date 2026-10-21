@@ -3147,6 +3147,103 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('#createRequestBodyConverter()', () => {
+    const AlphaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+    const BetaRequestBodyConverter = class extends BaseRequestBodyConverter {}
+
+    describe('should be an instance of the declared request body converter', () => {
+      const cases = [
+        {
+          input: {
+            Payload: BaseRestfulApiPayload,
+          },
+          expected: FormDataRequestBodyConverter, // default
+        },
+        {
+          input: {
+            Payload: class AlphaRestfulApiPayload extends BaseRestfulApiPayload {
+              /** @override */
+              static get RequestBodyConverter () {
+                return AlphaRequestBodyConverter
+              }
+            },
+          },
+          expected: AlphaRequestBodyConverter,
+        },
+        {
+          input: {
+            Payload: class BetaRestfulApiPayload extends BaseRestfulApiPayload {
+              /** @override */
+              static get RequestBodyConverter () {
+                return BetaRequestBodyConverter
+              }
+            },
+          },
+          expected: BetaRequestBodyConverter,
+        },
+      ]
+
+      test.each(cases)('Payload: $input.Payload.name', ({ input, expected }) => {
+        const payload = input.Payload.create()
+
+        const actual = payload.createRequestBodyConverter()
+
+        expect(actual)
+          .toBeInstanceOf(expected)
+      })
+    })
+
+    describe('should convert the filtered request body', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+              secret: 'first secret',
+            },
+          },
+          override: {
+            filteredBody: {
+              first: 'first value',
+            },
+          },
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+              secret: 'second secret',
+            },
+          },
+          override: {
+            filteredBody: {
+              second: 'second value',
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, override }) => {
+        const payload = BaseRestfulApiPayload.create(input)
+
+        jest.spyOn(payload, 'extractFilteredRequestBody')
+          .mockReturnValue(override.filteredBody)
+
+        const createSpy = jest.spyOn(BaseRestfulApiPayload, 'createRequestBodyConverter')
+
+        payload.createRequestBodyConverter()
+
+        expect(createSpy)
+          .toHaveBeenCalledWith({
+            body: override.filteredBody,
+            formDataBuilder: expect.any(Function),
+          })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#generateBodyEntry()', () => {
     const AlphaGetRestfulApiPayload = class extends BaseRestfulApiPayload {
       /** @override */
