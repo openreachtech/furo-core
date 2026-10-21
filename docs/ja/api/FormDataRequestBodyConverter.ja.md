@@ -4,8 +4,8 @@
 
 | member | description |
 | :-- | :-- |
-| `.create()` | ファクトリメソッド。変換対象の `body` ハッシュと任意の `headerEntries`、`formDataBuilder` を受け取ります。ペイロードはここへ `#buildFormDataBody()` を渡します。 |
-| `.createFormDataInstance()` | ボディの追加先となる `FormData` インスタンスを生成します。 |
-| `#convertBody()` | 任意の `formDataBuilder` が返す `FormData`、またはボディを新しい `FormData` インスタンスへ追加したものを返します。 |
-| `#appendBodyTo()` | ボディのすべてのフィールドを、渡された `FormData` インスタンスへ追加します。 |
+| `.create()` | `BaseRequestBodyConverter` から継承したファクトリメソッド。変換対象の `body` ハッシュと任意の `headerEntries` を受け取ります。 |
+| `.createFormDataInstance()` | ボディの追加先となる `FormData` インスタンスを生成します。`FormData` をカスタマイズするにはサブクラスでオーバーライドします。 |
+| `#convertBody()` | `.createFormDataInstance()` が生成した `FormData` インスタンスへボディを追加したものを返します。 |
+| `#appendBodyTo()` | ボディのすべてのフィールドを、渡された `FormData` インスタンスへ追加します。配列の値は、同じキーで要素ごとに 1 つのパートになります。ボディの追加方法をカスタマイズするにはサブクラスでオーバーライドします。 |
 | `.collectHeaderEntries()` | エントリを収集しません。`Request` が境界文字列つきの `multipart/form-data` を設定するためです。 |
