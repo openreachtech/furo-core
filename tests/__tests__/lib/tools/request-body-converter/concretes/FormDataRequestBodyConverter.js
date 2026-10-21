@@ -111,38 +111,6 @@ describe('FormDataRequestBodyConverter', () => {
 })
 
 describe('FormDataRequestBodyConverter', () => {
-  describe('.create()', () => {
-    describe('should keep the callback which builds FormData', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-            },
-            formDataBuilder: () => new FormData(),
-          },
-        },
-        {
-          input: {
-            body: {
-              second: 'beta value',
-            },
-            formDataBuilder: () => new FormData(),
-          },
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input }) => {
-        const converter = FormDataRequestBodyConverter.create(input)
-
-        expect(converter)
-          .toHaveProperty('formDataBuilder', input.formDataBuilder) // same reference
-      })
-    })
-  })
-})
-
-describe('FormDataRequestBodyConverter', () => {
   describe('#appendBodyTo()', () => {
     describe('should append every field of the body to the given FormData', () => {
       const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
@@ -190,6 +158,147 @@ describe('FormDataRequestBodyConverter', () => {
 
         expect(actual)
           .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('FormDataRequestBodyConverter', () => {
+  describe('#appendBodyTo()', () => {
+    describe('should append each element of an array value as its own part, in order', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              tags: ['alpha', 'beta', 'gamma'],
+            },
+          },
+          expected: [
+            ['tags', 'alpha'],
+            ['tags', 'beta'],
+            ['tags', 'gamma'],
+          ],
+        },
+        {
+          input: {
+            body: {
+              title: 'delta value',
+              tags: ['epsilon', 'zeta'],
+              note: 'eta value',
+            },
+          },
+          expected: [
+            ['title', 'delta value'],
+            ['tags', 'epsilon'],
+            ['tags', 'zeta'],
+            ['note', 'eta value'],
+          ],
+        },
+        {
+          input: {
+            body: {
+              first: ['alpha', 'beta'],
+              second: ['gamma'],
+            },
+          },
+          expected: [
+            ['first', 'alpha'],
+            ['first', 'beta'],
+            ['second', 'gamma'],
+          ],
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, expected }) => {
+        const converter = FormDataRequestBodyConverter.create(input)
+
+        const actual = converter.appendBodyTo({
+          formDataHub: new FormData(),
+        })
+
+        expect(Array.from(actual.entries()))
+          .toStrictEqual(expected)
+      })
+    })
+
+    describe('should append each File of an array value as its own part', () => {
+      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
+      const betaFile = new File(['beta'], 'beta.txt', { type: 'text/plain' })
+
+      const cases = [
+        {
+          input: {
+            body: {
+              files: [alphaFile, betaFile],
+            },
+          },
+          expected: [
+            { name: 'alpha.txt' },
+            { name: 'beta.txt' },
+          ],
+        },
+        {
+          input: {
+            body: {
+              title: 'gamma value',
+              files: [betaFile, alphaFile],
+            },
+          },
+          expected: [
+            { name: 'beta.txt' },
+            { name: 'alpha.txt' },
+          ],
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, expected }) => {
+        const converter = FormDataRequestBodyConverter.create(input)
+
+        const actual = converter.appendBodyTo({
+          formDataHub: new FormData(),
+        })
+
+        expect(actual.getAll('files'))
+          .toMatchObject(expected)
+        expect(actual.getAll('files'))
+          .toHaveLength(expected.length)
+      })
+    })
+
+    describe('should append nothing for an empty array value', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              tags: [],
+            },
+          },
+          expected: [],
+        },
+        {
+          input: {
+            body: {
+              title: 'alpha value',
+              tags: [],
+              note: 'beta value',
+            },
+          },
+          expected: [
+            ['title', 'alpha value'],
+            ['note', 'beta value'],
+          ],
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, expected }) => {
+        const converter = FormDataRequestBodyConverter.create(input)
+
+        const actual = converter.appendBodyTo({
+          formDataHub: new FormData(),
+        })
+
+        expect(Array.from(actual.entries()))
+          .toStrictEqual(expected)
       })
     })
   })
@@ -275,39 +384,6 @@ describe('FormDataRequestBodyConverter', () => {
 
         expect(createFormDataInstanceSpy)
           .toHaveBeenCalledWith()
-      })
-    })
-
-    describe('to return what the callback builds', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-            },
-          },
-          tally: new FormData(),
-        },
-        {
-          input: {
-            body: {
-              second: 'beta value',
-            },
-          },
-          tally: new FormData(),
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, tally }) => {
-        const converter = FormDataRequestBodyConverter.create({
-          ...input,
-          formDataBuilder: () => tally,
-        })
-
-        const actual = converter.convertBody()
-
-        expect(actual)
-          .toBe(tally) // same reference
       })
     })
   })
