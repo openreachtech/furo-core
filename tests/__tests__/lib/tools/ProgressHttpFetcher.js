@@ -91,6 +91,116 @@ describe('ProgressHttpFetcher', () => {
 })
 
 describe('ProgressHttpFetcher', () => {
+  describe('.createRequestBody()', () => {
+    describe('when method does not send a body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'GET',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'DELETE',
+            }),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/gamma', {
+              method: 'HEAD',
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.request.method', async ({ input }) => {
+        const received = await ProgressHttpFetcher.createRequestBody(input)
+
+        expect(received)
+          .toBeNull()
+      })
+    })
+
+    describe('when method sends a body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/alpha', {
+              method: 'POST',
+              body: '{"name":"Alpha"}',
+              headers: new Headers({
+                'Content-Type': 'application/json',
+              }),
+            }),
+          },
+          expected: '{"name":"Alpha"}',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/beta', {
+              method: 'PUT',
+              body: 'name=Beta',
+              headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              }),
+            }),
+          },
+          expected: 'name=Beta',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/gamma', {
+              method: 'PATCH',
+              body: '--alpha--',
+              headers: new Headers({
+                'Content-Type': 'multipart/form-data; boundary=alpha',
+              }),
+            }),
+          },
+          expected: '--alpha--',
+        },
+      ]
+
+      describe('should resolve to a Blob', () => {
+        test.each(cases)('method: $input.request.method', async ({ input }) => {
+          const received = await ProgressHttpFetcher.createRequestBody(input)
+
+          expect(received)
+            .toBeInstanceOf(Blob)
+        })
+      })
+
+      describe('should resolve to the bytes of the body', () => {
+        test.each(cases)('method: $input.request.method', async ({ input, expected }) => {
+          const received = await ProgressHttpFetcher.createRequestBody(input)
+
+          const response = new Response(received)
+
+          await expect(response.text())
+            .resolves
+            .toBe(expected)
+        })
+      })
+
+      describe('should leave the given request unread', () => {
+        test.each(cases)('method: $input.request.method', async ({ input }) => {
+          await ProgressHttpFetcher.createRequestBody(input)
+
+          const received = input.request.bodyUsed
+
+          expect(received)
+            .toBe(false)
+        })
+      })
+    })
+  })
+})
+
+describe('ProgressHttpFetcher', () => {
   describe('.createFormDataFromRequest()', () => {
     const cases = [
       {
@@ -254,6 +364,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onload()
                 },
@@ -286,6 +399,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -332,7 +448,7 @@ describe('ProgressHttpFetcher', () => {
             const formDataTally = new FormData()
             const responseTally = new Response()
 
-            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
+            const createRequestBodySpy = jest.spyOn(ProgressHttpFetcher, 'createRequestBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -345,7 +461,7 @@ describe('ProgressHttpFetcher', () => {
             expect(actual)
               .toBe(responseTally) // same reference
 
-            expect(createFormDataBodySpy)
+            expect(createRequestBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
@@ -393,6 +509,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onabort()
                 },
@@ -428,6 +547,9 @@ describe('ProgressHttpFetcher', () => {
                 open () {
                   // noop
                 },
+                setRequestHeader () {
+                  // noop
+                },
                 send () {
                   this.onerror()
                 },
@@ -461,6 +583,9 @@ describe('ProgressHttpFetcher', () => {
                   },
                 },
                 open () {
+                  // noop
+                },
+                setRequestHeader () {
                   // noop
                 },
                 send () {
@@ -507,7 +632,7 @@ describe('ProgressHttpFetcher', () => {
 
             const formDataTally = new FormData()
 
-            const createFormDataBodySpy = jest.spyOn(ProgressHttpFetcher, 'createFormDataBody')
+            const createRequestBodySpy = jest.spyOn(ProgressHttpFetcher, 'createRequestBody')
               .mockResolvedValue(formDataTally)
             const setupRequestHeadersSpy = jest.spyOn(parser, 'setupRequestHeaders')
             const createResponseSpy = jest.spyOn(parser, 'createResponse')
@@ -518,7 +643,7 @@ describe('ProgressHttpFetcher', () => {
               .rejects
               .toThrow(expected)
 
-            expect(createFormDataBodySpy)
+            expect(createRequestBodySpy)
               .toHaveBeenCalledWith(expectedArgs)
             expect(setupRequestHeadersSpy)
               .toHaveBeenCalledWith(expectedArgs)
@@ -567,6 +692,9 @@ describe('ProgressHttpFetcher', () => {
               open () {
                 // noop
               },
+              setRequestHeader () {
+                // noop
+              },
               send () {
                 this.onload()
               },
@@ -601,6 +729,9 @@ describe('ProgressHttpFetcher', () => {
               open () {
                 // noop
               },
+              setRequestHeader () {
+                // noop
+              },
               send () {
                 this.onload()
               },
@@ -629,6 +760,9 @@ describe('ProgressHttpFetcher', () => {
                 'https://example.com/alpha',
                 true, // OPENS_AS_ASYNC
               ],
+              sendArgs: [
+                expect.any(Blob),
+              ],
             },
           },
           {
@@ -638,7 +772,7 @@ describe('ProgressHttpFetcher', () => {
                 name: 'Beta',
               }),
               headers: new Headers({
-                'Content-Type': 'multiple/form-data',
+                'Content-Type': 'multipart/form-data',
               }),
             }),
             expected: {
@@ -646,6 +780,9 @@ describe('ProgressHttpFetcher', () => {
                 'POST',
                 'https://example.com/beta',
                 true, // OPENS_AS_ASYNC
+              ],
+              sendArgs: [
+                expect.any(Blob),
               ],
             },
           },
@@ -679,7 +816,168 @@ describe('ProgressHttpFetcher', () => {
             .toHaveBeenCalledWith('timeout', expect.any(Function))
 
           expect(sendSpy)
-            .toHaveBeenCalledWith(expect.any(FormData))
+            .toHaveBeenCalledWith(...expected.sendArgs)
+        })
+      })
+    })
+
+    describe('to send a JSON body as application/json', () => {
+      /**
+       * @type {Array<{
+       *   params: {
+       *     httpRequest: XMLHttpRequest
+       *   }
+       * }>}
+       */
+      const parserCases = /** @type {Array<*>} */ ([
+        {
+          params: {
+            httpRequest: {
+              status: 200,
+              statusText: 'OK',
+              responseText: JSON.stringify({
+                message: 'Success',
+              }),
+              getAllResponseHeaders () {
+                return 'Content-Type: application/json\r\n'
+              },
+              addEventListener (
+                eventName,
+                listener
+              ) {
+                this[`on${eventName}`] = listener
+              },
+              upload: {
+                addEventListener (
+                  eventName,
+                  listener
+                ) {
+                  this[`on${eventName}`] = listener
+                },
+              },
+              open () {
+                // noop
+              },
+              setRequestHeader () {
+                // noop
+              },
+              send () {
+                this.upload.onprogress({
+                  loaded: 10,
+                  total: 100,
+                })
+                this.onprogress({
+                  loaded: 50,
+                  total: 100,
+                })
+                this.onload()
+              },
+            },
+          },
+        },
+      ])
+
+      describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
+        const parser = ProgressHttpFetcher.create(params)
+
+        const cases = [
+          {
+            input: {
+              request: new Request('https://example.com/alpha', {
+                method: 'POST',
+                body: JSON.stringify({
+                  name: 'Alpha',
+                }),
+                headers: new Headers({
+                  'Content-Type': 'application/json',
+                }),
+              }),
+            },
+            expected: {
+              sendArgs: [
+                expect.any(Blob),
+              ],
+            },
+          },
+          {
+            input: {
+              request: new Request('https://example.com/beta', {
+                method: 'PUT',
+                body: JSON.stringify({
+                  name: 'Beta',
+                  tags: ['beta'],
+                }),
+                headers: new Headers({
+                  'Content-Type': 'application/json',
+                }),
+              }),
+            },
+            expected: {
+              sendArgs: [
+                expect.any(Blob),
+              ],
+            },
+          },
+        ]
+
+        describe('should send the body as a Blob', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input, expected }) => {
+            const sendSpy = jest.spyOn(parser.httpRequest, 'send')
+
+            await parser.fetchRequest(input)
+
+            expect(sendSpy)
+              .toHaveBeenCalledWith(...expected.sendArgs)
+          })
+        })
+
+        describe('should keep the content type', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input }) => {
+            const setRequestHeaderSpy = jest.spyOn(parser.httpRequest, 'setRequestHeader')
+
+            await parser.fetchRequest(input)
+
+            expect(setRequestHeaderSpy)
+              .toHaveBeenCalledWith('content-type', 'application/json')
+          })
+        })
+
+        describe('should report upload and download progress', () => {
+          test.each(cases)('URL: $input.request.url', async ({ input }) => {
+            const sink = {
+              onUploadProgress () {
+                // noop
+              },
+              onDownloadProgress () {
+                // noop
+              },
+            }
+
+            const onUploadProgressSpy = jest.spyOn(sink, 'onUploadProgress')
+            const onDownloadProgressSpy = jest.spyOn(sink, 'onDownloadProgress')
+
+            await parser.fetchRequest({
+              request: input.request,
+              sink,
+            })
+
+            expect(onUploadProgressSpy)
+              .toHaveBeenCalledWith({
+                request: input.request,
+                progressEvent: {
+                  loaded: 10,
+                  total: 100,
+                },
+              })
+            expect(onDownloadProgressSpy)
+              .toHaveBeenCalledWith({
+                request: input.request,
+                progressEvent: {
+                  loaded: 50,
+                  total: 100,
+                },
+              })
+          })
         })
       })
     })
@@ -812,7 +1110,7 @@ describe('ProgressHttpFetcher', () => {
       })
     })
 
-    describe('to setup headers except for "content-type"', () => {
+    describe('to setup all headers including "content-type"', () => {
       describe.each(parserCases)('status: $params.httpRequest.status', ({ params }) => {
         const parser = ProgressHttpFetcher.create(params)
 
@@ -824,37 +1122,58 @@ describe('ProgressHttpFetcher', () => {
                 name: 'Alpha',
               }),
               headers: new Headers({
-                'Content-Type': 'application/json', // ❌️
-                'Content-Length': '10000',
-                'User-Agent': 'Mozilla/5.0',
                 'Accept-Language': 'ja-JP',
+                'Content-Length': '10000',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0',
               }),
             }),
             expected: {
-              times: 3,
-              firstArgs: ['content-length', '10000'],
-              secondArgs: ['user-agent', 'Mozilla/5.0'],
-              thirdArgs: ['accept-language', 'ja-JP'],
+              times: 4,
+              firstArgs: ['accept-language', 'ja-JP'],
+              secondArgs: ['content-length', '10000'],
+              thirdArgs: ['content-type', 'application/json'],
+              fourthArgs: ['user-agent', 'Mozilla/5.0'],
             },
           },
           {
             request: new Request('https://example.com/beta', {
-              method: 'POST',
+              method: 'PATCH',
               body: JSON.stringify({
                 name: 'Beta',
               }),
               headers: new Headers({
                 'Accept-Language': 'vi_VN',
                 'Content-Length': '20000',
-                'content-type': 'multiple/form-data', // ❌️
+                'content-type': 'application/vnd.api+json',
                 'User-Agent': 'WebKit/537.36',
               }),
             }),
             expected: {
-              times: 3,
+              times: 4,
               firstArgs: ['accept-language', 'vi_VN'],
               secondArgs: ['content-length', '20000'],
-              thirdArgs: ['user-agent', 'WebKit/537.36'],
+              thirdArgs: ['content-type', 'application/vnd.api+json'],
+              fourthArgs: ['user-agent', 'WebKit/537.36'],
+            },
+          },
+          {
+            request: new Request('https://example.com/gamma', {
+              method: 'POST',
+              body: '--gamma--',
+              headers: new Headers({
+                'Accept-Language': 'en-US',
+                'Content-Length': '30000',
+                'content-type': 'multipart/form-data; boundary=gamma',
+                'User-Agent': 'Gecko/20100101',
+              }),
+            }),
+            expected: {
+              times: 4,
+              firstArgs: ['accept-language', 'en-US'],
+              secondArgs: ['content-length', '30000'],
+              thirdArgs: ['content-type', 'multipart/form-data; boundary=gamma'],
+              fourthArgs: ['user-agent', 'Gecko/20100101'],
             },
           },
         ]
@@ -874,6 +1193,8 @@ describe('ProgressHttpFetcher', () => {
             .toHaveBeenNthCalledWith(2, ...expected.secondArgs)
           expect(setRequestHeaderSpy)
             .toHaveBeenNthCalledWith(3, ...expected.thirdArgs)
+          expect(setRequestHeaderSpy)
+            .toHaveBeenNthCalledWith(4, ...expected.fourthArgs)
         })
       })
     })
