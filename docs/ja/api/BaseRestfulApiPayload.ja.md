@@ -13,12 +13,17 @@
 | `.get:asPostMethod` | メソッドを `POST` に固定した派生ペイロードコンストラクタ。 |
 | `.get:queryRequiredFields` | パラメータが妥当であるために必須となるクエリフィールド。 |
 | `.get:bodyRequiredFields` | パラメータが妥当であるために必須となるボディフィールド。 |
+| `.get:RequestBodyConverter` | リクエストボディに適用されるコンバーター。既定値は `FormDataRequestBodyConverter` です。 |
 | `.get:pathParameterRequiredFields` | パラメータが妥当であるために必須となるパスパラメータ。 |
 | `.generateRequestParameterHash()` | 値ハッシュをリクエストの各部へ変換します。フォームのフィールドをエンドポイントへ対応づけるためにオーバーライドします。 |
 | `.collectBasedHeadersOptions()` | すべてのリクエストにマージされるヘッダーハッシュ。 |
 | `.collectBasedFetchOptions()` | すべてのリクエストにマージされる fetch オプションハッシュ。 |
 | `.isBodyRequiredMethod()` | 宣言されたメソッドがリクエストボディを送信するかどうか。 |
+| `.createRequestBodyConverter()` | `.get:RequestBodyConverter` のコンバーターを生成します。 |
+| `.createFormDataInstance()` | 既定のコンバーターが使用する `FormData` インスタンスを生成します。送信されるボディを変えるにはオーバーライドします。 |
 | `#createFetchRequest()` | このペイロードに対応する `Request` を構築します。 |
+| `#createRequestBodyConverter()` | フィルタ済みのリクエストボディのコンバーターを生成します。 |
+| `#buildFormDataBody()` | 既定のコンバーターが使用する `FormData` ボディを構築します。送信されるボディを変えるにはオーバーライドします。 |
 | `#isValidAllParameterHash()` | 必須フィールドがすべて存在するかどうか。 |
 | `#isInvalidAllParameterHash()` | `#isValidAllParameterHash()` の否定。 |
 
