@@ -6,4 +6,4 @@
 | :-- | :-- |
 | `.create()` | 継承したファクトリメソッド。変換対象の `body` ハッシュを受け取ります。 |
 | `#convertBody()` | ボディを JSON テキストへ変換します。 |
-| `#generateHeaderEntries()` | `content-type: application/json` のエントリを生成します。 |
+| `.collectHeaderEntries()` | `content-type: application/json` のエントリを収集します。 |
