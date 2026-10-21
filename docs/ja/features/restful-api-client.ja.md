@@ -58,7 +58,7 @@ export default class CurriculumGetRestfulApiPayload extends BaseRestfulApiPayloa
 
 ## JSON ボディの送信
 
-ペイロードは既定でボディを `FormData` として送信します。JSON として送信するには `RequestBodyConverter` をオーバーライドします。
+ペイロードは既定でボディを `FormData` として送信します。JSON として送信するには `RequestBodyConverterCtor` をオーバーライドします。
 
 ```javascript
 import {
@@ -79,7 +79,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
   }
 
   /** @override */
-  static get RequestBodyConverter () {
+  static get RequestBodyConverterCtor () {
     return JsonRequestBodyConverter
   }
 }
@@ -89,7 +89,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
 
 ## FormData ボディのカスタマイズ
 
-ペイロードが送信する `FormData` をカスタマイズするには、`FormDataRequestBodyConverter` を継承し、そのサブクラスを `RequestBodyConverter` から返します。サブクラスでは `static createFormDataInstance()` または `appendBodyTo()` をオーバーライドします。[HTTP クライアントツール](./client-tools.ja.md) を参照してください。
+ペイロードが送信する `FormData` をカスタマイズするには、`FormDataRequestBodyConverter` を継承し、そのサブクラスを `RequestBodyConverterCtor` から返します。サブクラスでは `static createFormDataInstance()` または `appendBodyTo()` をオーバーライドします。[HTTP クライアントツール](./client-tools.ja.md) を参照してください。
 
 ```javascript
 import {
@@ -121,7 +121,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
   }
 
   /** @override */
-  static get RequestBodyConverter () {
+  static get RequestBodyConverterCtor () {
     return SignedFormDataRequestBodyConverter
   }
 }

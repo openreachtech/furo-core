@@ -1,6 +1,6 @@
 # JsonRequestBodyConverter
 
-Converts a request body into JSON text. Declare it through `.get:RequestBodyConverter` of a RESTful API payload.
+Converts a request body into JSON text. Declare it through `.get:RequestBodyConverterCtor` of a RESTful API payload.
 
 | member | description |
 | :-- | :-- |

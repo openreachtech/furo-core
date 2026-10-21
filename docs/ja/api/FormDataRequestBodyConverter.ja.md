@@ -1,6 +1,6 @@
 # FormDataRequestBodyConverter
 
-リクエストボディを `FormData` へ変換します。`.get:RequestBodyConverter` で変更しない限り、RESTful API ペイロードが使用するコンバーターです。
+リクエストボディを `FormData` へ変換します。`.get:RequestBodyConverterCtor` で変更しない限り、RESTful API ペイロードが使用するコンバーターです。
 
 | member | description |
 | :-- | :-- |

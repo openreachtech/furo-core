@@ -130,7 +130,7 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
 }
 ```
 
-ペイロードからは `RequestBodyConverter` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
+ペイロードからは `RequestBodyConverterCtor` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
 
 ### FormData のカスタマイズ
 

@@ -1,6 +1,6 @@
 # JsonRequestBodyConverter
 
-リクエストボディを JSON テキストへ変換します。RESTful API ペイロードの `.get:RequestBodyConverter` で宣言してください。
+リクエストボディを JSON テキストへ変換します。RESTful API ペイロードの `.get:RequestBodyConverterCtor` で宣言してください。
 
 | member | description |
 | :-- | :-- |
