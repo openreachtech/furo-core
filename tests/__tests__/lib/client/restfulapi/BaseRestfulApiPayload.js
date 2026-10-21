@@ -3788,6 +3788,97 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('#buildRequestBody()', () => {
+    describe('should build JSON text of the filtered request body', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverterCtor () {
+          return JsonRequestBodyConverter
+        }
+
+        /** @override */
+        extractFilteredRequestBody () {
+          return {
+            name: this.body.name,
+          }
+        }
+      }
+
+      const cases = [
+        {
+          input: {
+            body: {
+              name: 'alpha',
+              secret: 'alpha secret',
+            },
+          },
+          expected: '{"name":"alpha"}',
+        },
+        {
+          input: {
+            body: {
+              name: 'beta',
+              secret: 'beta secret',
+            },
+          },
+          expected: '{"name":"beta"}',
+        },
+      ]
+
+      test.each(cases)('name: $input.body.name', ({ input, expected }) => {
+        const payload = JsonRestfulApiPayload.create({
+          body: input.body,
+        })
+
+        const actual = payload.buildRequestBody()
+
+        expect(actual)
+          .toBe(expected)
+      })
+    })
+
+    describe('should build FormData of the request body by default', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+          },
+          expected: [
+            ['first', 'first value'],
+          ],
+        },
+        {
+          input: {
+            body: {
+              second: ['second value', 'extra value'],
+            },
+          },
+          expected: [
+            ['second', 'second value'],
+            ['second', 'extra value'],
+          ],
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, expected }) => {
+        const payload = BaseRestfulApiPayload.create({
+          body: input.body,
+        })
+
+        const actual = payload.buildRequestBody()
+
+        expect(actual)
+          .toBeInstanceOf(FormData)
+        expect([...actual.entries()])
+          .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#extractFilteredRequestBody()', () => {
     const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
 
