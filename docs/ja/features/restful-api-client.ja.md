@@ -89,7 +89,7 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
 
 ## FormData ボディのカスタマイズ
 
-ペイロードが送信する `FormData` をカスタマイズするには、`FormDataRequestBodyConverter` を継承し、そのサブクラスを `RequestBodyConverter` から返します。サブクラスでは `static createFormDataInstance()` または `appendBodyTo()` をオーバーライドします。[クライアントツール](./client-tools.ja.md) を参照してください。
+ペイロードが送信する `FormData` をカスタマイズするには、`FormDataRequestBodyConverter` を継承し、そのサブクラスを `RequestBodyConverter` から返します。サブクラスでは `static createFormDataInstance()` または `appendBodyTo()` をオーバーライドします。[HTTP クライアントツール](./client-tools.ja.md) を参照してください。
 
 ```javascript
 import {
