@@ -1360,6 +1360,17 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('.get:RequestBodyConverter', () => {
+    test('should be FormDataRequestBodyConverter', () => {
+      const actual = BaseRestfulApiPayload.RequestBodyConverter
+
+      expect(actual)
+        .toBe(FormDataRequestBodyConverter) // same reference
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('.get:pathParameterRequiredFields', () => {
     test('to be fixed value', () => {
       const expected = []
