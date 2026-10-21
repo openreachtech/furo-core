@@ -13,12 +13,15 @@
 | `.get:asPostMethod` | メソッドを `POST` に固定した派生ペイロードコンストラクタ。 |
 | `.get:queryRequiredFields` | パラメータが妥当であるために必須となるクエリフィールド。 |
 | `.get:bodyRequiredFields` | パラメータが妥当であるために必須となるボディフィールド。 |
+| `.get:RequestBodyConverterCtor` | リクエストボディに適用されるコンバーター。既定値は `FormDataRequestBodyConverter` です。 |
 | `.get:pathParameterRequiredFields` | パラメータが妥当であるために必須となるパスパラメータ。 |
 | `.generateRequestParameterHash()` | 値ハッシュをリクエストの各部へ変換します。フォームのフィールドをエンドポイントへ対応づけるためにオーバーライドします。 |
 | `.collectBasedHeadersOptions()` | すべてのリクエストにマージされるヘッダーハッシュ。 |
 | `.collectBasedFetchOptions()` | すべてのリクエストにマージされる fetch オプションハッシュ。 |
 | `.isBodyRequiredMethod()` | 宣言されたメソッドがリクエストボディを送信するかどうか。 |
+| `.createRequestBodyConverter()` | `.get:RequestBodyConverterCtor` のコンバーターを生成します。 |
 | `#createFetchRequest()` | このペイロードに対応する `Request` を構築します。 |
+| `#createRequestBodyConverter()` | フィルタ済みのリクエストボディのコンバーターを生成します。 |
 | `#isValidAllParameterHash()` | 必須フィールドがすべて存在するかどうか。 |
 | `#isInvalidAllParameterHash()` | `#isValidAllParameterHash()` の否定。 |
 

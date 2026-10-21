@@ -6,8 +6,7 @@ Performs a `Request` over `XMLHttpRequest` and resolves to a `Response`, reporti
 | :-- | :-- |
 | `.create()` | Factory method. Takes an optional `httpRequest`, defaulting to a new `XMLHttpRequest`. |
 | `.createXMLHttpRequest()` | Creates the `XMLHttpRequest` used for the request. |
-| `.createFormDataBody()` | Reads a `Request` body into a `FormData` instance. |
-| `.createFormDataFromRequest()` | Builds a `FormData` instance from a `Request`. |
+| `.createRequestBody()` | Reads a `Request` body as a `Blob`, and as `null` for a method without a body. |
 | `.isBodyRequiredMethod()` | Whether a request's method sends a body. |
 | `#fetchRequest()` | Sends the `request`, reporting progress through the optional `sink`, and resolves to a `Response`. |
 
