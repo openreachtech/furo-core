@@ -131,3 +131,26 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
 ```
 
 ペイロードからは `RequestBodyConverter` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
+
+### FormData のカスタマイズ
+
+構築される `FormData` をカスタマイズするには `FormDataRequestBodyConverter` を継承します。`FormData` に初期値を入れるには `static createFormDataInstance()` を、ボディの追加方法を変えるには `appendBodyTo()` をオーバーライドします。
+
+```javascript
+import {
+  FormDataRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class SignedFormDataRequestBodyConverter extends FormDataRequestBodyConverter {
+  /** @override */
+  static createFormDataInstance () {
+    const formDataHub = super.createFormDataInstance()
+
+    formDataHub.append('client', 'web')
+
+    return formDataHub
+  }
+}
+```
+
+ボディの配列の値は、同じキーで要素ごとに 1 つのパートとして、順番どおりに追加されます。
