@@ -7,6 +7,7 @@ import RestMethodRestfulApiPayloadDerivedCtorRegistry from '~/lib/tools/derived-
 import DynamicDerivedCtorPool from '~/lib/tools/DynamicDerivedCtorPool'
 import BaseRequestBodyConverter from '~/lib/tools/request-body-converter/BaseRequestBodyConverter.js'
 import FormDataRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
+import JsonRequestBodyConverter from '~/lib/tools/request-body-converter/concretes/JsonRequestBodyConverter.js'
 
 describe('BaseRestfulApiPayload', () => {
   describe('constructor', () => {
@@ -3238,6 +3239,133 @@ describe('BaseRestfulApiPayload', () => {
             body: override.filteredBody,
             formDataBuilder: expect.any(Function),
           })
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
+  describe('#collectRequestBodyHeaderEntries()', () => {
+    describe('when method sends a body', () => {
+      const cases = [
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.POST
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
+            ['content-type', 'application/json'],
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.PUT
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
+            ['content-type', 'application/json'],
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.PATCH
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+          expected: [
+            ['content-type', 'application/json'],
+          ],
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.POST
+              }
+            },
+          },
+          expected: [], // FormDataRequestBodyConverter by default
+        },
+      ]
+
+      test.each(cases)('method: $input.Payload.method', ({ input, expected }) => {
+        const payload = input.Payload.create()
+
+        const actual = payload.collectRequestBodyHeaderEntries()
+
+        expect(actual)
+          .toStrictEqual(expected)
+      })
+    })
+
+    describe('when method does not send a body', () => {
+      const cases = [
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.GET
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+        },
+        {
+          input: {
+            Payload: class extends BaseRestfulApiPayload {
+              /** @override */
+              static get method () {
+                return RESTFUL_API_METHOD.DELETE
+              }
+
+              /** @override */
+              static get RequestBodyConverter () {
+                return JsonRequestBodyConverter
+              }
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('method: $input.Payload.method', ({ input }) => {
+        const payload = input.Payload.create()
+
+        const actual = payload.collectRequestBodyHeaderEntries()
+
+        expect(actual)
+          .toStrictEqual([])
       })
     })
   })
