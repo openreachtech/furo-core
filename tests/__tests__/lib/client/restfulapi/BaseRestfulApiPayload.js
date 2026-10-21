@@ -3652,6 +3652,166 @@ describe('BaseRestfulApiPayload', () => {
       })
     })
 
+    describe('for a request body converter of JSON', () => {
+      const JsonRestfulApiPayload = class extends BaseRestfulApiPayload {
+        /** @override */
+        static get RequestBodyConverter () {
+          return JsonRequestBodyConverter
+        }
+      }
+
+      describe('with body required method', () => {
+        const cases = [
+          {
+            input: {
+              method: RESTFUL_API_METHOD.POST,
+              body: {
+                first: 'first value',
+              },
+            },
+            expected: [
+              ['body', '{"first":"first value"}'],
+            ],
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.PUT,
+              body: {
+                second: 'second value',
+                count: 2,
+              },
+            },
+            expected: [
+              ['body', '{"second":"second value","count":2}'],
+            ],
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.PATCH,
+              body: {
+                third: ['third value'],
+              },
+            },
+            expected: [
+              ['body', '{"third":["third value"]}'],
+            ],
+          },
+        ]
+
+        test.each(cases)('method: $input.method', ({ input, expected }) => {
+          jest.spyOn(JsonRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(input.method)
+
+          const payload = JsonRestfulApiPayload.create({
+            body: input.body,
+          })
+
+          const received = payload.generateBodyEntry()
+
+          expect(received)
+            .toStrictEqual(expected)
+        })
+      })
+
+      describe('with body not-required method', () => {
+        const cases = [
+          {
+            input: {
+              method: RESTFUL_API_METHOD.GET,
+              body: {
+                unknown: 'unknown value',
+              },
+            },
+          },
+          {
+            input: {
+              method: RESTFUL_API_METHOD.DELETE,
+              body: {
+                unknown: 'unknown value',
+              },
+            },
+          },
+        ]
+
+        test.each(cases)('method: $input.method', ({ input }) => {
+          jest.spyOn(JsonRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(input.method)
+
+          const payload = JsonRestfulApiPayload.create({
+            body: input.body,
+          })
+
+          const received = payload.generateBodyEntry()
+
+          expect(received)
+            .toStrictEqual([])
+        })
+      })
+    })
+
+    describe('for body required method, to delegate to the request body converter', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+              secret: 'first secret',
+            },
+          },
+          override: {
+            filteredBody: {
+              first: 'first value',
+            },
+          },
+          tally: 'first tally',
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+              secret: 'second secret',
+            },
+          },
+          override: {
+            filteredBody: {
+              second: 'second value',
+            },
+          },
+          tally: 'second tally',
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, override, tally }) => {
+        jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+          .mockReturnValue(RESTFUL_API_METHOD.POST)
+
+        const payload = BaseRestfulApiPayload.create(input)
+
+        jest.spyOn(payload, 'extractFilteredRequestBody')
+          .mockReturnValue(override.filteredBody)
+
+        const converter = FormDataRequestBodyConverter.create({
+          body: override.filteredBody,
+        })
+        const createRequestBodyConverterSpy = jest.spyOn(payload, 'createRequestBodyConverter')
+          .mockReturnValue(converter)
+        const convertBodySpy = jest.spyOn(converter, 'convertBody')
+          .mockReturnValue(tally)
+
+        const received = payload.generateBodyEntry()
+
+        expect(received)
+          .toStrictEqual([
+            ['body', tally],
+          ])
+
+        expect(createRequestBodyConverterSpy)
+          .toHaveBeenCalledWith()
+        expect(convertBodySpy)
+          .toHaveBeenCalledWith()
+      })
+    })
+
     describe('for body not-required method', () => {
       const cases = [
         {
