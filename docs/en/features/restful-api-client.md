@@ -87,6 +87,48 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
 
 The body reaches the server as `application/json`, and upload and download progress are still reported. A `Content-Type` the payload sets through its headers is kept as it is. A method without a body, such as `GET`, gets no `Content-Type`. The GraphQL client keeps sending `multipart/form-data`.
 
+## Customizing the FormData body
+
+To customize the `FormData` a payload sends, extend `FormDataRequestBodyConverter` and return the subclass from `RequestBodyConverter`. Override `static createFormDataInstance()` or `appendBodyTo()` in the subclass. See [Client Tools](./client-tools.md).
+
+```javascript
+import {
+  BaseRestfulApiPayload,
+  FormDataRequestBodyConverter,
+  RESTFUL_API_METHOD,
+} from '@openreachtech/furo'
+
+class SignedFormDataRequestBodyConverter extends FormDataRequestBodyConverter {
+  /** @override */
+  static createFormDataInstance () {
+    const formDataHub = super.createFormDataInstance()
+
+    formDataHub.append('client', 'web')
+
+    return formDataHub
+  }
+}
+
+export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPayload {
+  /** @override */
+  static get method () {
+    return RESTFUL_API_METHOD.POST
+  }
+
+  /** @override */
+  static get pathname () {
+    return '/curriculums'
+  }
+
+  /** @override */
+  static get RequestBodyConverter () {
+    return SignedFormDataRequestBodyConverter
+  }
+}
+```
+
+An array value of the body is appended as one part per element under the same key, so `{ tags: ['alpha', 'beta'] }` sends two `tags` parts.
+
 ## Renchan backends
 
 `BaseRenchanRestfulApiPayload` reads an access token from **session storage** and sends it as a header. Both keys are abstract, so a shared base payload must declare them.
