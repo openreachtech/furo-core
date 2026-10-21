@@ -131,3 +131,26 @@ export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConve
 ```
 
 Point a payload at it through `RequestBodyConverter`. See [RESTful API Client](./restful-api-client.md).
+
+### Customizing the FormData
+
+Extend `FormDataRequestBodyConverter` to customize the `FormData` it builds. Override `static createFormDataInstance()` to seed the `FormData`, or `appendBodyTo()` to change how the body is appended.
+
+```javascript
+import {
+  FormDataRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class SignedFormDataRequestBodyConverter extends FormDataRequestBodyConverter {
+  /** @override */
+  static createFormDataInstance () {
+    const formDataHub = super.createFormDataInstance()
+
+    formDataHub.append('client', 'web')
+
+    return formDataHub
+  }
+}
+```
+
+An array value of the body is appended as one part per element under the same key, in order.
