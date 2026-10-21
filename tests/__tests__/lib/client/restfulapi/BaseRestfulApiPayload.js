@@ -3405,7 +3405,6 @@ describe('BaseRestfulApiPayload', () => {
         expect(createSpy)
           .toHaveBeenCalledWith({
             body: override.filteredBody,
-            formDataBuilder: expect.any(Function),
           })
       })
     })
@@ -3866,111 +3865,6 @@ describe('BaseRestfulApiPayload', () => {
 
         expect(actual)
           .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
-  describe('#buildFormDataBody()', () => {
-    describe('to create FormData with correct structure', () => {
-      const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
-
-      const alphaFormDataHub = new FormData()
-      const betaFormDataHub = new FormData()
-
-      alphaFormDataHub.append('first', 'alpha value')
-      alphaFormDataHub.append('second', 'beta value')
-
-      betaFormDataHub.append('first', 'gamma value')
-      betaFormDataHub.append('second', 'delta value')
-      betaFormDataHub.append('file', alphaFile)
-
-      const cases = [
-        {
-          args: {
-            body: {
-              first: 'alpha value',
-              second: 'beta value',
-            },
-          },
-          expected: alphaFormDataHub,
-        },
-        {
-          args: {
-            body: {
-              first: 'gamma value',
-              second: 'delta value',
-              file: alphaFile,
-            },
-          },
-          expected: betaFormDataHub,
-        },
-      ]
-
-      test.each(cases)('first: $args.body.first', ({ args, expected }) => {
-        const constructorArgs = {
-          query: {},
-          body: args.body,
-          pathParameterHash: {},
-          options: {},
-        }
-        const payload = new BaseRestfulApiPayload(constructorArgs)
-
-        const actual = payload.buildFormDataBody()
-
-        expect(actual)
-          .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiPayload', () => {
-  describe('#buildFormDataBody()', () => {
-    describe('when a subclass overrides it, for a payload of the default converter', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'first value',
-            },
-          },
-          tally: new FormData(),
-        },
-        {
-          input: {
-            body: {
-              second: 'second value',
-            },
-          },
-          tally: new FormData(),
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, tally }) => {
-        const OverridingRestfulApiPayload = class extends BaseRestfulApiPayload {
-          /** @override */
-          static get method () {
-            return RESTFUL_API_METHOD.POST
-          }
-
-          /** @override */
-          buildFormDataBody () {
-            return tally
-          }
-        }
-
-        const payload = OverridingRestfulApiPayload.create(input)
-
-        const received = payload.generateBodyEntry()
-
-        expect(received)
-          .toStrictEqual([
-            ['body', tally],
-          ])
-        expect(received[0][1])
-          .toBe(tally) // same reference
       })
     })
   })
