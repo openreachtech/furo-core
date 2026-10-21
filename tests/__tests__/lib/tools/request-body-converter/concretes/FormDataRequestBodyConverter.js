@@ -111,38 +111,6 @@ describe('FormDataRequestBodyConverter', () => {
 })
 
 describe('FormDataRequestBodyConverter', () => {
-  describe('.create()', () => {
-    describe('should keep the callback which builds FormData', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-            },
-            formDataBuilder: () => new FormData(),
-          },
-        },
-        {
-          input: {
-            body: {
-              second: 'beta value',
-            },
-            formDataBuilder: () => new FormData(),
-          },
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input }) => {
-        const converter = FormDataRequestBodyConverter.create(input)
-
-        expect(converter)
-          .toHaveProperty('formDataBuilder', input.formDataBuilder) // same reference
-      })
-    })
-  })
-})
-
-describe('FormDataRequestBodyConverter', () => {
   describe('#appendBodyTo()', () => {
     describe('should append every field of the body to the given FormData', () => {
       const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
@@ -416,39 +384,6 @@ describe('FormDataRequestBodyConverter', () => {
 
         expect(createFormDataInstanceSpy)
           .toHaveBeenCalledWith()
-      })
-    })
-
-    describe('to return what the callback builds', () => {
-      const cases = [
-        {
-          input: {
-            body: {
-              first: 'alpha value',
-            },
-          },
-          tally: new FormData(),
-        },
-        {
-          input: {
-            body: {
-              second: 'beta value',
-            },
-          },
-          tally: new FormData(),
-        },
-      ]
-
-      test.each(cases)('body: $input.body', ({ input, tally }) => {
-        const converter = FormDataRequestBodyConverter.create({
-          ...input,
-          formDataBuilder: () => tally,
-        })
-
-        const actual = converter.convertBody()
-
-        expect(actual)
-          .toBe(tally) // same reference
       })
     })
   })
