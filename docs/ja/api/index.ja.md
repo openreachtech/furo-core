@@ -76,6 +76,9 @@
 | [PathnameBuilder](./PathnameBuilder.ja.md) | パス名内の `[name]` プレースホルダーを補間します。 |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.ja.md) | レスポンスボディをパースするための基底クラスです。 |
 | [JsonResponseBodyParser](./JsonResponseBodyParser.ja.md) | レスポンスボディを JSON としてパースします。 |
+| [BaseRequestBodyConverter](./BaseRequestBodyConverter.ja.md) | リクエストボディを変換するための基底クラスです。 |
+| [FormDataRequestBodyConverter](./FormDataRequestBodyConverter.ja.md) | リクエストボディを `FormData` へ変換します。 |
+| [JsonRequestBodyConverter](./JsonRequestBodyConverter.ja.md) | リクエストボディを JSON テキストへ変換します。 |
 
 ## 動的クラス宣言
 
