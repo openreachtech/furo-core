@@ -9,6 +9,9 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 | `PathnameBuilder` | パス名テンプレート内の `[name]` プレースホルダーを補間します。 |
 | `BaseResponseBodyParser` | `Response` のボディを値へ変換するための基底クラスです。 |
 | `JsonResponseBodyParser` | レスポンスボディを JSON としてパースします。 |
+| `BaseRequestBodyConverter` | リクエストボディを `Request` が送信する形へ変換するための基底クラスです。 |
+| `FormDataRequestBodyConverter` | リクエストボディを `FormData` へ変換します。 |
+| `JsonRequestBodyConverter` | リクエストボディを JSON テキストへ変換します。 |
 
 ## 進捗を通知する fetch
 
@@ -35,6 +38,8 @@ const response = await ProgressHttpFetcher.create()
     },
   })
 ```
+
+ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
 
 返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
 
@@ -99,3 +104,53 @@ export default class TextResponseBodyParser extends BaseResponseBodyParser {
 ```
 
 ランチャーからは `ResponseBodyParser` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
+
+## リクエストボディの変換
+
+`FormDataRequestBodyConverter` は RESTful API ペイロードの既定のコンバーターです。別のコンテンツタイプを送信する場合は `BaseRequestBodyConverter` を継承してください。`.collectHeaderEntries()` はそのコンテンツタイプが必要とするヘッダーを返します。
+
+```javascript
+import {
+  BaseRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class UrlEncodedRequestBodyConverter extends BaseRequestBodyConverter {
+  /** @override */
+  convertBody () {
+    return new URLSearchParams(this.body)
+      .toString()
+  }
+
+  /** @override */
+  static collectHeaderEntries () {
+    return [
+      ['content-type', 'application/x-www-form-urlencoded'],
+    ]
+  }
+}
+```
+
+ペイロードからは `RequestBodyConverterCtor` を通じて指定します。[RESTful API クライアント](./restful-api-client.ja.md) を参照してください。
+
+### FormData のカスタマイズ
+
+構築される `FormData` をカスタマイズするには `FormDataRequestBodyConverter` を継承します。`FormData` に初期値を入れるには `static createFormDataInstance()` を、ボディの追加方法を変えるには `appendBodyTo()` をオーバーライドします。
+
+```javascript
+import {
+  FormDataRequestBodyConverter,
+} from '@openreachtech/furo'
+
+export default class SignedFormDataRequestBodyConverter extends FormDataRequestBodyConverter {
+  /** @override */
+  static createFormDataInstance () {
+    const formDataHub = super.createFormDataInstance()
+
+    formDataHub.append('client', 'web')
+
+    return formDataHub
+  }
+}
+```
+
+ボディの配列の値は、同じキーで要素ごとに 1 つのパートとして、順番どおりに追加されます。

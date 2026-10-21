@@ -13,12 +13,15 @@ Declares the HTTP method and pathname of one endpoint, and builds the `Request` 
 | `.get:asPostMethod` | A derived payload constructor with the method fixed to `POST`. |
 | `.get:queryRequiredFields` | Query fields that must be present for the parameters to be valid. |
 | `.get:bodyRequiredFields` | Body fields that must be present for the parameters to be valid. |
+| `.get:RequestBodyConverterCtor` | The converter applied to the request body. Defaults to `FormDataRequestBodyConverter`. |
 | `.get:pathParameterRequiredFields` | Path parameters that must be present for the parameters to be valid. |
 | `.generateRequestParameterHash()` | Converts a value hash into the request parts. Override to map form fields onto an endpoint. |
 | `.collectBasedHeadersOptions()` | Header hashes merged into every request. |
 | `.collectBasedFetchOptions()` | Fetch option hashes merged into every request. |
 | `.isBodyRequiredMethod()` | Whether the declared method sends a request body. |
+| `.createRequestBodyConverter()` | Creates a converter of `.get:RequestBodyConverterCtor`. |
 | `#createFetchRequest()` | Builds the `Request` for this payload. |
+| `#createRequestBodyConverter()` | Creates a converter of the filtered request body. |
 | `#isValidAllParameterHash()` | Whether every required field is present. |
 | `#isInvalidAllParameterHash()` | Negation of `#isValidAllParameterHash()`. |
 
