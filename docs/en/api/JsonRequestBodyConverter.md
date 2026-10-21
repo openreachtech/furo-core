@@ -1,0 +1,9 @@
+# JsonRequestBodyConverter
+
+Converts a request body into JSON text. Declare it through `.get:RequestBodyConverter` of a RESTful API payload.
+
+| member | description |
+| :-- | :-- |
+| `.create()` | Inherited factory method. Takes the `body` hash to convert. |
+| `#convertBody()` | Converts the body into JSON text. |
+| `#generateHeaderEntries()` | Generates the `content-type: application/json` entry. |
