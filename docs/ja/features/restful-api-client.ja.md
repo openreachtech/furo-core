@@ -87,6 +87,48 @@ export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPaylo
 
 ボディは `application/json` としてサーバーへ届き、アップロードとダウンロードの進捗も引き続き通知されます。ペイロードがヘッダーで指定した `Content-Type` はそのまま保持されます。`GET` のようにボディを持たないメソッドには `Content-Type` が付きません。GraphQL クライアントは引き続き `multipart/form-data` を送信します。
 
+## FormData ボディのカスタマイズ
+
+ペイロードが送信する `FormData` をカスタマイズするには、`FormDataRequestBodyConverter` を継承し、そのサブクラスを `RequestBodyConverter` から返します。サブクラスでは `static createFormDataInstance()` または `appendBodyTo()` をオーバーライドします。[クライアントツール](./client-tools.ja.md) を参照してください。
+
+```javascript
+import {
+  BaseRestfulApiPayload,
+  FormDataRequestBodyConverter,
+  RESTFUL_API_METHOD,
+} from '@openreachtech/furo'
+
+class SignedFormDataRequestBodyConverter extends FormDataRequestBodyConverter {
+  /** @override */
+  static createFormDataInstance () {
+    const formDataHub = super.createFormDataInstance()
+
+    formDataHub.append('client', 'web')
+
+    return formDataHub
+  }
+}
+
+export default class CurriculumPostRestfulApiPayload extends BaseRestfulApiPayload {
+  /** @override */
+  static get method () {
+    return RESTFUL_API_METHOD.POST
+  }
+
+  /** @override */
+  static get pathname () {
+    return '/curriculums'
+  }
+
+  /** @override */
+  static get RequestBodyConverter () {
+    return SignedFormDataRequestBodyConverter
+  }
+}
+```
+
+ボディの配列の値は、同じキーで要素ごとに 1 つのパートとして追加されるため、`{ tags: ['alpha', 'beta'] }` は `tags` のパートを 2 つ送信します。
+
 ## Renchan バックエンド
 
 `BaseRenchanRestfulApiPayload` は **セッションストレージ** からアクセストークンを読み出し、ヘッダーとして送信します。どちらのキーも abstract であるため、共有の基底ペイロードで宣言する必要があります。
