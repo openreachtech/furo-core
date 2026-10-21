@@ -3285,6 +3285,56 @@ describe('BaseRestfulApiPayload', () => {
 })
 
 describe('BaseRestfulApiPayload', () => {
+  describe('#buildFormDataBody()', () => {
+    describe('when a subclass overrides it, for a payload of the default converter', () => {
+      const cases = [
+        {
+          input: {
+            body: {
+              first: 'first value',
+            },
+          },
+          tally: new FormData(),
+        },
+        {
+          input: {
+            body: {
+              second: 'second value',
+            },
+          },
+          tally: new FormData(),
+        },
+      ]
+
+      test.each(cases)('body: $input.body', ({ input, tally }) => {
+        const OverridingRestfulApiPayload = class extends BaseRestfulApiPayload {
+          /** @override */
+          static get method () {
+            return RESTFUL_API_METHOD.POST
+          }
+
+          /** @override */
+          buildFormDataBody () {
+            return tally
+          }
+        }
+
+        const payload = OverridingRestfulApiPayload.create(input)
+
+        const received = payload.generateBodyEntry()
+
+        expect(received)
+          .toStrictEqual([
+            ['body', tally],
+          ])
+        expect(received[0][1])
+          .toBe(tally) // same reference
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiPayload', () => {
   describe('#extractFilteredRequestBody()', () => {
     const alphaFile = new File(['alpha'], 'alpha.txt', { type: 'text/plain' })
 
