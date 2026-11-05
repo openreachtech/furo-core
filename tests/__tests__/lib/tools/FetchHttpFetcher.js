@@ -13,18 +13,20 @@ function waitFor (milliseconds) {
 /**
  * Settle like fetch() that gets no answer, rejecting once the signal aborts.
  *
- * @param {Request} input - Request.
- * @param {{
- *   signal: AbortSignal
- * }} init - Options of fetch().
+ * @param {RequestInfo | URL} input - Request.
+ * @param {RequestInit} [init] - Options of fetch().
  * @returns {Promise<Response>} Promise that rejects on abort.
  */
 function fetchUntilAbort (
   input,
   {
     signal,
-  }
+  } = {}
 ) {
+  if (!signal) {
+    return Promise.reject(new TypeError('fetch() received no signal'))
+  }
+
   if (signal.aborted) {
     return Promise.reject(signal.reason)
   }
@@ -274,7 +276,7 @@ describe('FetchHttpFetcher', () => {
 
         const [[, init]] = fetchSpy.mock.calls
 
-        return /** @type {AbortSignal} */ (init.signal)
+        return /** @type {AbortSignal} */ (init?.signal)
       }
 
       describe('should abort as timed out after the timeout', () => {

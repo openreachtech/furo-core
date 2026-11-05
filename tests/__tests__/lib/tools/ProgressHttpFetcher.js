@@ -5,16 +5,16 @@ const OriginalResponse = Response
 /**
  * Create a response that rejects a body on a null body status, as the Fetch Standard does.
  *
- * @param {*} body - Body.
- * @param {ResponseInit} init - Options.
+ * @param {BodyInit | null} [body] - Body.
+ * @param {ResponseInit} [init] - Options.
  * @returns {Response} Response.
  * @throws {TypeError} When a body comes with a null body status.
  */
 function createNullBodyCheckingResponse (
-  body,
-  init
+  body = null,
+  init = {}
 ) {
-  if ([204, 205, 304].includes(init.status) && body !== null) {
+  if ([204, 205, 304].includes(init.status ?? 200) && body !== null) {
     throw new TypeError('Response with null body status cannot have body')
   }
 
@@ -48,6 +48,14 @@ function createAsyncCapableHttpRequestStub ({
     getAllResponseHeaders () {
       return 'Content-Type: application/octet-stream\r\n'
     },
+
+    /**
+     * Keep the listener as `on<eventName>`, for the test to fire.
+     *
+     * @param {string} eventName - Name of the event.
+     * @param {Function} listener - Listener of the event.
+     * @returns {void}
+     */
     addEventListener (
       eventName,
       listener
@@ -826,6 +834,14 @@ describe('ProgressHttpFetcher', () => {
           getAllResponseHeaders () {
             return 'Content-Type: application/json\r\n'
           },
+
+          /**
+           * Keep the listener as `on<eventName>`, for the test to fire.
+           *
+           * @param {string} eventName - Name of the event.
+           * @param {Function} listener - Listener of the event.
+           * @returns {void}
+           */
           addEventListener (
             eventName,
             listener
@@ -861,6 +877,7 @@ describe('ProgressHttpFetcher', () => {
         ]
 
         test.each(cases)('timeout: $timeout', async ({ timeout }) => {
+          /** @type {Array<number>} */
           const timeoutOnSend = []
 
           const parser = ProgressHttpFetcher.create({
@@ -889,6 +906,7 @@ describe('ProgressHttpFetcher', () => {
         ]
 
         test.each(cases)('timeout: $timeout', async ({ timeout, expected }) => {
+          /** @type {Array<number>} */
           const timeoutOnSend = []
 
           const parser = ProgressHttpFetcher.create({
@@ -1645,6 +1663,7 @@ describe('ProgressHttpFetcher', () => {
   describe('#fetchRequest()', () => {
     describe('to read the response as a Blob', () => {
       test('responseType: blob', async () => {
+        /** @type {Array<Record<string, *>>} */
         const sentStates = []
 
         const fetcher = ProgressHttpFetcher.create({
@@ -1709,6 +1728,7 @@ describe('ProgressHttpFetcher', () => {
       ]
 
       test.each(cases)('credentials: $credentials, withCredentials: $withCredentials', async ({ credentials, withCredentials, expected }) => {
+        /** @type {Array<Record<string, *>>} */
         const sentStates = []
 
         const fetcher = ProgressHttpFetcher.create({
@@ -1735,6 +1755,7 @@ describe('ProgressHttpFetcher', () => {
 
     describe('to follow the signal of the request', () => {
       test('to reject without sending when already aborted', async () => {
+        /** @type {Array<Record<string, *>>} */
         const sentStates = []
         const abortController = new AbortController()
 
@@ -1759,6 +1780,7 @@ describe('ProgressHttpFetcher', () => {
       })
 
       test('to reject without sending when aborted while reading the body', async () => {
+        /** @type {Array<Record<string, *>>} */
         const sentStates = []
         const abortController = new AbortController()
 
