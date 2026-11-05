@@ -27,10 +27,10 @@
     "url": "https://github.com/openreachtech/furo-core/issues"
   },
   "dependencies": {
-    "graphql-ws": "^6.4.0"
+    "graphql-ws": "^6.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^8.0.7",
+    "@babel/core": "^8.0.9",
     "@babel/preset-env": "^8.0.7",
     "@openreachtech/eslint-config": "^4.5.0",
     "@openreachtech/jest-constructor-spy": "^1.1.2",
