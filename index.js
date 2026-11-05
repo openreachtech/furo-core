@@ -14,6 +14,7 @@ export { default as SubscriptionConnector } from './lib/client/graphql/Subscript
  * Client tools
  */
 export { default as ProgressHttpFetcher } from './lib/tools/ProgressHttpFetcher.js'
+export { default as FetchHttpFetcher } from './lib/tools/FetchHttpFetcher.js'
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
 export { default as PathnameBuilder } from './lib/tools/PathnameBuilder.js'
 
