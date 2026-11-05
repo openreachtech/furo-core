@@ -35,6 +35,7 @@
     "@openreachtech/eslint-config": "^4.5.0",
     "@openreachtech/jest-constructor-spy": "^1.1.2",
     "@openreachtech/jest-deep-containing": "^1.0.2",
+    "@openreachtech/mentsu-npm-audit-gate": "^0.1.0",
     "@types/jest": "^30.0.0",
     "babel-jest": "^30.5.2",
     "eslint": "^9.39.5",
