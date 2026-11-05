@@ -114,6 +114,18 @@ describe('HeadersParser', () => {
           ['x-beta', 'normal value'],
         ],
       },
+      {
+        params: {
+          haystack: '',
+        },
+        expected: [],
+      },
+      {
+        params: {
+          haystack: '\r\n',
+        },
+        expected: [],
+      },
     ]
 
     test.each(cases)('haystack: $params.haystack', ({ params, expected }) => {
