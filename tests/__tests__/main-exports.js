@@ -3,7 +3,9 @@ import {
   BaseGraphqlLauncher,
   BaseGraphqlPayload,
 
+  BaseHttpFetcher,
   ProgressHttpFetcher,
+  FetchHttpFetcher,
   HeadersParser,
   PathnameBuilder,
 
@@ -52,7 +54,9 @@ describe('Classes exported correctly', () => {
     { ExportedClass: BaseGraphqlLauncher },
     { ExportedClass: BaseGraphqlPayload },
 
+    { ExportedClass: BaseHttpFetcher },
     { ExportedClass: ProgressHttpFetcher },
+    { ExportedClass: FetchHttpFetcher },
     { ExportedClass: HeadersParser },
     { ExportedClass: PathnameBuilder },
 

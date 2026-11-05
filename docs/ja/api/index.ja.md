@@ -71,7 +71,9 @@
 
 | class | description |
 | :-- | :-- |
+| [BaseHttpFetcher](./BaseHttpFetcher.ja.md) | `Request` を送信し、その `Response` へ解決するための基底クラスです。 |
 | [ProgressHttpFetcher](./ProgressHttpFetcher.ja.md) | `Request` を実行し、アップロード・ダウンロードの進捗を通知します。 |
+| [FetchHttpFetcher](./FetchHttpFetcher.ja.md) | `Request` を `fetch()` で実行し、その `credentials` を守ります。タイムアウトも指定できます。 |
 | [HeadersParser](./HeadersParser.ja.md) | 生のヘッダーテキストをエントリまたは `Headers` へパースします。 |
 | [PathnameBuilder](./PathnameBuilder.ja.md) | パス名内の `[name]` プレースホルダーを補間します。 |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.ja.md) | レスポンスボディをパースするための基底クラスです。 |
