@@ -1,6 +1,6 @@
 # ProgressHttpFetcher
 
-`Request` を `XMLHttpRequest` 経由で実行し、`Response` へ解決します。`fetch()` では取得できないアップロードの進捗も含め、アップロード・ダウンロード双方の進捗を通知します。
+[BaseHttpFetcher](./BaseHttpFetcher.ja.md) を継承します。`Request` を `XMLHttpRequest` 経由で実行し、`Response` へ解決します。`fetch()` では取得できないアップロードの進捗も含め、アップロード・ダウンロード双方の進捗を通知します。
 
 | member | description |
 | :-- | :-- |

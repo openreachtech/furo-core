@@ -4,6 +4,7 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 | class | responsibility |
 | :-- | :-- |
+| `BaseHttpFetcher` | `Request` を送信し、その `Response` へ解決するための基底クラスです。 |
 | `ProgressHttpFetcher` | `Request` を `XMLHttpRequest` 経由で実行し、アップロード・ダウンロードの進捗を通知します。 |
 | `FetchHttpFetcher` | `Request` を `fetch()` で実行し、その `credentials` を守ります。 |
 | `HeadersParser` | 生のヘッダーテキストをエントリまたは `Headers` インスタンスへパースします。 |

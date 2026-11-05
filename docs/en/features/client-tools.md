@@ -4,6 +4,7 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 
 | class | responsibility |
 | :-- | :-- |
+| `BaseHttpFetcher` | Base class for sending a `Request` and resolving to its `Response`. |
 | `ProgressHttpFetcher` | Performs a `Request` over `XMLHttpRequest`, reporting upload and download progress. |
 | `FetchHttpFetcher` | Performs a `Request` through `fetch()`, keeping its `credentials`. |
 | `HeadersParser` | Parses raw header text into entries or a `Headers` instance. |
