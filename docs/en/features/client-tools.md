@@ -5,6 +5,7 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 | class | responsibility |
 | :-- | :-- |
 | `ProgressHttpFetcher` | Performs a `Request` over `XMLHttpRequest`, reporting upload and download progress. |
+| `FetchHttpFetcher` | Performs a `Request` through `fetch()`, keeping its `credentials`. |
 | `HeadersParser` | Parses raw header text into entries or a `Headers` instance. |
 | `PathnameBuilder` | Interpolates `[name]` placeholders in a pathname template. |
 | `BaseResponseBodyParser` | Base class for turning a `Response` body into a value. |
@@ -39,9 +40,32 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-The body goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`.
+The body goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`. The response body keeps the bytes the server sent, so a file download or a byte order mark arrives intact.
 
 The returned promise rejects with a `TypeError` when the request is aborted, fails, or times out — matching how `fetch()` reports the same conditions.
+
+Pass `timeout` in milliseconds to `.create()` to give up on a request that gets no answer: `ProgressHttpFetcher.create({ timeout: 15000 })`. Without it, the fetcher keeps the `timeout` of its `XMLHttpRequest`, which is `0` (no limit) by default.
+
+## Fetch without same-origin cookies
+
+`XMLHttpRequest` always sends same-origin cookies, so `ProgressHttpFetcher` cannot honour `credentials: 'omit'`. `FetchHttpFetcher` sends the `Request` through `fetch()` as built, and also takes a `timeout`. It reports no progress.
+
+```javascript
+import {
+  FetchHttpFetcher,
+} from '@openreachtech/furo'
+
+const response = await FetchHttpFetcher.create({
+  timeout: 15000,
+})
+  .fetchRequest({
+    request: new Request('https://example.com/start', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'alpha' }),
+      credentials: 'omit',
+    }),
+  })
+```
 
 ## Parsing headers
 

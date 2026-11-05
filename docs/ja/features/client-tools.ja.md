@@ -5,6 +5,7 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 | class | responsibility |
 | :-- | :-- |
 | `ProgressHttpFetcher` | `Request` を `XMLHttpRequest` 経由で実行し、アップロード・ダウンロードの進捗を通知します。 |
+| `FetchHttpFetcher` | `Request` を `fetch()` で実行し、その `credentials` を守ります。 |
 | `HeadersParser` | 生のヘッダーテキストをエントリまたは `Headers` インスタンスへパースします。 |
 | `PathnameBuilder` | パス名テンプレート内の `[name]` プレースホルダーを補間します。 |
 | `BaseResponseBodyParser` | `Response` のボディを値へ変換するための基底クラスです。 |
@@ -39,9 +40,32 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
+ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。レスポンスボディはサーバーが送ったバイトをそのまま保つため、ダウンロードしたファイルやバイトオーダーマークも壊れずに届きます。
 
 返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
+
+応答のないリクエストをあきらめるには、`.create()` に `timeout`（ミリ秒）を渡します（`ProgressHttpFetcher.create({ timeout: 15000 })`）。渡さない場合は `XMLHttpRequest` の `timeout` を引き継ぎ、その既定値は `0`（無制限）です。
+
+## 同一オリジンの cookie を付けない fetch
+
+`XMLHttpRequest` は同一オリジンの cookie を必ず送るため、`ProgressHttpFetcher` は `credentials: 'omit'` を守れません。`FetchHttpFetcher` は `Request` を作られたまま `fetch()` で送り、`timeout` も受け取ります。進捗は通知しません。
+
+```javascript
+import {
+  FetchHttpFetcher,
+} from '@openreachtech/furo'
+
+const response = await FetchHttpFetcher.create({
+  timeout: 15000,
+})
+  .fetchRequest({
+    request: new Request('https://example.com/start', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'alpha' }),
+      credentials: 'omit',
+    }),
+  })
+```
 
 ## ヘッダーのパース
 
