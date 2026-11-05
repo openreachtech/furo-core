@@ -1,6 +1,6 @@
 # ProgressHttpFetcher
 
-Performs a `Request` over `XMLHttpRequest` and resolves to a `Response`, reporting upload and download progress — which `fetch()` cannot do for uploads.
+Extends [BaseHttpFetcher](./BaseHttpFetcher.md). Performs a `Request` over `XMLHttpRequest` and resolves to a `Response`, reporting upload and download progress — which `fetch()` cannot do for uploads.
 
 | member | description |
 | :-- | :-- |
