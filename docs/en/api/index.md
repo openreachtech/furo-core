@@ -72,6 +72,7 @@ Class members are written with the following notation.
 | class | description |
 | :-- | :-- |
 | [ProgressHttpFetcher](./ProgressHttpFetcher.md) | Performs a `Request`, reporting upload and download progress. |
+| [FetchHttpFetcher](./FetchHttpFetcher.md) | Performs a `Request` through `fetch()`, keeping its `credentials`, with an optional timeout. |
 | [HeadersParser](./HeadersParser.md) | Parses raw header text into entries or a `Headers`. |
 | [PathnameBuilder](./PathnameBuilder.md) | Interpolates `[name]` placeholders in a pathname. |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing a response body. |
