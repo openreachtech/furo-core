@@ -1,5 +1,100 @@
 import ProgressHttpFetcher from '../../../../lib/tools/ProgressHttpFetcher.js'
 
+const OriginalResponse = Response
+
+/**
+ * Create a response that rejects a body on a null body status, as the Fetch Standard does.
+ *
+ * @param {BodyInit | null} [body] - Body.
+ * @param {ResponseInit} [init] - Options.
+ * @returns {Response} Response.
+ * @throws {TypeError} When a body comes with a null body status.
+ */
+function createNullBodyCheckingResponse (
+  body = null,
+  init = {}
+) {
+  if ([204, 205, 304].includes(init.status ?? 200) && body !== null) {
+    throw new TypeError('Response with null body status cannot have body')
+  }
+
+  return new OriginalResponse(body, init)
+}
+
+/**
+ * @param {{
+ *   status?: number
+ *   response?: *
+ *   withCredentials?: boolean
+ *   sentStates?: Array<Record<string, *>>
+ *   firesLoadAsync?: boolean
+ * }} [params] - Parameters.
+ * @returns {*} Stub of XMLHttpRequest.
+ */
+function createAsyncCapableHttpRequestStub ({
+  status = 200,
+  response = new Blob(['{}']),
+  withCredentials = false,
+  sentStates = [],
+  firesLoadAsync = false,
+} = {}) {
+  return {
+    timeout: 0,
+    responseType: '',
+    withCredentials,
+    status,
+    statusText: '',
+    response,
+    getAllResponseHeaders () {
+      return 'Content-Type: application/octet-stream\r\n'
+    },
+
+    /**
+     * Keep the listener as `on<eventName>`, for the test to fire.
+     *
+     * @param {string} eventName - Name of the event.
+     * @param {Function} listener - Listener of the event.
+     * @returns {void}
+     */
+    addEventListener (
+      eventName,
+      listener
+    ) {
+      this[`on${eventName}`] = listener
+    },
+    upload: {
+      addEventListener () {
+        // noop
+      },
+    },
+    open () {
+      // noop
+    },
+    setRequestHeader () {
+      // noop
+    },
+    abort () {
+      this.onabort()
+    },
+    send () {
+      sentStates.push({
+        responseType: this.responseType,
+        withCredentials: this.withCredentials,
+      })
+
+      if (firesLoadAsync) {
+        queueMicrotask(() => {
+          this.onload()
+        })
+
+        return
+      }
+
+      this.onload()
+    },
+  }
+}
+
 describe('ProgressHttpFetcher', () => {
   describe('constructor', () => {
     describe('to keep properties', () => {
@@ -17,6 +112,45 @@ describe('ProgressHttpFetcher', () => {
 
           expect(parser)
             .toHaveProperty('httpRequest', params.httpRequest)
+        })
+      })
+
+      describe('#timeout', () => {
+        const cases = [
+          {
+            params: {
+              httpRequest: new XMLHttpRequest(),
+              timeout: 3000,
+            },
+            expected: 3000,
+          },
+          {
+            params: {
+              httpRequest: new XMLHttpRequest(),
+              timeout: 0,
+            },
+            expected: 0,
+          },
+        ]
+
+        test.each(cases)('timeout: $params.timeout', ({ params, expected }) => {
+          const parser = new ProgressHttpFetcher(params)
+
+          expect(parser)
+            .toHaveProperty('timeout', expected)
+        })
+
+        test('without timeout to keep timeout of httpRequest', () => {
+          const httpRequest = new XMLHttpRequest()
+
+          httpRequest.timeout = 5000
+
+          const parser = new ProgressHttpFetcher({
+            httpRequest,
+          })
+
+          expect(parser)
+            .toHaveProperty('timeout', 5000)
         })
       })
     })
@@ -50,18 +184,67 @@ describe('ProgressHttpFetcher', () => {
     })
 
     describe('to call constructor', () => {
-      test.each(cases)('httpRequest: $params.httpRequest', ({ params }) => {
-        const SpyClass = globalThis.constructorSpy.spyOn(ProgressHttpFetcher)
+      describe('with timeout', () => {
+        const timeoutCases = [
+          {
+            params: {
+              httpRequest: new XMLHttpRequest(),
+              timeout: 3000,
+            },
+          },
+          {
+            params: {
+              httpRequest: new XMLHttpRequest(),
+              timeout: 0,
+            },
+          },
+        ]
 
-        SpyClass.create(params)
+        test.each(timeoutCases)('timeout: $params.timeout', ({ params }) => {
+          const SpyClass = globalThis.constructorSpy.spyOn(ProgressHttpFetcher)
 
-        expect(SpyClass.__spy__)
-          .toHaveBeenCalledWith(params)
+          SpyClass.create(params)
+
+          expect(SpyClass.__spy__)
+            .toHaveBeenCalledWith(params)
+        })
+      })
+
+      describe('without timeout to keep timeout of httpRequest', () => {
+        const httpRequestCases = [
+          {
+            timeout: 0,
+          },
+          {
+            timeout: 5000,
+          },
+        ]
+
+        test.each(httpRequestCases)('httpRequest.timeout: $timeout', ({ timeout }) => {
+          const httpRequest = new XMLHttpRequest()
+
+          httpRequest.timeout = timeout
+
+          const expectedParams = {
+            httpRequest,
+            timeout,
+          }
+
+          const SpyClass = globalThis.constructorSpy.spyOn(ProgressHttpFetcher)
+
+          SpyClass.create({
+            httpRequest,
+          })
+
+          expect(SpyClass.__spy__)
+            .toHaveBeenCalledWith(expectedParams)
+        })
       })
 
       test('with no arguments', () => {
         const expectedParams = {
           httpRequest: expect.any(XMLHttpRequest),
+          timeout: 0,
         }
 
         const createXMLHttpRequestSpy = jest.spyOn(ProgressHttpFetcher, 'createXMLHttpRequest')
@@ -239,7 +422,7 @@ describe('ProgressHttpFetcher', () => {
           httpRequest: {
             status: 200,
             statusText: 'OK',
-            responseText: JSON.stringify({
+            response: JSON.stringify({
               message: 'Success',
             }),
             getAllResponseHeaders () {
@@ -266,7 +449,7 @@ describe('ProgressHttpFetcher', () => {
           httpRequest: {
             status: 404,
             statusText: 'Not Found',
-            responseText: JSON.stringify({
+            response: JSON.stringify({
               message: 'Not Found',
             }),
             getAllResponseHeaders () {
@@ -317,7 +500,7 @@ describe('ProgressHttpFetcher', () => {
               httpRequest: {
                 status: 200,
                 statusText: 'OK',
-                responseText: JSON.stringify({
+                response: JSON.stringify({
                   message: 'Success',
                 }),
                 getAllResponseHeaders () {
@@ -354,7 +537,7 @@ describe('ProgressHttpFetcher', () => {
               httpRequest: {
                 status: 404,
                 statusText: 'Not Found',
-                responseText: JSON.stringify({
+                response: JSON.stringify({
                   message: 'Not Found',
                 }),
                 getAllResponseHeaders () {
@@ -462,7 +645,7 @@ describe('ProgressHttpFetcher', () => {
               httpRequest: {
                 status: 400,
                 statusText: 'OK',
-                responseText: JSON.stringify({
+                response: JSON.stringify({
                   message: 'Success',
                 }),
                 getAllResponseHeaders () {
@@ -500,7 +683,7 @@ describe('ProgressHttpFetcher', () => {
               httpRequest: {
                 status: 401,
                 statusText: 'Not Found',
-                responseText: JSON.stringify({
+                response: JSON.stringify({
                   message: 'Not Found',
                 }),
                 getAllResponseHeaders () {
@@ -538,7 +721,7 @@ describe('ProgressHttpFetcher', () => {
               httpRequest: {
                 status: 402,
                 statusText: 'Not Found',
-                responseText: JSON.stringify({
+                response: JSON.stringify({
                   message: 'Not Found',
                 }),
                 getAllResponseHeaders () {
@@ -631,6 +814,121 @@ describe('ProgressHttpFetcher', () => {
       })
     })
 
+    describe('to set timeout of XMLHttpRequest before sending', () => {
+      /**
+       * @param {{
+       *   timeoutOnSend: Array<number>
+       *   firesEvent: string
+       * }} params - Parameters.
+       * @returns {XMLHttpRequest} Stub of XMLHttpRequest.
+       */
+      function createHttpRequestStub ({
+        timeoutOnSend,
+        firesEvent,
+      }) {
+        return /** @type {*} */ ({
+          timeout: 0,
+          status: 200,
+          statusText: 'OK',
+          response: '{}',
+          getAllResponseHeaders () {
+            return 'Content-Type: application/json\r\n'
+          },
+
+          /**
+           * Keep the listener as `on<eventName>`, for the test to fire.
+           *
+           * @param {string} eventName - Name of the event.
+           * @param {Function} listener - Listener of the event.
+           * @returns {void}
+           */
+          addEventListener (
+            eventName,
+            listener
+          ) {
+            this[`on${eventName}`] = listener
+          },
+          upload: {
+            addEventListener () {
+              // noop
+            },
+          },
+          open () {
+            // noop
+          },
+          setRequestHeader () {
+            // noop
+          },
+          send () {
+            timeoutOnSend.push(this.timeout)
+            this[`on${firesEvent}`]()
+          },
+        })
+      }
+
+      describe('should resolve with timeout set', () => {
+        const cases = [
+          {
+            timeout: 3000,
+          },
+          {
+            timeout: 0,
+          },
+        ]
+
+        test.each(cases)('timeout: $timeout', async ({ timeout }) => {
+          /** @type {Array<number>} */
+          const timeoutOnSend = []
+
+          const parser = ProgressHttpFetcher.create({
+            httpRequest: createHttpRequestStub({
+              timeoutOnSend,
+              firesEvent: 'load',
+            }),
+            timeout,
+          })
+
+          await parser.fetchRequest({
+            request: new Request('https://example.com/alpha'),
+          })
+
+          expect(timeoutOnSend)
+            .toEqual([timeout])
+        })
+      })
+
+      describe('should reject after the timeout elapses', () => {
+        const cases = [
+          {
+            timeout: 3000,
+            expected: new TypeError('Network request timed out'),
+          },
+        ]
+
+        test.each(cases)('timeout: $timeout', async ({ timeout, expected }) => {
+          /** @type {Array<number>} */
+          const timeoutOnSend = []
+
+          const parser = ProgressHttpFetcher.create({
+            httpRequest: createHttpRequestStub({
+              timeoutOnSend,
+              firesEvent: 'timeout',
+            }),
+            timeout,
+          })
+
+          await expect(parser.fetchRequest({
+            request: new Request('https://example.com/alpha'),
+          }))
+            .rejects
+            .toThrow(expected)
+
+          expect(timeoutOnSend)
+            .toEqual([timeout])
+        })
+      })
+    })
+
     describe('to call members of an instance of XMLHttpRequest', () => {
       /**
        * @type {Array<{
@@ -645,7 +943,7 @@ describe('ProgressHttpFetcher', () => {
             httpRequest: {
               status: 200,
               statusText: 'OK',
-              responseText: JSON.stringify({
+              response: JSON.stringify({
                 message: 'Success',
               }),
               getAllResponseHeaders () {
@@ -682,7 +980,7 @@ describe('ProgressHttpFetcher', () => {
             httpRequest: {
               status: 404,
               statusText: 'Not Found',
-              responseText: JSON.stringify({
+              response: JSON.stringify({
                 message: 'Not Found',
               }),
               getAllResponseHeaders () {
@@ -811,7 +1109,7 @@ describe('ProgressHttpFetcher', () => {
             httpRequest: {
               status: 200,
               statusText: 'OK',
-              responseText: JSON.stringify({
+              response: JSON.stringify({
                 message: 'Success',
               }),
               getAllResponseHeaders () {
@@ -975,7 +1273,7 @@ describe('ProgressHttpFetcher', () => {
           httpRequest: {
             status: 200,
             statusText: 'OK',
-            responseText: JSON.stringify({
+            response: JSON.stringify({
               message: 'Success',
             }),
             getAllResponseHeaders () {
@@ -1012,7 +1310,7 @@ describe('ProgressHttpFetcher', () => {
           httpRequest: {
             status: 404,
             statusText: 'Not Found',
-            responseText: JSON.stringify({
+            response: JSON.stringify({
               message: 'Not Found',
             }),
             getAllResponseHeaders () {
@@ -1298,6 +1596,266 @@ describe('ProgressHttpFetcher', () => {
 
         expect(actual)
           .toBeFalsy()
+      })
+    })
+  })
+})
+
+describe('ProgressHttpFetcher', () => {
+  describe('#createResponse()', () => {
+    describe('to keep the bytes of the body', () => {
+      const cases = [
+        {
+          bytes: [0x89, 0x50, 0xff, 0x00, 0x80],
+        },
+        {
+          bytes: [0xef, 0xbb, 0xbf, 0x61, 0x2c, 0x62],
+        },
+      ]
+
+      test.each(cases)('bytes: $bytes', async ({ bytes }) => {
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            response: new Blob([new Uint8Array(bytes)]),
+          }),
+        })
+
+        const actual = fetcher.createResponse()
+        const actualBytes = [...new Uint8Array(await actual.arrayBuffer())]
+
+        expect(actualBytes)
+          .toEqual(bytes)
+      })
+    })
+
+    describe('to build a response without body on a null body status', () => {
+      const cases = [
+        {
+          status: 204,
+        },
+        {
+          status: 205,
+        },
+        {
+          status: 304,
+        },
+      ]
+
+      test.each(cases)('status: $status', ({ status }) => {
+        jest.spyOn(globalThis, 'Response')
+          .mockImplementation(createNullBodyCheckingResponse)
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            status,
+            response: new Blob([]),
+          }),
+        })
+
+        const actual = fetcher.createResponse()
+
+        expect(actual)
+          .toHaveProperty('status', status)
+      })
+    })
+  })
+
+  describe('#fetchRequest()', () => {
+    describe('to read the response as a Blob', () => {
+      test('responseType: blob', async () => {
+        /** @type {Array<Record<string, *>>} */
+        const sentStates = []
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            sentStates,
+          }),
+        })
+
+        await fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha'),
+        })
+
+        expect(sentStates)
+          .toEqual([
+            expect.objectContaining({
+              responseType: 'blob',
+            }),
+          ])
+      })
+    })
+
+    describe('to reject when the response cannot be built', () => {
+      test('after an asynchronous load', async () => {
+        const expected = new TypeError('Response cannot be built')
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            firesLoadAsync: true,
+          }),
+        })
+
+        jest.spyOn(fetcher, 'createResponse')
+          .mockImplementation(() => {
+            throw expected
+          })
+
+        await expect(fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha'),
+        }))
+          .rejects
+          .toBe(expected)
+      })
+    })
+
+    describe('to follow credentials of the request', () => {
+      const cases = [
+        {
+          credentials: 'include',
+          withCredentials: false,
+          expected: true,
+        },
+        {
+          credentials: 'same-origin',
+          withCredentials: false,
+          expected: false,
+        },
+        {
+          credentials: 'same-origin',
+          withCredentials: true,
+          expected: true,
+        },
+      ]
+
+      test.each(cases)('credentials: $credentials, withCredentials: $withCredentials', async ({ credentials, withCredentials, expected }) => {
+        /** @type {Array<Record<string, *>>} */
+        const sentStates = []
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            withCredentials,
+            sentStates,
+          }),
+        })
+
+        await fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha', {
+            credentials: /** @type {RequestCredentials} */ (credentials),
+          }),
+        })
+
+        expect(sentStates)
+          .toEqual([
+            expect.objectContaining({
+              withCredentials: expected,
+            }),
+          ])
+      })
+    })
+
+    describe('to follow the signal of the request', () => {
+      test('to reject without sending when already aborted', async () => {
+        /** @type {Array<Record<string, *>>} */
+        const sentStates = []
+        const abortController = new AbortController()
+
+        abortController.abort()
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            sentStates,
+          }),
+        })
+
+        await expect(fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha', {
+            signal: abortController.signal,
+          }),
+        }))
+          .rejects
+          .toThrow(new TypeError('Network request aborted'))
+
+        expect(sentStates)
+          .toEqual([])
+      })
+
+      test('to reject without sending when aborted while reading the body', async () => {
+        /** @type {Array<Record<string, *>>} */
+        const sentStates = []
+        const abortController = new AbortController()
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest: createAsyncCapableHttpRequestStub({
+            sentStates,
+          }),
+        })
+
+        jest.spyOn(ProgressHttpFetcher, 'createRequestBody')
+          .mockImplementation(async () => {
+            abortController.abort()
+
+            return null
+          })
+
+        await expect(fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha', {
+            signal: abortController.signal,
+          }),
+        }))
+          .rejects
+          .toThrow(new TypeError('Network request aborted'))
+
+        expect(sentStates)
+          .toEqual([])
+      })
+
+      test('not to abort XMLHttpRequest once the request settled', async () => {
+        const abortController = new AbortController()
+        const httpRequest = createAsyncCapableHttpRequestStub()
+
+        const abortSpy = jest.spyOn(httpRequest, 'abort')
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest,
+        })
+
+        await fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha', {
+            signal: abortController.signal,
+          }),
+        })
+
+        abortController.abort()
+
+        expect(abortSpy)
+          .not
+          .toHaveBeenCalled()
+      })
+
+      test('to abort XMLHttpRequest when aborted while sending', async () => {
+        const abortController = new AbortController()
+        const httpRequest = createAsyncCapableHttpRequestStub()
+
+        httpRequest.send = () => {
+          abortController.abort()
+        }
+
+        const abortSpy = jest.spyOn(httpRequest, 'abort')
+
+        const fetcher = ProgressHttpFetcher.create({
+          httpRequest,
+        })
+
+        await expect(fetcher.fetchRequest({
+          request: new Request('https://example.com/alpha', {
+            signal: abortController.signal,
+          }),
+        }))
+          .rejects
+          .toThrow(new TypeError('Network request aborted'))
+
+        expect(abortSpy)
+          .toHaveBeenCalledWith()
       })
     })
   })
