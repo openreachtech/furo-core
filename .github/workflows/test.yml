@@ -52,22 +52,26 @@ jobs:
           echo "node  : $(node -v)"
           echo "npm   : $(npm -v)"
 
-      # ⚠️ This gate runs before npm ci, and the order is the point: npm ci puts the
-      # vulnerable files on the runner, and the test run then executes them through the
-      # real code path. The advisory has to answer before anything is fetched. Auditing
-      # first is possible because npm audit resolves the tree from package-lock.json
-      # alone and needs no node_modules; skipping a doomed install is a side benefit.
-      #
-      # ⚠️ When this step fails, check whether npm is answering before reading it as a
-      # finding. A 503 from the advisory service exits 1 exactly as an advisory does, and
-      # npm does not retry the bulk POST — `--fetch-retries=4` still sends one request.
-      # Telling the two apart takes a script that reads `npm audit --json`, and that is
-      # worth carrying only while the service is degraded, which is a passing condition.
-      - name: 🛡️ npm audit
-        run: npm audit
-
       - name: 📦 Install packages
         run: npm ci
+
+      # ⚠️ This gate runs after npm ci because it imports
+      # @openreachtech/mentsu-npm-audit-gate, a devDependency that only node_modules holds.
+      # npm audit itself resolves the tree from package-lock.json alone.
+      #
+      # ⚠️ The gate runs npm audit and fails on every advisory except the ones
+      # scripts/stopgap-audit/npm-audit-gate.js lists, a stopgap until a release fixes them.
+      # Each entry carries its reason and the condition for removing it, and an entry whose
+      # advisory is no longer reported fails too, so the list cannot outlive its reason.
+      #
+      # ⚠️ A 503 from the advisory service leaves npm with no report, and the gate says
+      # so rather than listing advisories. npm does not retry the bulk POST, so rerun the job.
+      - name: 🛡️ npm audit
+        # ⚠️ Revert to `npm audit`, before npm ci, once IGNORED_ADVISORIES in
+        # scripts/stopgap-audit/npm-audit-gate.js is empty, and delete that script along
+        # with @openreachtech/mentsu-npm-audit-gate.
+        # run: npm audit
+        run: node scripts/stopgap-audit/npm-audit-gate.js
 
       - name: 🧵 ESLint
         run: npm run lint
