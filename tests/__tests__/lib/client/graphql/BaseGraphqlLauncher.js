@@ -9,7 +9,7 @@ import {
   LAUNCH_ABORTED_REASON,
 } from '~/lib/client/graphql/BaseGraphqlCapsule'
 
-import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher'
+import HttpFetcher from '~/lib/tools/HttpFetcher.js'
 
 describe('BaseGraphqlLauncher', () => {
   describe('constructor', () => {
@@ -867,17 +867,6 @@ describe('BaseGraphqlLauncher', () => {
 })
 
 describe('BaseGraphqlLauncher', () => {
-  describe('.createHttpFetcher()', () => {
-    test('to be fixed value', () => {
-      const actual = BaseGraphqlLauncher.createHttpFetcher()
-
-      expect(actual)
-        .toBeInstanceOf(ProgressHttpFetcher)
-    })
-  })
-})
-
-describe('BaseGraphqlLauncher', () => {
   describe('#get:endpointUrl', () => {
     const cases = [
       {
@@ -1679,7 +1668,7 @@ describe('BaseGraphqlLauncher', () => {
 
       test.each(cases)('endpointUrl: $params.request.endpointUrl', async ({ params, tally }) => {
         const responseTally = new Response()
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = HttpFetcher.create()
 
         const expectedArgsForCreateFetchRequest = {
           url: params.endpointUrl,
@@ -1794,7 +1783,7 @@ describe('BaseGraphqlLauncher', () => {
       ]
 
       test.each(cases)('endpointUrl: $params.request.endpointUrl', async ({ params, tally }) => {
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = HttpFetcher.create()
 
         jest.spyOn(params.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
