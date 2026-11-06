@@ -227,3 +227,44 @@ describe('BaseRequestClerk', () => {
     })
   })
 })
+
+describe('BaseRequestClerk', () => {
+  describe('.buildNetworkError()', () => {
+    describe('should build TypeError with the reason in the message', () => {
+      const cases = [
+        {
+          reason: 'aborted',
+          expected: 'Network request aborted',
+        },
+        {
+          reason: 'failed',
+          expected: 'Network request failed',
+        },
+        {
+          reason: 'timed out',
+          expected: 'Network request timed out',
+        },
+      ]
+
+      test.each(cases)('reason: $reason', ({ reason, expected }) => {
+        const cause = new Error('cause')
+
+        const actual = BaseRequestClerk.buildNetworkError({
+          reason: /** @type {RequestClerkFailureReason} */ (reason),
+          cause,
+        })
+
+        expect(actual)
+          .toBeInstanceOf(TypeError)
+        expect(actual)
+          .toHaveProperty('message', expected)
+        expect(actual)
+          .toHaveProperty('cause', cause)
+      })
+    })
+  })
+})
+
+/**
+ * @typedef {import('~/lib/tools/request-clerk/BaseRequestClerk.js').RequestClerkFailureReason} RequestClerkFailureReason
+ */
