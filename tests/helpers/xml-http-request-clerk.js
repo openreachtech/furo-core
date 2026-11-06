@@ -59,6 +59,11 @@ export function createHttpRequestStub ({
     getAllResponseHeaders () {
       return responseHeaders
     },
+
+    /**
+     * @param {string} eventName - Name of the event.
+     * @param {Function} listener - Listener of the event.
+     */
     addEventListener (
       eventName,
       listener
@@ -66,6 +71,10 @@ export function createHttpRequestStub ({
       listeners[eventName] = listener
     },
     upload: {
+      /**
+       * @param {string} eventName - Name of the event.
+       * @param {Function} listener - Listener of the event.
+       */
       addEventListener (
         eventName,
         listener
@@ -73,9 +82,18 @@ export function createHttpRequestStub ({
         uploadListeners[eventName] = listener
       },
     },
+
+    /**
+     * @param {...*} args - Arguments of open().
+     */
     open (...args) {
       this.openedWith.push(args)
     },
+
+    /**
+     * @param {string} key - Name of the header.
+     * @param {string} value - Value of the header.
+     */
     setRequestHeader (
       key,
       value
@@ -87,6 +105,10 @@ export function createHttpRequestStub ({
 
       listeners.abort?.()
     },
+
+    /**
+     * @param {*} body - Body to send.
+     */
     send (body) {
       this.sentBodies.push(body)
 
