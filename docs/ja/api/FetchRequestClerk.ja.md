@@ -9,8 +9,8 @@
 | `.buildAnySignal()` | 複数のシグナルに従う `AbortSignal` を生成します。 |
 | `#buildResponse()` | `request` を送信し、`fetch()` の `Response` へ解決します。 |
 
-`#buildResponse()` はリクエストの `signal` で中断し、`timeout` が `0` より大きいときは `timeout` の後にも中断します。`credentials` は、`withCredentials` が `true` なら `'include'`、そうでなければリクエストの `credentials` です。そのため `credentials: 'omit'` は守られます。
+`#buildResponse()` はリクエストの `signal` で中断し、`timeout` が `0` より大きいときは `timeout` の後にも中断します。`withCredentials` は `XMLHttpRequest` と同じくクロスオリジンの cookie を決めます。`true` なら `'include'` を送り、`false` ならリクエストの `'include'` を `'same-origin'` に下げます。リクエストの `credentials: 'omit'` は守られます。
 
-`fetch()` と同じように reject します。失敗したリクエストは `TypeError`、リクエスト自身の `signal` で中断されたものはその `signal` の理由（既定では `AbortError`）、`timeout` を過ぎたものは `TimeoutError` で reject します。`responseType` は無視し、進捗も通知しないため、`sink` は読み取りません。
+`XMLHttpRequestClerk` と同じく、`.buildNetworkError()` の `TypeError` で reject します。リクエストの `signal` で中断されたら `Network request aborted`、`timeout` を過ぎたら `Network request timed out`、それ以外は `Network request failed` です。`fetch()` のエラーは `cause` に残ります。`responseType` は無視し、進捗も通知しないため、`sink` は読み取りません。
 
 `AbortSignal.any()` と `AbortSignal.timeout()` が必要です。主要ブラウザはすべて 2024 年 3 月から対応しています。
