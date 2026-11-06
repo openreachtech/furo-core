@@ -138,9 +138,8 @@ describe('HttpFetcher', () => {
 
         jest.spyOn(RequestClerkCtor, 'create')
           .mockReturnValue(
-            /** @type {*} */ ({
-              buildResponse: jest.fn()
-                .mockResolvedValue(response),
+            /** @type {never} */ ({
+              buildResponse: async () => response,
             })
           )
 
@@ -194,9 +193,8 @@ describe('HttpFetcher', () => {
       test.each(cases)('sink: $params.sink', async ({ params, expected }) => {
         const createSpy = jest.spyOn(FetchRequestClerk, 'create')
           .mockReturnValue(
-            /** @type {*} */ ({
-              buildResponse: jest.fn()
-                .mockResolvedValue(new Response('{}')),
+            /** @type {never} */ ({
+              buildResponse: async () => new Response('{}'),
             })
           )
 

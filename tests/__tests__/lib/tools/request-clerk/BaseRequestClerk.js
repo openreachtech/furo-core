@@ -35,7 +35,7 @@ describe('BaseRequestClerk', () => {
 
       describe('#request', () => {
         test.each(cases)('url: $input.request.url', ({ input }) => {
-          const clerk = new BaseRequestClerk(input)
+          const clerk = new BaseRequestClerk(/** @type {*} */ (input))
 
           expect(clerk)
             .toHaveProperty('request', input.request) // same reference
@@ -44,7 +44,7 @@ describe('BaseRequestClerk', () => {
 
       describe('#config', () => {
         test.each(cases)('config: $input.config', ({ input }) => {
-          const clerk = new BaseRequestClerk(input)
+          const clerk = new BaseRequestClerk(/** @type {*} */ (input))
 
           expect(clerk)
             .toHaveProperty('config', input.config) // same reference
@@ -53,7 +53,7 @@ describe('BaseRequestClerk', () => {
 
       describe('#sink', () => {
         test.each(cases)('url: $input.request.url', ({ input }) => {
-          const clerk = new BaseRequestClerk(input)
+          const clerk = new BaseRequestClerk(/** @type {*} */ (input))
 
           expect(clerk)
             .toHaveProperty('sink', input.sink) // same reference
@@ -155,7 +155,7 @@ describe('BaseRequestClerk', () => {
       test.each(cases)('request: $params.request.url, config: $params.config', ({ params, expected }) => {
         const SpyClass = globalThis.constructorSpy.spyOn(BaseRequestClerk)
 
-        SpyClass.create(params)
+        SpyClass.create(/** @type {*} */ (params))
 
         expect(SpyClass.__spy__)
           .toHaveBeenCalledWith(expected)

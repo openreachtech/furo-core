@@ -174,7 +174,7 @@ describe('XMLHttpRequestClerk', () => {
 
         await clerk.buildResponse()
 
-        const [[sentBody]] = stub.sentBodies.map(it => [it])
+        const [sentBody] = stub.sentBodies
 
         expect(sentBody)
           .toBeInstanceOf(Blob)
