@@ -29,6 +29,35 @@ function fetchUntilAbort (
 }
 
 /**
+ * Answer the headers at once with a body that loads until the signal aborts.
+ *
+ * @param {RequestInfo | URL} input - Request.
+ * @param {RequestInit} [init] - Options of fetch().
+ * @returns {Promise<Response>} Promise of the response.
+ */
+async function fetchHeadersUntilAbort (
+  input,
+  {
+    signal,
+  } = {}
+) {
+  const loadBodyUntilAbort = () => new Promise((resolve, reject) => {
+    signal?.addEventListener('abort', () => {
+      reject(signal.reason)
+    })
+  })
+
+  const response = {
+    clone: () => response,
+    arrayBuffer: loadBodyUntilAbort,
+    blob: loadBodyUntilAbort,
+    text: loadBodyUntilAbort,
+  }
+
+  return /** @type {Response} */ (/** @type {*} */ (response))
+}
+
+/**
  * @param {Promise<Response>} promise - Promise of the response.
  * @returns {Promise<*>} Reason of the rejection.
  */
@@ -133,6 +162,80 @@ describe('FetchRequestClerk', () => {
           .toBeInstanceOf(TypeError)
         expect(actual)
           .toHaveProperty('message', 'Network request aborted')
+      })
+    })
+
+    describe('should reject with TypeError when the body stops after the headers', () => {
+      const cases = [
+        {
+          title: 'past the timeout',
+          timeout: 10,
+          leaveRequest: (/** @type {AbortController} */ abortController) => {},
+          expected: 'Network request timed out',
+        },
+        {
+          title: 'with the request aborted',
+          timeout: 0,
+          leaveRequest: (/** @type {AbortController} */ abortController) => {
+            abortController.abort()
+          },
+          expected: 'Network request aborted',
+        },
+      ]
+
+      test.each(cases)('$title', async ({ timeout, leaveRequest, expected }) => {
+        jest.spyOn(FetchRequestClerk, 'fetch')
+          .mockImplementation(fetchHeadersUntilAbort)
+
+        const abortController = new AbortController()
+
+        const clerk = FetchRequestClerk.create({
+          request: new Request('https://example.com/alpha', {
+            signal: abortController.signal,
+          }),
+          config: {
+            timeout,
+          },
+        })
+
+        const promise = clerk.buildResponse()
+
+        leaveRequest(abortController)
+
+        const actual = await captureRejection(promise)
+
+        expect(actual)
+          .toBeInstanceOf(TypeError)
+        expect(actual)
+          .toHaveProperty('message', expected)
+      })
+    })
+
+    describe('should leave the body of the request unread after a failure', () => {
+      test('with .fetch() reading the body it receives', async () => {
+        jest.spyOn(FetchRequestClerk, 'fetch')
+          .mockImplementation(async input => {
+            await /** @type {Request} */ (input).text()
+
+            throw new TypeError('fetch failed')
+          })
+
+        const request = new Request('https://example.com/alpha', {
+          method: 'POST',
+          body: '{"first":"alpha"}',
+        })
+
+        await expect(
+          FetchRequestClerk.create({
+            request,
+          })
+            .buildResponse()
+        )
+          .rejects
+          .toThrow('Network request failed')
+
+        expect(request.bodyUsed)
+          .toBe(false)
       })
     })
 
