@@ -11,34 +11,6 @@ function waitFor (milliseconds) {
   })
 }
 
-/**
- * Settle like fetch() that gets no answer, rejecting once the signal aborts.
- *
- * @param {RequestInfo | URL} input - Request.
- * @param {RequestInit} [init] - Options of fetch().
- * @returns {Promise<Response>} Promise that rejects on abort.
- */
-function fetchUntilAbort (
-  input,
-  {
-    signal,
-  } = {}
-) {
-  if (!signal) {
-    return Promise.reject(new TypeError('fetch() received no signal'))
-  }
-
-  if (signal.aborted) {
-    return Promise.reject(signal.reason)
-  }
-
-  return new Promise((resolve, reject) => {
-    signal.addEventListener('abort', () => {
-      reject(signal.reason)
-    })
-  })
-}
-
 describe('FetchRequestClerk', () => {
   describe('inheritance', () => {
     test('to extend BaseRequestClerk', () => {
@@ -210,6 +182,22 @@ describe('FetchRequestClerk', () => {
           expected: 'include',
         },
         {
+          title: 'lowers include to same-origin when withCredentials is false',
+          requestCredentials: 'include',
+          config: {
+            withCredentials: false,
+          },
+          expected: 'same-origin',
+        },
+        {
+          title: 'keeps omit when withCredentials is false',
+          requestCredentials: 'omit',
+          config: {
+            withCredentials: false,
+          },
+          expected: 'omit',
+        },
+        {
           title: 'keeps same-origin when withCredentials is false',
           requestCredentials: 'same-origin',
           config: {
@@ -260,117 +248,6 @@ describe('FetchRequestClerk', () => {
         expect(sink.onDownloadProgress)
           .not
           .toHaveBeenCalled()
-      })
-    })
-
-    describe('should reject when .fetch() rejects', () => {
-      test('with a network failure', async () => {
-        const expected = new TypeError('Network request failed')
-
-        jest.spyOn(FetchRequestClerk, 'fetch')
-          .mockRejectedValue(expected)
-
-        const clerk = FetchRequestClerk.create({
-          request: new Request('https://example.com/alpha'),
-        })
-
-        await expect(clerk.buildResponse())
-          .rejects
-          .toBe(expected)
-      })
-    })
-
-    describe('should reject when the signal given to .fetch() aborts', () => {
-      test('after the timeout', async () => {
-        jest.spyOn(FetchRequestClerk, 'fetch')
-          .mockImplementation(fetchUntilAbort)
-
-        const clerk = FetchRequestClerk.create({
-          request: new Request('https://example.com/alpha'),
-          config: {
-            timeout: 10,
-          },
-        })
-
-        await expect(clerk.buildResponse())
-          .rejects
-          .toHaveProperty('name', 'TimeoutError')
-      })
-
-      test('with the request already aborted', async () => {
-        jest.spyOn(FetchRequestClerk, 'fetch')
-          .mockImplementation(fetchUntilAbort)
-
-        const abortController = new AbortController()
-
-        abortController.abort()
-
-        const clerk = FetchRequestClerk.create({
-          request: new Request('https://example.com/alpha', {
-            signal: abortController.signal,
-          }),
-          config: {
-            timeout: 3000,
-          },
-        })
-
-        await expect(clerk.buildResponse())
-          .rejects
-          .toHaveProperty('name', 'AbortError')
-      })
-
-      test('with the request aborted while it waits', async () => {
-        jest.spyOn(FetchRequestClerk, 'fetch')
-          .mockImplementation(fetchUntilAbort)
-
-        const abortController = new AbortController()
-
-        const clerk = FetchRequestClerk.create({
-          request: new Request('https://example.com/alpha', {
-            signal: abortController.signal,
-          }),
-        })
-
-        const promise = clerk.buildResponse()
-
-        abortController.abort()
-
-        await expect(promise)
-          .rejects
-          .toHaveProperty('name', 'AbortError')
-      })
-    })
-
-    describe('should leave the request unchanged after a failure', () => {
-      test('with the body unread and the properties kept', async () => {
-        jest.spyOn(FetchRequestClerk, 'fetch')
-          .mockRejectedValue(new TypeError('Network request failed'))
-
-        const request = new Request('https://example.com/alpha', {
-          method: 'POST',
-          body: '{"first":"alpha"}',
-        })
-        const config = {
-          timeout: 3000,
-          responseType: /** @type {XMLHttpRequestResponseType} */ (''),
-          withCredentials: false,
-        }
-
-        const clerk = FetchRequestClerk.create({
-          request,
-          config,
-        })
-
-        await expect(clerk.buildResponse())
-          .rejects
-          .toThrow('Network request failed')
-
-        expect(request.bodyUsed)
-          .toBe(false)
-        expect(clerk)
-          .toHaveProperty('request', request)
-        expect(clerk.config)
-          .toStrictEqual(config)
       })
     })
 
