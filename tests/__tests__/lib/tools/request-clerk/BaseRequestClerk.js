@@ -179,6 +179,56 @@ describe('BaseRequestClerk', () => {
           })
       })
     })
+
+    describe('should accept a responseType that Response takes as a body', () => {
+      const cases = [
+        {
+          responseType: '',
+        },
+        {
+          responseType: 'text',
+        },
+        {
+          responseType: 'blob',
+        },
+        {
+          responseType: 'arraybuffer',
+        },
+      ]
+
+      test.each(cases)('responseType: $responseType', ({ responseType }) => {
+        const clerk = BaseRequestClerk.create({
+          request: new Request('https://example.com/alpha'),
+          config: {
+            responseType: /** @type {XMLHttpRequestResponseType} */ (responseType),
+          },
+        })
+
+        expect(clerk.config)
+          .toHaveProperty('responseType', responseType)
+      })
+    })
+
+    describe('should throw TypeError on a responseType that Response cannot take as a body', () => {
+      const cases = [
+        {
+          responseType: 'json',
+        },
+        {
+          responseType: 'document',
+        },
+      ]
+
+      test.each(cases)('responseType: $responseType', ({ responseType }) => {
+        expect(() => BaseRequestClerk.create({
+          request: new Request('https://example.com/alpha'),
+          config: {
+            responseType: /** @type {XMLHttpRequestResponseType} */ (responseType),
+          },
+        }))
+          .toThrow(new TypeError(`responseType '${responseType}' is not supported`))
+      })
+    })
   })
 })
 
