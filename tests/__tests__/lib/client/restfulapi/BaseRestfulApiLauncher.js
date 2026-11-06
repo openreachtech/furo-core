@@ -9,7 +9,7 @@ import {
   LAUNCH_ABORTED_REASON,
 } from '~/lib/client/restfulapi/BaseRestfulApiCapsule.js'
 
-import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher.js'
+import HttpFetcher from '~/lib/tools/HttpFetcher.js'
 
 import BaseResponseBodyParser from '~/lib/tools/response-body-parser/BaseResponseBodyParser'
 import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
@@ -112,17 +112,6 @@ describe('BaseRestfulApiLauncher', () => {
 
       expect(actual)
         .toBe(expected) // same reference
-    })
-  })
-})
-
-describe('BaseRestfulApiLauncher', () => {
-  describe('.createHttpFetcher()', () => {
-    test('to be fixed value', () => {
-      const actual = BaseRestfulApiLauncher.createHttpFetcher()
-
-      expect(actual)
-        .toBeInstanceOf(ProgressHttpFetcher)
     })
   })
 })
@@ -2468,7 +2457,7 @@ describe('BaseRestfulApiLauncher', () => {
 
       test.each(cases)('baseUrl: $input.request.baseUrl', async ({ input, tally }) => {
         const responseTally = new Response()
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = HttpFetcher.create()
 
         const expectedArgsForCreateFetchRequest = {
           baseUrl: input.baseUrl,
@@ -2568,7 +2557,7 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('baseUrl: $input.request.baseUrl', async ({ input, tally }) => {
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = HttpFetcher.create()
 
         jest.spyOn(input.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
