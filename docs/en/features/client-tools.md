@@ -4,9 +4,10 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 
 | class | responsibility |
 | :-- | :-- |
-| `BaseHttpFetcher` | Base class for sending a `Request` and resolving to its `Response`. |
-| `ProgressHttpFetcher` | Performs a `Request` over `XMLHttpRequest`, reporting upload and download progress. |
-| `FetchHttpFetcher` | Performs a `Request` through `fetch()`, keeping its `credentials`. |
+| `HttpFetcher` | Sends a `Request` through a request clerk and resolves to its `Response`. |
+| `BaseRequestClerk` | Base class for sending a `Request` and building its `Response`. |
+| `XMLHttpRequestClerk` | Builds a `Response` over `XMLHttpRequest`, reporting upload and download progress. |
+| `FetchRequestClerk` | Builds a `Response` through `fetch()`, keeping its `credentials`. |
 | `HeadersParser` | Parses raw header text into entries or a `Headers` instance. |
 | `PathnameBuilder` | Interpolates `[name]` placeholders in a pathname template. |
 | `BaseResponseBodyParser` | Base class for turning a `Response` body into a value. |
@@ -17,14 +18,14 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 
 ## Progress-reporting fetch
 
-`fetch()` cannot report upload progress, so the launchers use `ProgressHttpFetcher`, which runs the request through `XMLHttpRequest` and resolves to a `Response`.
+`fetch()` cannot report upload progress, so the launchers use `HttpFetcher` with `XMLHttpRequestClerk`, which runs the request through `XMLHttpRequest` and resolves to a `Response`. It is the default clerk of `HttpFetcher`.
 
 ```javascript
 import {
-  ProgressHttpFetcher,
+  HttpFetcher,
 } from '@openreachtech/furo'
 
-const response = await ProgressHttpFetcher.create()
+const response = await HttpFetcher.create()
   .fetchRequest({
     request: new Request('https://example.com/upload', {
       method: 'POST',
@@ -41,23 +42,27 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-The body goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`. The response body keeps the bytes the server sent, so a file download or a byte order mark arrives intact.
+The body goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`. The response body keeps the text the server sent.
 
-The returned promise rejects with a `TypeError` when the request is aborted, fails, or times out — matching how `fetch()` reports the same conditions.
+The returned promise rejects with a `TypeError` when the request is aborted, fails, or times out, matching how `fetch()` reports a failed request.
 
-Pass `timeout` in milliseconds to `.create()` to give up on a request that gets no answer: `ProgressHttpFetcher.create({ timeout: 15000 })`. Without it, the fetcher keeps the `timeout` of its `XMLHttpRequest`, which is `0` (no limit) by default.
+Pass `config` to `.create()` to set `timeout` in milliseconds, `responseType`, or `withCredentials` for every request: `HttpFetcher.create({ config: { timeout: 15000 } })`. Without a `timeout`, the request waits without limit.
 
 ## Fetch without same-origin cookies
 
-`XMLHttpRequest` always sends same-origin cookies, so `ProgressHttpFetcher` cannot honour `credentials: 'omit'`. `FetchHttpFetcher` sends the `Request` through `fetch()` as built, and also takes a `timeout`. It reports no progress.
+`XMLHttpRequest` always sends same-origin cookies, so `XMLHttpRequestClerk` cannot honour `credentials: 'omit'`. Pass `FetchRequestClerk` as `RequestClerkCtor` to send the `Request` through `fetch()` as built. It takes the same `config` and reports no progress.
 
 ```javascript
 import {
-  FetchHttpFetcher,
+  FetchRequestClerk,
+  HttpFetcher,
 } from '@openreachtech/furo'
 
-const response = await FetchHttpFetcher.create({
-  timeout: 15000,
+const response = await HttpFetcher.create({
+  RequestClerkCtor: FetchRequestClerk,
+  config: {
+    timeout: 15000,
+  },
 })
   .fetchRequest({
     request: new Request('https://example.com/start', {
