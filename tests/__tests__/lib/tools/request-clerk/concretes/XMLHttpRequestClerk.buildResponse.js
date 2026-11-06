@@ -178,7 +178,9 @@ describe('XMLHttpRequestClerk', () => {
 
         expect(sentBody)
           .toBeInstanceOf(Blob)
-        await expect(sentBody.text())
+        const response = new Response(sentBody)
+
+        await expect(response.text())
           .resolves
           .toBe('{"first":"alpha"}')
       })

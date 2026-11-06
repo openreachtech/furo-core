@@ -122,7 +122,9 @@ describe('XMLHttpRequestClerk', () => {
 
         expect(actual)
           .toBeInstanceOf(Blob)
-        await expect(actual?.text())
+        const response = new Response(actual)
+
+        await expect(response.text())
           .resolves
           .toBe(body)
       })
