@@ -4,9 +4,10 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 | class | responsibility |
 | :-- | :-- |
-| `BaseHttpFetcher` | `Request` を送信し、その `Response` へ解決するための基底クラスです。 |
-| `ProgressHttpFetcher` | `Request` を `XMLHttpRequest` 経由で実行し、アップロード・ダウンロードの進捗を通知します。 |
-| `FetchHttpFetcher` | `Request` を `fetch()` で実行し、その `credentials` を守ります。 |
+| `HttpFetcher` | `Request` をリクエストクラーク経由で送信し、その `Response` へ解決します。 |
+| `BaseRequestClerk` | `Request` を送信し、その `Response` を組み立てるための基底クラスです。 |
+| `XMLHttpRequestClerk` | `XMLHttpRequest` 経由で `Response` を組み立て、アップロード・ダウンロードの進捗を通知します。 |
+| `FetchRequestClerk` | `fetch()` で `Response` を組み立て、その `credentials` を守ります。 |
 | `HeadersParser` | 生のヘッダーテキストをエントリまたは `Headers` インスタンスへパースします。 |
 | `PathnameBuilder` | パス名テンプレート内の `[name]` プレースホルダーを補間します。 |
 | `BaseResponseBodyParser` | `Response` のボディを値へ変換するための基底クラスです。 |
@@ -17,14 +18,14 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 ## 進捗を通知する fetch
 
-`fetch()` はアップロードの進捗を通知できないため、ランチャーは `ProgressHttpFetcher` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行し、`Response` へ解決します。
+`fetch()` はアップロードの進捗を通知できないため、ランチャーは `HttpFetcher` と `XMLHttpRequestClerk` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行し、`Response` へ解決します。`HttpFetcher` の既定のクラークです。
 
 ```javascript
 import {
-  ProgressHttpFetcher,
+  HttpFetcher,
 } from '@openreachtech/furo'
 
-const response = await ProgressHttpFetcher.create()
+const response = await HttpFetcher.create()
   .fetchRequest({
     request: new Request('https://example.com/upload', {
       method: 'POST',
@@ -41,23 +42,27 @@ const response = await ProgressHttpFetcher.create()
   })
 ```
 
-ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。レスポンスボディはサーバーが送ったバイトをそのまま保つため、ダウンロードしたファイルやバイトオーダーマークも壊れずに届きます。
+ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。レスポンスボディはサーバーが送ったテキストをそのまま保ちます。
 
-返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
+返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が失敗したリクエストを報告する方法に揃えたものです。
 
-応答のないリクエストをあきらめるには、`.create()` に `timeout`（ミリ秒）を渡します（`ProgressHttpFetcher.create({ timeout: 15000 })`）。渡さない場合は `XMLHttpRequest` の `timeout` を引き継ぎ、その既定値は `0`（無制限）です。
+すべてのリクエストに `timeout`（ミリ秒）・`responseType`・`withCredentials` を設定するには、`.create()` に `config` を渡します（`HttpFetcher.create({ config: { timeout: 15000 } })`）。`timeout` を渡さない場合、リクエストは無制限に待ちます。
 
 ## 同一オリジンの cookie を付けない fetch
 
-`XMLHttpRequest` は同一オリジンの cookie を必ず送るため、`ProgressHttpFetcher` は `credentials: 'omit'` を守れません。`FetchHttpFetcher` は `Request` を作られたまま `fetch()` で送り、`timeout` も受け取ります。進捗は通知しません。
+`XMLHttpRequest` は同一オリジンの cookie を必ず送るため、`XMLHttpRequestClerk` は `credentials: 'omit'` を守れません。`RequestClerkCtor` に `FetchRequestClerk` を渡すと、`Request` を作られたまま `fetch()` で送ります。同じ `config` を受け取り、進捗は通知しません。
 
 ```javascript
 import {
-  FetchHttpFetcher,
+  FetchRequestClerk,
+  HttpFetcher,
 } from '@openreachtech/furo'
 
-const response = await FetchHttpFetcher.create({
-  timeout: 15000,
+const response = await HttpFetcher.create({
+  RequestClerkCtor: FetchRequestClerk,
+  config: {
+    timeout: 15000,
+  },
 })
   .fetchRequest({
     request: new Request('https://example.com/start', {

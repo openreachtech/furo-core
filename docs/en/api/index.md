@@ -71,9 +71,10 @@ Class members are written with the following notation.
 
 | class | description |
 | :-- | :-- |
-| [BaseHttpFetcher](./BaseHttpFetcher.md) | Base class for sending a `Request` and resolving to its `Response`. |
-| [ProgressHttpFetcher](./ProgressHttpFetcher.md) | Performs a `Request`, reporting upload and download progress. |
-| [FetchHttpFetcher](./FetchHttpFetcher.md) | Performs a `Request` through `fetch()`, keeping its `credentials`, with an optional timeout. |
+| [HttpFetcher](./HttpFetcher.md) | Sends a `Request` through a request clerk and resolves to its `Response`. |
+| [BaseRequestClerk](./BaseRequestClerk.md) | Base class for sending a `Request` and building its `Response`. |
+| [XMLHttpRequestClerk](./XMLHttpRequestClerk.md) | Builds a `Response` over `XMLHttpRequest`, reporting upload and download progress. |
+| [FetchRequestClerk](./FetchRequestClerk.md) | Builds a `Response` through `fetch()`, keeping its `credentials`, with an optional timeout. |
 | [HeadersParser](./HeadersParser.md) | Parses raw header text into entries or a `Headers`. |
 | [PathnameBuilder](./PathnameBuilder.md) | Interpolates `[name]` placeholders in a pathname. |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing a response body. |

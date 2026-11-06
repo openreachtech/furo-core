@@ -1,0 +1,13 @@
+# BaseRequestClerk
+
+Base class for sending a `Request` and building its `Response`. A clerk serves one request: it holds the `request`, the `config`, and the `sink`, and every subclass takes the same input and builds the response through the same `#buildResponse()`. `XMLHttpRequestClerk` and `FetchRequestClerk` extend it.
+
+| member | description |
+| :-- | :-- |
+| `.create()` | Factory method. Takes the `request`, an optional `config`, and an optional `sink`. |
+| `.resolveWithCredentials()` | Resolves the default of `withCredentials`, which is `true` when `credentials` of the request is `'include'`. |
+| `#buildResponse()` | Sends the request and resolves to its `Response`. Must be overridden. |
+
+The `config` takes `timeout` in milliseconds (default `0`, which waits without limit), `responseType` (default `''`), and `withCredentials` (default from `.resolveWithCredentials()`). `.create()` fills in what the `config` leaves out, and the constructor applies no defaults.
+
+The `sink` takes `onUploadProgress` and `onDownloadProgress`, which a clerk that cannot report progress leaves unread.
