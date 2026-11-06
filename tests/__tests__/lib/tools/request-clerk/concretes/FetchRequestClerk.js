@@ -134,12 +134,15 @@ describe('FetchRequestClerk', () => {
       })
     })
 
-    describe('should give the request itself to .fetch()', () => {
-      test('with the same instance', async () => {
+    describe('should give a clone of the request to .fetch()', () => {
+      test('with the same url and method', async () => {
         const fetchSpy = jest.spyOn(FetchRequestClerk, 'fetch')
           .mockResolvedValue(new Response('{}'))
 
-        const request = new Request('https://example.com/alpha')
+        const request = new Request('https://example.com/alpha', {
+          method: 'POST',
+          body: '{"first":"alpha"}',
+        })
 
         await FetchRequestClerk.create({
           request,
@@ -149,7 +152,12 @@ describe('FetchRequestClerk', () => {
         const [[input]] = fetchSpy.mock.calls
 
         expect(input)
+          .not
           .toBe(request)
+        expect(input)
+          .toHaveProperty('url', request.url)
+        expect(input)
+          .toHaveProperty('method', 'POST')
       })
     })
 
