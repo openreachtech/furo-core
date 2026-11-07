@@ -9,7 +9,8 @@
 | `.get:Payload` | このオペレーションのペイロードクラス。オーバーライドが必須です。 |
 | `.get:Capsule` | このオペレーションのカプセルクラス。オーバーライドが必須です。 |
 | `.get:fetch` | リクエストに使用される fetch 関数。 |
-| `.createHttpFetcher()` | リクエストに使用する進捗通知付きフェッチャーを生成します。 |
+| `.get:HttpFetcherCtor` | リクエストに使用する HTTP フェッチャーのクラス。既定は、アップロードとダウンロードの進捗を通知する `XMLHttpFetcher` です。 |
+| `.createHttpFetcher()` | リクエストと設定から、`.get:HttpFetcherCtor` の HTTP フェッチャーを生成します。 |
 | `.createPayload()` | 変数とオプションから `.get:Payload` のペイロードを生成します。 |
 | `.createPayloadWithValueHash()` | フラットな値ハッシュからペイロードを生成します。 |
 | `.createPayloadWithFormValueHash()` | `<form>` の値ハッシュからペイロードを生成します。 |
