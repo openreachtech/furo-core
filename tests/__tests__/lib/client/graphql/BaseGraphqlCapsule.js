@@ -7,11 +7,16 @@ import BaseGraphqlCapsule, {
 } from '~/lib/client/graphql/BaseGraphqlCapsule.js'
 
 import BaseGraphqlPayload from '~/lib/client/graphql/BaseGraphqlPayload.js'
+import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
 describe('BaseGraphqlCapsule', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
-      const mockResponse = new Response()
+      const mockResponseParcel = XMLHttpParcel.create({
+        request: new Request('http://example.com/neutral'), // Neutral value
+        config: {}, // Neutral value
+        response: new Response(),
+      })
       const mockPayload = new BaseGraphqlPayload({
         queryTemplate: /* GraphQL */ `
           query {
@@ -23,7 +28,7 @@ describe('BaseGraphqlCapsule', () => {
         variables: null,
       })
 
-      describe('#rawResponse', () => {
+      describe('#responseParcel', () => {
         const cases = [
           {
             params: {
@@ -34,7 +39,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('response: $params.response', ({ params }) => {
           const args = {
-            rawResponse: params.response,
+            responseParcel: params.response,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -43,7 +48,7 @@ describe('BaseGraphqlCapsule', () => {
           const actual = new BaseGraphqlCapsule(args)
 
           expect(actual)
-            .toHaveProperty('rawResponse', params.response)
+            .toHaveProperty('responseParcel', params.response)
         })
       })
 
@@ -81,7 +86,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('payload: $params.payload', ({ params }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: params.payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -150,7 +155,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: params.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -196,7 +201,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('abortedReason: $params.abortedReason', ({ params }) => {
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: params.abortedReason,
@@ -218,7 +223,7 @@ describe('BaseGraphqlCapsule', () => {
       /**
        * @type {Array<{
        *   params: {
-       *     rawResponse: Response | null
+       *     responseParcel: Response | null
        *     payload: BaseGraphqlPayload
        *     result: GraphqlType.Response | null
        *   }
@@ -227,7 +232,11 @@ describe('BaseGraphqlCapsule', () => {
       const cases = /** @type {Array<*>} */ ([
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -253,7 +262,11 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -313,7 +326,7 @@ describe('BaseGraphqlCapsule', () => {
         /**
          * @type {Array<{
          *   params: {
-         *     rawResponse: Response | null
+         *     responseParcel: Response | null
          *     payload: BaseGraphqlPayload
          *     result: GraphqlType.Response | null
          *     abortedReason: LAUNCH_ABORTED_REASON
@@ -323,7 +336,11 @@ describe('BaseGraphqlCapsule', () => {
         const cases = /** @type {Array<*>} */ ([
           {
             params: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -350,7 +367,11 @@ describe('BaseGraphqlCapsule', () => {
           },
           {
             params: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -413,7 +434,7 @@ describe('BaseGraphqlCapsule', () => {
         /**
          * @type {Array<{
          *   params: {
-         *     rawResponse: Response | null
+         *     responseParcel: Response | null
          *     payload: BaseGraphqlPayload
          *     result: GraphqlType.Response | null
          *   }
@@ -422,7 +443,11 @@ describe('BaseGraphqlCapsule', () => {
         const cases = /** @type {Array<*>} */ ([
           {
             params: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -448,7 +473,11 @@ describe('BaseGraphqlCapsule', () => {
           },
           {
             params: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -528,7 +557,7 @@ describe('BaseGraphqlCapsule', () => {
     describe('to call .create()', () => {
       test('with no args', () => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
         }
@@ -603,7 +632,7 @@ describe('BaseGraphqlCapsule', () => {
     describe('to call .create()', () => {
       test.each(cases)('payload: $args.payload', ({ args }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: args.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -679,7 +708,7 @@ describe('BaseGraphqlCapsule', () => {
     describe('to call .create()', () => {
       test.each(cases)('payload: $args.payload', ({ args }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: args.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -704,6 +733,10 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           args: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -718,6 +751,10 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           args: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -744,6 +781,10 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           args: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -758,6 +799,10 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           args: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -774,7 +819,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('payload: $args.payload', ({ args }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: args.responseParcel,
           payload: args.payload,
           result: null,
         }
@@ -798,7 +843,11 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           args: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -813,7 +862,11 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           args: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -840,7 +893,11 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           args: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -855,7 +912,11 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           args: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -872,7 +933,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('payload: $args.payload', ({ args }) => {
         const expected = {
-          rawResponse: args.rawResponse,
+          responseParcel: args.responseParcel,
           payload: args.payload,
           result: null,
         }
@@ -917,6 +978,32 @@ describe('BaseGraphqlCapsule', () => {
 })
 
 describe('BaseGraphqlCapsule', () => {
+  describe('.get:abortErrorCode', () => {
+    test('to be fixed value', () => {
+      const expected = '192.X000.004'
+
+      const actual = BaseGraphqlCapsule.abortErrorCode
+
+      expect(actual)
+        .toBe(expected)
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
+  describe('.get:timeoutErrorCode', () => {
+    test('to be fixed value', () => {
+      const expected = '192.X000.003'
+
+      const actual = BaseGraphqlCapsule.timeoutErrorCode
+
+      expect(actual)
+        .toBe(expected)
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
   describe('.get:networkErrorCode', () => {
     test('to be fixed value', () => {
       const expected = '192.X000.001'
@@ -944,7 +1031,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#get:Ctor', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -967,7 +1058,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: mockResult,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -977,7 +1068,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -987,7 +1078,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -997,7 +1088,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1019,7 +1110,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#get:content', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -1035,7 +1130,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: {
               data: {
@@ -1056,7 +1151,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: {
               data: {
@@ -1077,7 +1172,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: {
               data: {
@@ -1102,7 +1197,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1125,7 +1220,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#get:errors', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -1141,7 +1240,7 @@ describe('BaseGraphqlCapsule', () => {
      * @type {Array<{
      *   params: {
      *     args: {
-     *       rawResponse: Response | null
+     *       responseParcel: Response | null
      *       payload: BaseGraphqlPayload
      *       result: GraphqlType.Response | null
      *       abortedReason: LAUNCH_ABORTED_REASON
@@ -1154,7 +1253,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: {
               errors: [
@@ -1187,7 +1286,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: {
               errors: [
@@ -1238,7 +1337,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: {
               errors: [
@@ -1307,7 +1406,7 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1330,7 +1429,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#isPending()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockResult = {
       data: {
         customer: {
@@ -1343,7 +1446,7 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1351,7 +1454,7 @@ describe('BaseGraphqlCapsule', () => {
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const capsule = new BaseGraphqlCapsule(params)
 
         const actual = capsule.isPending()
@@ -1376,7 +1479,7 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: mockResult,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1384,7 +1487,7 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1392,7 +1495,7 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1400,7 +1503,7 @@ describe('BaseGraphqlCapsule', () => {
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const capsule = new BaseGraphqlCapsule(params)
 
         const actual = capsule.isPending()
@@ -1492,7 +1595,7 @@ describe('BaseGraphqlCapsule', () => {
         })
 
         const args = {
-          rawResponse: null,
+          responseParcel: null,
           payload: targetPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1560,7 +1663,7 @@ describe('BaseGraphqlCapsule', () => {
         })
 
         const args = {
-          rawResponse: null,
+          responseParcel: null,
           payload: targetPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1575,7 +1678,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test('when payload is null', () => {
         const args = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1586,6 +1689,208 @@ describe('BaseGraphqlCapsule', () => {
 
         expect(actual)
           .toBeFalsy()
+      })
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
+  describe('#hasAbortError()', () => {
+    const mockPayload = new BaseGraphqlPayload({
+      queryTemplate: /* GraphQL */ `
+        query {
+          customer {
+            id
+          }
+        }
+      `,
+      variables: null,
+    })
+
+    describe('to be true where the parcel is of the abort', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasAbortError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to be false where the parcel is not of the abort', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: null,
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/resource-0003'),
+              config: {},
+              response: new Response(),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasAbortError()
+
+        expect(actual)
+          .toBe(false)
+      })
+    })
+  })
+})
+
+describe('BaseGraphqlCapsule', () => {
+  describe('#hasTimeoutError()', () => {
+    const mockPayload = new BaseGraphqlPayload({
+      queryTemplate: /* GraphQL */ `
+        query {
+          customer {
+            id
+          }
+        }
+      `,
+      variables: null,
+    })
+
+    describe('to be true where the parcel is of the timeout', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasTimeoutError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to be false where the parcel is not of the timeout', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: null,
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/resource-0003'),
+              config: {},
+              response: new Response(),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasTimeoutError()
+
+        expect(actual)
+          .toBe(false)
       })
     })
   })
@@ -1604,18 +1909,18 @@ describe('BaseGraphqlCapsule', () => {
       variables: null,
     })
 
-    describe('to has no rawResponse (truthy)', () => {
+    describe('to has no responseParcel (truthy)', () => {
       const cases = [
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1629,18 +1934,22 @@ describe('BaseGraphqlCapsule', () => {
       })
     })
 
-    describe('to has rawResponse (falsy)', () => {
+    describe('to has responseParcel (falsy)', () => {
       const cases = [
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1653,12 +1962,88 @@ describe('BaseGraphqlCapsule', () => {
           .toBeFalsy()
       })
     })
+
+    describe('to has a failed parcel other than the abortion and the timeout (true)', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasNetworkError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to has a parcel of the abortion or the timeout (false)', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.hasNetworkError()
+
+        expect(actual)
+          .toBe(false)
+      })
+    })
   })
 })
 
 describe('BaseGraphqlCapsule', () => {
   describe('#hasJsonParseError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -1670,7 +2055,7 @@ describe('BaseGraphqlCapsule', () => {
       variables: null,
     })
 
-    describe('when has rawResponse', () => {
+    describe('when has responseParcel', () => {
       describe('to has no result (truthy)', () => {
         const cases = [
           {
@@ -1682,7 +2067,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: params.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1752,7 +2137,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: params.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1767,7 +2152,7 @@ describe('BaseGraphqlCapsule', () => {
       })
     })
 
-    describe('when has no rawResponse', () => {
+    describe('when has no responseParcel', () => {
       describe('to be falsy always', () => {
         /**
          * @type {Array<{
@@ -1829,7 +2214,7 @@ describe('BaseGraphqlCapsule', () => {
 
         test.each(cases)('result: $params.result', ({ params }) => {
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: params.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1848,7 +2233,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#hasQueryError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -1914,7 +2303,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1950,7 +2339,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1968,7 +2357,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#hasError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -1984,7 +2377,7 @@ describe('BaseGraphqlCapsule', () => {
       /**
        * @type {Array<{
        *   params: {
-       *     rawResponse: Response | null
+       *     responseParcel: Response | null
        *     payload: BaseGraphqlPayload
        *     result: GraphqlType.Response | null
        *   }
@@ -1994,7 +2387,7 @@ describe('BaseGraphqlCapsule', () => {
         // query error
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               errors: [
                 {
@@ -2028,22 +2421,22 @@ describe('BaseGraphqlCapsule', () => {
         // network error
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
         },
         // JSON parse error
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: null,
           },
         },
       ])
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2062,7 +2455,7 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               data: {
                 customer: {
@@ -2074,15 +2467,15 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {},
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2101,7 +2494,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#hasContent()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -2141,7 +2538,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2205,7 +2602,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2223,7 +2620,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#extractErrors()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -2341,7 +2742,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params, expected }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2359,7 +2760,7 @@ describe('BaseGraphqlCapsule', () => {
       const cases = [
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               data: {
                 customer: {
@@ -2371,21 +2772,21 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: null,
           },
         },
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2405,7 +2806,96 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#getErrorMessage()', () => {
-    const mockResponse = new Response()
+    describe('when the response was not received', () => {
+      const neutralPayload = new BaseGraphqlPayload({
+        queryTemplate: /* GraphQL */ `
+          query {
+            customer {
+              id
+            }
+          }
+        `,
+        variables: null,
+      })
+
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.timeoutErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.timeoutErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.abortErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.abortErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.networkErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseGraphqlCapsule.networkErrorCode,
+        },
+      ]
+
+      test.each(cases)('expected: $expected', ({ params, expected }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: neutralPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseGraphqlCapsule(args)
+
+        const actual = capsule.getErrorMessage()
+
+        expect(actual)
+          .toBe(expected)
+      })
+    })
+
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -2455,7 +2945,7 @@ describe('BaseGraphqlCapsule', () => {
                 },
               },
             }),
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
           expected: '191.X000.001',
@@ -2464,7 +2954,7 @@ describe('BaseGraphqlCapsule', () => {
         {
           params: {
             payload: mockPayload,
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
           expected: '192.X000.001',
@@ -2473,7 +2963,7 @@ describe('BaseGraphqlCapsule', () => {
         {
           params: {
             payload: mockPayload,
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: null,
           },
           expected: '192.X000.002',
@@ -2482,7 +2972,7 @@ describe('BaseGraphqlCapsule', () => {
         {
           params: {
             payload: mockPayload,
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               errors: [
                 {
@@ -2517,7 +3007,7 @@ describe('BaseGraphqlCapsule', () => {
         {
           params: {
             payload: mockPayload,
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               errors: [
                 {
@@ -2541,7 +3031,7 @@ describe('BaseGraphqlCapsule', () => {
         {
           params: {
             payload: mockPayload,
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               errors: [],
             },
@@ -2550,9 +3040,9 @@ describe('BaseGraphqlCapsule', () => {
         },
       ]
 
-      test.each(cases)('payload: $params.payload; rawResponse: $params.rawResponse; result: $params.result', ({ params, expected }) => {
+      test.each(cases)('payload: $params.payload; responseParcel: $params.responseParcel; result: $params.result', ({ params, expected }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: params.payload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2588,7 +3078,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2605,7 +3095,7 @@ describe('BaseGraphqlCapsule', () => {
     describe('when has no error on pre-fetch', () => {
       test('all args are null', () => {
         const args = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2623,7 +3113,11 @@ describe('BaseGraphqlCapsule', () => {
 
 describe('BaseGraphqlCapsule', () => {
   describe('#extractContent()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = new BaseGraphqlPayload({
       queryTemplate: /* GraphQL */ `
         query {
@@ -2673,7 +3167,7 @@ describe('BaseGraphqlCapsule', () => {
 
       test.each(cases)('result: $params.result', ({ params, expected }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2691,7 +3185,7 @@ describe('BaseGraphqlCapsule', () => {
       /**
        * @type {Array<{
        *   params: {
-       *     rawResponse: Response | null
+       *     responseParcel: Response | null
        *     result: GraphqlType.Response | null
        *   }
        * }>}
@@ -2700,21 +3194,21 @@ describe('BaseGraphqlCapsule', () => {
         // on network error
         {
           params: {
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
         },
         // on JSON parse error
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: null,
           },
         },
         // on query error
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               errors: [
                 {
@@ -2735,15 +3229,15 @@ describe('BaseGraphqlCapsule', () => {
         },
         {
           params: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {},
           },
         },
       ])
 
-      test.each(cases)('rawResponse: $params.rawResponse; result: $params.result', ({ params }) => {
+      test.each(cases)('responseParcel: $params.responseParcel; result: $params.result', ({ params }) => {
         const args = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: mockPayload,
           result: params.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
