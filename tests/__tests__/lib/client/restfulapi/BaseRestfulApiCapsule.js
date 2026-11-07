@@ -7,11 +7,16 @@ import BaseRestfulApiCapsule, {
 } from '~/lib/client/restfulapi/BaseRestfulApiCapsule.js'
 
 import BaseRestfulApiPayload from '~/lib/client/restfulapi/BaseRestfulApiPayload.js'
+import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
 describe('BaseRestfulApiCapsule', () => {
   describe('constructor', () => {
     describe('to keep property', () => {
-      const mockResponse = new Response()
+      const mockResponseParcel = XMLHttpParcel.create({
+        request: new Request('http://example.com/neutral'), // Neutral value
+        config: {}, // Neutral value
+        response: new Response(),
+      })
       const mockPayload = new BaseRestfulApiPayload({
         query: {},
         body: {},
@@ -19,7 +24,7 @@ describe('BaseRestfulApiCapsule', () => {
         options: {},
       })
 
-      describe('#rawResponse', () => {
+      describe('#responseParcel', () => {
         const cases = [
           {
             input: {
@@ -41,7 +46,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('response: $input.response', ({ input }) => {
           const args = {
-            rawResponse: input.response,
+            responseParcel: input.response,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -50,7 +55,7 @@ describe('BaseRestfulApiCapsule', () => {
           const actual = new BaseRestfulApiCapsule(args)
 
           expect(actual)
-            .toHaveProperty('rawResponse', input.response)
+            .toHaveProperty('responseParcel', input.response)
         })
       })
 
@@ -84,7 +89,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('payload: $input.payload', ({ input }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: input.payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -123,7 +128,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('result: $input.result', ({ input }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -162,7 +167,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('abortedReason: $input.abortedReason', ({ input }) => {
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: input.abortedReason,
@@ -184,7 +189,7 @@ describe('BaseRestfulApiCapsule', () => {
       /**
        * @type {Array<{
        *   input: {
-       *     rawResponse: Response | null
+       *     responseParcel: Response | null
        *     payload: BaseRestfulApiPayload | null
        *     result: * | null
        *   }
@@ -193,7 +198,11 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 alpha: 'alpha value',
@@ -210,7 +219,11 @@ describe('BaseRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 beta: 'beta value',
@@ -238,7 +251,7 @@ describe('BaseRestfulApiCapsule', () => {
         /**
          * @type {Array<{
          *   input: {
-         *     rawResponse: Response | null
+         *     responseParcel: Response | null
          *     payload: BaseRestfulApiPayload | null
          *     result: * | null
          *     abortedReason: LAUNCH_ABORTED_REASON
@@ -248,7 +261,11 @@ describe('BaseRestfulApiCapsule', () => {
         const cases = [
           {
             input: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: BaseRestfulApiPayload.create({
                 query: {
                   alpha: 'alpha value',
@@ -266,7 +283,11 @@ describe('BaseRestfulApiCapsule', () => {
           },
           {
             input: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: BaseRestfulApiPayload.create({
                 query: {
                   beta: 'beta value',
@@ -296,7 +317,7 @@ describe('BaseRestfulApiCapsule', () => {
         /**
          * @type {Array<{
          *   input: {
-         *     rawResponse: Response | null
+         *     responseParcel: Response | null
          *     payload: BaseRestfulApiPayload | null
          *     result: * | null
          *   }
@@ -305,7 +326,11 @@ describe('BaseRestfulApiCapsule', () => {
         const cases = [
           {
             input: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: BaseRestfulApiPayload.create({
                 query: {
                   id: 10001,
@@ -322,7 +347,11 @@ describe('BaseRestfulApiCapsule', () => {
           },
           {
             input: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: BaseRestfulApiPayload.create({
                 query: {
                   id: 10002,
@@ -369,7 +398,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('to call .create()', () => {
       test('with no args', () => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
         }
@@ -422,7 +451,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('to call .create()', () => {
       test.each(cases)('payload: $input.payload', ({ input }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: input.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -474,7 +503,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('to call .create()', () => {
       test.each(cases)('payload: $input.payload', ({ input }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: null,
           payload: input.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -498,6 +527,10 @@ describe('BaseRestfulApiCapsule', () => {
     const cases = [
       {
         input: {
+          responseParcel: XMLHttpParcel.createAsNetworkError({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+          }),
           payload: BaseRestfulApiPayload.create({
             query: {
               id: 10001,
@@ -507,6 +540,10 @@ describe('BaseRestfulApiCapsule', () => {
       },
       {
         input: {
+          responseParcel: XMLHttpParcel.createAsNetworkError({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+          }),
           payload: BaseRestfulApiPayload.create({
             query: {
               id: 10002,
@@ -528,7 +565,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('to call .create()', () => {
       test.each(cases)('payload: $input.payload', ({ input }) => {
         const expectedArgs = {
-          rawResponse: null,
+          responseParcel: input.responseParcel,
           payload: input.payload,
           result: null,
         }
@@ -549,7 +586,11 @@ describe('BaseRestfulApiCapsule', () => {
     const cases = [
       {
         input: {
-          rawResponse: new Response(),
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response(),
+          }),
           payload: BaseRestfulApiPayload.create({
             query: {
               id: 10001,
@@ -559,7 +600,11 @@ describe('BaseRestfulApiCapsule', () => {
       },
       {
         input: {
-          rawResponse: new Response(),
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response(),
+          }),
           payload: BaseRestfulApiPayload.create({
             query: {
               id: 10002,
@@ -581,7 +626,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('to call constructor', () => {
       test.each(cases)('payload: $input.payload', ({ input }) => {
         const expected = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: input.payload,
           result: null,
         }
@@ -624,6 +669,32 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
+  describe('.get:abortErrorCode', () => {
+    test('to be fixed value', () => {
+      const expected = '192.X000.004'
+
+      const actual = BaseRestfulApiCapsule.abortErrorCode
+
+      expect(actual)
+        .toBe(expected)
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('.get:timeoutErrorCode', () => {
+    test('to be fixed value', () => {
+      const expected = '192.X000.003'
+
+      const actual = BaseRestfulApiCapsule.timeoutErrorCode
+
+      expect(actual)
+        .toBe(expected)
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
   describe('.get:networkErrorCode', () => {
     test('to be fixed value', () => {
       const expected = '192.X000.001'
@@ -651,7 +722,11 @@ describe('BaseRestfulApiCapsule', () => {
 
 describe('BaseRestfulApiCapsule', () => {
   describe('#get:Ctor', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRestfulApiPayload.create()
     const mockResult = {
       content: {
@@ -665,7 +740,7 @@ describe('BaseRestfulApiCapsule', () => {
       {
         input: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: mockResult,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -675,7 +750,7 @@ describe('BaseRestfulApiCapsule', () => {
       {
         input: {
           args: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -685,7 +760,7 @@ describe('BaseRestfulApiCapsule', () => {
       {
         input: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -695,7 +770,7 @@ describe('BaseRestfulApiCapsule', () => {
       {
         input: {
           args: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -721,36 +796,48 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 200,
-              statusText: 'OK',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 200,
+                statusText: 'OK',
+              }),
             }),
           },
           expected: 200,
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 400,
-              statusText: 'Bad Request',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 400,
+                statusText: 'Bad Request',
+              }),
             }),
           },
           expected: 400,
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 404,
-              statusText: 'Not Found',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 404,
+                statusText: 'Not Found',
+              }),
             }),
           },
           expected: 404,
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input, expected }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input, expected }) => {
         const capsule = new BaseRestfulApiCapsule({
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -767,14 +854,14 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: null, // network error
+            responseParcel: null, // network error
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const capsule = new BaseRestfulApiCapsule({
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -795,36 +882,48 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 200,
-              statusText: 'OK',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 200,
+                statusText: 'OK',
+              }),
             }),
           },
           expected: 'OK',
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 400,
-              statusText: 'Bad Request',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 400,
+                statusText: 'Bad Request',
+              }),
             }),
           },
           expected: 'Bad Request',
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 404,
-              statusText: 'Not Found',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 404,
+                statusText: 'Not Found',
+              }),
             }),
           },
           expected: 'Not Found',
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input, expected }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input, expected }) => {
         const capsule = new BaseRestfulApiCapsule({
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -841,14 +940,14 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: null, // network error
+            responseParcel: null, // network error
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const capsule = new BaseRestfulApiCapsule({
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -865,7 +964,11 @@ describe('BaseRestfulApiCapsule', () => {
 
 describe('BaseRestfulApiCapsule', () => {
   describe('#hasError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRestfulApiPayload.create()
 
     describe('to has error (truthy)', () => {
@@ -919,7 +1022,7 @@ describe('BaseRestfulApiCapsule', () => {
 
       test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -959,7 +1062,7 @@ describe('BaseRestfulApiCapsule', () => {
 
       test.each(cases)('input: $input', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: {},
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -989,7 +1092,11 @@ describe('BaseRestfulApiCapsule', () => {
 
 describe('BaseRestfulApiCapsule', () => {
   describe('#isPending()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockResult = {
       content: {
         customer: {
@@ -1002,7 +1109,7 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1010,7 +1117,7 @@ describe('BaseRestfulApiCapsule', () => {
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel; result: $input.result', ({ input }) => {
         const capsule = new BaseRestfulApiCapsule(input)
 
         const actual = capsule.isPending()
@@ -1026,7 +1133,7 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: mockResult,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1034,7 +1141,7 @@ describe('BaseRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1042,7 +1149,7 @@ describe('BaseRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1050,7 +1157,7 @@ describe('BaseRestfulApiCapsule', () => {
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel; result: $input.result', ({ input }) => {
         const capsule = new BaseRestfulApiCapsule(input)
 
         const actual = capsule.isPending()
@@ -1365,7 +1472,7 @@ describe('BaseRestfulApiCapsule', () => {
           })
 
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1388,7 +1495,7 @@ describe('BaseRestfulApiCapsule', () => {
           })
 
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1403,7 +1510,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test('when payload is null', () => {
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload: null,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1421,21 +1528,213 @@ describe('BaseRestfulApiCapsule', () => {
 })
 
 describe('BaseRestfulApiCapsule', () => {
-  describe('#hasNetworkError()', () => {
-    const mockPayload = BaseRestfulApiPayload.create()
+  describe('#hasAbortError()', () => {
+    const mockPayload = BaseRestfulApiPayload.create({
+      query: {
+        id: 10001,
+      },
+    })
 
-    describe('to has no rawResponse (truthy)', () => {
+    describe('to be true where the parcel is of the abort', () => {
       const cases = [
         {
-          input: {
-            rawResponse: null,
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasAbortError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to be false where the parcel is not of the abort', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: null,
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/resource-0003'),
+              config: {},
+              response: new Response(),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasAbortError()
+
+        expect(actual)
+          .toBe(false)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('#hasTimeoutError()', () => {
+    const mockPayload = BaseRestfulApiPayload.create({
+      query: {
+        id: 10001,
+      },
+    })
+
+    describe('to be true where the parcel is of the timeout', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasTimeoutError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to be false where the parcel is not of the timeout', () => {
+      const cases = [
+        {
+          params: {
+            responseParcel: null,
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/resource-0003'),
+              config: {},
+              response: new Response(),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $params.responseParcel', ({ params }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasTimeoutError()
+
+        expect(actual)
+          .toBe(false)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiCapsule', () => {
+  describe('#hasNetworkError()', () => {
+    const mockPayload = BaseRestfulApiPayload.create()
+
+    describe('to has no responseParcel (truthy)', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: null,
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
+        const args = {
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1449,18 +1748,22 @@ describe('BaseRestfulApiCapsule', () => {
       })
     })
 
-    describe('to has rawResponse (falsy)', () => {
+    describe('to has responseParcel (falsy)', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1473,15 +1776,91 @@ describe('BaseRestfulApiCapsule', () => {
           .toBeFalsy()
       })
     })
+
+    describe('to has a failed parcel other than the abortion and the timeout (true)', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            responseParcel: XMLHttpParcel.createAsError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
+        const args = {
+          responseParcel: input.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasNetworkError()
+
+        expect(actual)
+          .toBe(true)
+      })
+    })
+
+    describe('to has a parcel of the abortion or the timeout (false)', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
+        const args = {
+          responseParcel: input.responseParcel,
+          payload: mockPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.hasNetworkError()
+
+        expect(actual)
+          .toBe(false)
+      })
+    })
   })
 })
 
 describe('BaseRestfulApiCapsule', () => {
   describe('#hasResponseBodyParseError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRestfulApiPayload.create()
 
-    describe('when has rawResponse', () => {
+    describe('when has responseParcel', () => {
       describe('to has no result (truthy)', () => {
         const cases = [
           {
@@ -1493,7 +1872,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('result: $input.result', ({ input }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1533,7 +1912,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('result: $input.result', ({ input }) => {
           const args = {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1548,7 +1927,7 @@ describe('BaseRestfulApiCapsule', () => {
       })
     })
 
-    describe('when has no rawResponse', () => {
+    describe('when has no responseParcel', () => {
       describe('to be falsy always', () => {
         const cases = [
           {
@@ -1580,7 +1959,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('result: $input.result', ({ input }) => {
           const args = {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1605,45 +1984,61 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response(null, {
-              status: 400,
-              statusText: 'Bad Request',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(null, {
+                status: 400,
+                statusText: 'Bad Request',
+              }),
             }),
             result: {},
           },
         },
         {
           input: {
-            rawResponse: new Response(null, {
-              status: 401,
-              statusText: 'Unauthorized',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(null, {
+                status: 401,
+                statusText: 'Unauthorized',
+              }),
             }),
             result: {},
           },
         },
         {
           input: {
-            rawResponse: new Response(null, {
-              status: 404,
-              statusText: 'Not Found',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(null, {
+                status: 404,
+                statusText: 'Not Found',
+              }),
             }),
             result: {},
           },
         },
         {
           input: {
-            rawResponse: new Response(null, {
-              status: 500,
-              statusText: 'Internal Server Error',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(null, {
+                status: 500,
+                statusText: 'Internal Server Error',
+              }),
             }),
             result: {},
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1661,9 +2056,13 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 200,
-              statusText: 'OK',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 200,
+                statusText: 'OK',
+              }),
             }),
             result: {
               content: {
@@ -1676,18 +2075,22 @@ describe('BaseRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 201,
-              statusText: 'Created',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 201,
+                statusText: 'Created',
+              }),
             }),
             result: {},
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1711,9 +2114,13 @@ describe('BaseRestfulApiCapsule', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 200,
-              statusText: 'OK',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 200,
+                statusText: 'OK',
+              }),
             }),
             result: {
               content: {
@@ -1726,18 +2133,22 @@ describe('BaseRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: new Response('{}', {
-              status: 201,
-              statusText: 'Created',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{}', {
+                status: 201,
+                statusText: 'Created',
+              }),
             }),
             result: {},
           },
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1755,7 +2166,91 @@ describe('BaseRestfulApiCapsule', () => {
 
 describe('BaseRestfulApiCapsule', () => {
   describe('#getErrorMessage()', () => {
-    const mockResponse = new Response()
+    describe('when the response was not received', () => {
+      const neutralPayload = BaseRestfulApiPayload.create({
+        query: {
+          id: 10001,
+        },
+      })
+
+      const cases = [
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.timeoutErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsTimeoutError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.timeoutErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.abortErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsAbortError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.abortErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.networkErrorCode,
+        },
+        {
+          params: {
+            responseParcel: XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+          expected: BaseRestfulApiCapsule.networkErrorCode,
+        },
+      ]
+
+      test.each(cases)('expected: $expected', ({ params, expected }) => {
+        const args = {
+          responseParcel: params.responseParcel,
+          payload: neutralPayload,
+          result: null,
+          abortedReason: LAUNCH_ABORTED_REASON.NONE,
+        }
+        const capsule = new BaseRestfulApiCapsule(args)
+
+        const actual = capsule.getErrorMessage()
+
+        expect(actual)
+          .toBe(expected)
+      })
+    })
+
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRestfulApiPayload.create()
 
     const GetRequestRestfulApiPayload = class extends BaseRestfulApiPayload {
@@ -1808,7 +2303,7 @@ describe('BaseRestfulApiCapsule', () => {
                   second: '2nd value',
                 },
               }),
-              rawResponse: null,
+              responseParcel: null,
               result: null,
             },
           },
@@ -1820,7 +2315,7 @@ describe('BaseRestfulApiCapsule', () => {
                   // second: '2nd value',
                 },
               }),
-              rawResponse: null,
+              responseParcel: null,
               result: null,
             },
           },
@@ -1830,7 +2325,7 @@ describe('BaseRestfulApiCapsule', () => {
           const expected = '191.X000.001'
 
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1849,21 +2344,21 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
-              rawResponse: null,
+              responseParcel: null,
               result: null,
             },
           },
           {
             input: {
               payload: PostRequestRestfulApiPayload.create(),
-              rawResponse: null,
+              responseParcel: null,
               result: null,
             },
           },
           {
             input: {
               payload: DeleteRequestRestfulApiPayload.create(),
-              rawResponse: null,
+              responseParcel: null,
               result: null,
             },
           },
@@ -1873,7 +2368,7 @@ describe('BaseRestfulApiCapsule', () => {
           const expected = '192.X000.001'
 
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1892,21 +2387,21 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: null,
             },
           },
           {
             input: {
               payload: PostRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: null,
             },
           },
           {
             input: {
               payload: DeleteRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: null,
             },
           },
@@ -1916,7 +2411,7 @@ describe('BaseRestfulApiCapsule', () => {
           const expected = '192.X000.002'
 
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1935,9 +2430,13 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
-              rawResponse: new Response(null, {
-                status: 400,
-                statusText: 'Bad Request',
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(null, {
+                  status: 400,
+                  statusText: 'Bad Request',
+                }),
               }),
               result: {},
             },
@@ -1946,9 +2445,13 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: PostRequestRestfulApiPayload.create(),
-              rawResponse: new Response(null, {
-                status: 401,
-                statusText: 'Unauthorized',
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(null, {
+                  status: 401,
+                  statusText: 'Unauthorized',
+                }),
               }),
               result: {},
             },
@@ -1957,9 +2460,13 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: DeleteRequestRestfulApiPayload.create(),
-              rawResponse: new Response(null, {
-                status: 404,
-                statusText: 'Not Found',
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(null, {
+                  status: 404,
+                  statusText: 'Not Found',
+                }),
               }),
               result: {},
             },
@@ -1967,9 +2474,9 @@ describe('BaseRestfulApiCapsule', () => {
           },
         ]
 
-        test.each(cases)('rawResponse: $input.rawResponse', ({ input, expected }) => {
+        test.each(cases)('responseParcel: $input.responseParcel', ({ input, expected }) => {
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -1988,7 +2495,7 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: {
                 errorCode: '200.G001.001',
               },
@@ -1998,7 +2505,7 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: PostRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: {
                 errorCode: '200.P001.001',
               },
@@ -2008,7 +2515,7 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: DeleteRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: {
                 errorCode: '200.D001.001',
               },
@@ -2019,7 +2526,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('result: $input.result', ({ input, expected }) => {
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2043,7 +2550,7 @@ describe('BaseRestfulApiCapsule', () => {
           {
             input: {
               payload: GetRequestRestfulApiPayload.create(),
-              rawResponse: mockResponse,
+              responseParcel: mockResponseParcel,
               result: {
                 error: {
                   code: null,
@@ -2055,7 +2562,7 @@ describe('BaseRestfulApiCapsule', () => {
 
         test.each(cases)('payload: $input.payload.constructor.name', ({ input }) => {
           const args = {
-            rawResponse: input.rawResponse,
+            responseParcel: input.responseParcel,
             payload: input.payload,
             result: input.result,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2092,7 +2599,7 @@ describe('BaseRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2109,7 +2616,7 @@ describe('BaseRestfulApiCapsule', () => {
     describe('when has no error on pre-fetch', () => {
       test('all args are null', () => {
         const args = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2128,14 +2635,18 @@ describe('BaseRestfulApiCapsule', () => {
 describe('BaseRestfulApiCapsule', () => {
   describe('#generateResultErrorCode()', () => {
     describe('should throw an error', () => {
-      const mockResponse = new Response()
+      const mockResponseParcel = XMLHttpParcel.create({
+        request: new Request('http://example.com/neutral'), // Neutral value
+        config: {}, // Neutral value
+        response: new Response(),
+      })
       const mockPayload = BaseRestfulApiPayload.create()
 
       const cases = [
         {
           name: 'on result error',
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2144,7 +2655,7 @@ describe('BaseRestfulApiCapsule', () => {
         {
           name: 'on network error',
           input: {
-            rawResponse: null,
+            responseParcel: null,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2153,7 +2664,7 @@ describe('BaseRestfulApiCapsule', () => {
         {
           name: 'on response body parse error',
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             payload: mockPayload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -2162,9 +2673,13 @@ describe('BaseRestfulApiCapsule', () => {
         {
           name: 'on status code error',
           input: {
-            rawResponse: new Response(null, {
-              status: 400,
-              statusText: 'Bad Request',
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(null, {
+                status: 400,
+                statusText: 'Bad Request',
+              }),
             }),
             payload: mockPayload,
             result: null,
