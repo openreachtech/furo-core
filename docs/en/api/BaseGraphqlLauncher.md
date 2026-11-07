@@ -9,7 +9,8 @@ Binds a payload class to a capsule class, and launches the request. Extend one p
 | `.get:Payload` | The payload class for this operation. Must be overridden. |
 | `.get:Capsule` | The capsule class for this operation. Must be overridden. |
 | `.get:fetch` | The fetch function used for the request. |
-| `.createHttpFetcher()` | Creates the progress-reporting fetcher used for the request. |
+| `.get:HttpFetcherCtor` | The HTTP fetcher class used for the request. Defaults to `XMLHttpFetcher`, which reports the upload and download progress. |
+| `.createHttpFetcher()` | Creates an HTTP fetcher of `.get:HttpFetcherCtor` from the request and the config. |
 | `.createPayload()` | Creates a payload of `.get:Payload` from variables and options. |
 | `.createPayloadWithValueHash()` | Creates a payload from a flat value hash. |
 | `.createPayloadWithFormValueHash()` | Creates a payload from a `<form>` value hash. |
