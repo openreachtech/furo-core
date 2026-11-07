@@ -9,7 +9,8 @@ import {
   LAUNCH_ABORTED_REASON,
 } from '~/lib/client/restfulapi/BaseRestfulApiCapsule.js'
 
-import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher.js'
+import XMLHttpFetcher from '~/lib/tools/http-fetchers/concretes/XMLHttpFetcher.js'
+import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
 import BaseResponseBodyParser from '~/lib/tools/response-body-parser/BaseResponseBodyParser'
 import JsonResponseBodyParser from '~/lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
@@ -117,12 +118,53 @@ describe('BaseRestfulApiLauncher', () => {
 })
 
 describe('BaseRestfulApiLauncher', () => {
-  describe('.createHttpFetcher()', () => {
+  describe('.get:HttpFetcherCtor', () => {
     test('to be fixed value', () => {
-      const actual = BaseRestfulApiLauncher.createHttpFetcher()
+      const actual = BaseRestfulApiLauncher.HttpFetcherCtor
 
       expect(actual)
-        .toBeInstanceOf(ProgressHttpFetcher)
+        .toBe(XMLHttpFetcher) // same reference
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('.createHttpFetcher()', () => {
+    const cases = [
+      {
+        input: {
+          request: new Request('https://example.com/resource-0001'),
+          config: {},
+        },
+      },
+      {
+        input: {
+          request: new Request('https://example.com/resource-0002'),
+          config: {
+            timeoutMilliseconds: 1000,
+          },
+        },
+      },
+    ]
+
+    describe('should be an instance of the HTTP fetcher class', () => {
+      test.each(cases)('url: $input.request.url', ({ input }) => {
+        const actual = BaseRestfulApiLauncher.createHttpFetcher(input)
+
+        expect(actual)
+          .toBeInstanceOf(XMLHttpFetcher)
+      })
+    })
+
+    describe('should create the HTTP fetcher with the request and the config', () => {
+      test.each(cases)('url: $input.request.url', ({ input }) => {
+        const createSpy = jest.spyOn(BaseRestfulApiLauncher.HttpFetcherCtor, 'create')
+
+        BaseRestfulApiLauncher.createHttpFetcher(input)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(input)
+      })
     })
   })
 })
@@ -481,7 +523,11 @@ describe('BaseRestfulApiLauncher', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 101,
@@ -498,7 +544,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 201,
@@ -515,7 +565,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 301,
@@ -532,7 +586,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 401,
@@ -570,7 +628,11 @@ describe('BaseRestfulApiLauncher', () => {
       const cases = [
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 101,
@@ -588,7 +650,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 201,
@@ -604,7 +670,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 301,
@@ -622,7 +692,11 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: BaseRestfulApiPayload.create({
               query: {
                 id: 401,
@@ -698,7 +772,7 @@ describe('BaseRestfulApiLauncher', () => {
         }
 
         const expected = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
         }
@@ -779,7 +853,7 @@ describe('BaseRestfulApiLauncher', () => {
           }
 
           const expected = {
-            rawResponse: null,
+            responseParcel: null,
             payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -866,7 +940,7 @@ describe('BaseRestfulApiLauncher', () => {
 
         test.each(cases)('payload: $payload', ({ payload }) => {
           const expected = {
-            rawResponse: null,
+            responseParcel: null,
             payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -905,6 +979,10 @@ describe('BaseRestfulApiLauncher', () => {
 
     const cases = [
       {
+        responseParcel: XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        }),
         payload: BaseRestfulApiPayload.create({
           query: {
             id: 10001,
@@ -912,6 +990,10 @@ describe('BaseRestfulApiLauncher', () => {
         }),
       },
       {
+        responseParcel: XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        }),
         payload: BaseRestfulApiPayload.create({
           body: {
             id: 20001,
@@ -929,8 +1011,9 @@ describe('BaseRestfulApiLauncher', () => {
           }
         }
 
-        test.each(cases)('payload: $payload', ({ payload }) => {
+        test.each(cases)('payload: $payload', ({ responseParcel, payload }) => {
           const args = {
+            responseParcel,
             payload,
           }
 
@@ -951,9 +1034,9 @@ describe('BaseRestfulApiLauncher', () => {
           }
         }
 
-        test.each(cases)('payload: $payload', ({ payload }) => {
+        test.each(cases)('payload: $payload', ({ responseParcel, payload }) => {
           const expected = {
-            rawResponse: null,
+            responseParcel,
             payload,
             result: null,
           }
@@ -961,6 +1044,7 @@ describe('BaseRestfulApiLauncher', () => {
           const createSpy = jest.spyOn(input.Capsule, 'create')
 
           const args = {
+            responseParcel,
             payload,
           }
 
@@ -992,9 +1076,13 @@ describe('BaseRestfulApiLauncher', () => {
     const cases = [
       {
         args: {
-          rawResponse: new Response('{}', {
-            status: 200,
-            statusText: 'OK',
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response('{}', {
+              status: 200,
+              statusText: 'OK',
+            }),
           }),
           payload: BaseRestfulApiPayload.create({
             query: {
@@ -1005,9 +1093,13 @@ describe('BaseRestfulApiLauncher', () => {
       },
       {
         args: {
-          rawResponse: new Response('{}', {
-            status: 201,
-            statusText: 'Created',
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response('{}', {
+              status: 201,
+              statusText: 'Created',
+            }),
           }),
           payload: BaseRestfulApiPayload.create({
             body: {
@@ -1047,7 +1139,7 @@ describe('BaseRestfulApiLauncher', () => {
 
         test.each(cases)('payload: $args.payload', ({ args }) => {
           const expected = {
-            rawResponse: args.rawResponse,
+            responseParcel: args.responseParcel,
             payload: args.payload,
             result: null,
           }
@@ -1270,8 +1362,14 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('baseUrl: $input.baseUrl', async ({ input, tally, expected }) => {
+        const httpParcelTally = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: tally.response,
+        })
+
         const expectedArgs = {
-          rawResponse: tally.response,
+          responseParcel: httpParcelTally,
           payload: input.payload,
           result: expected,
         }
@@ -1292,7 +1390,7 @@ describe('BaseRestfulApiLauncher', () => {
         })
 
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(tally.response)
+          .mockResolvedValue(httpParcelTally)
         const createSpy = jest.spyOn(input.Capsule, 'create')
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
@@ -1374,7 +1472,12 @@ describe('BaseRestfulApiLauncher', () => {
 
       test.each(cases)('payload: $input.payload', async ({ input }) => {
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(null)
+          .mockResolvedValue(
+            XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            })
+          )
         const extendRequestHooksSpy = jest.spyOn(launcher, 'extendRequestHooks')
 
         await launcher.launchRequest(input)
@@ -1392,7 +1495,12 @@ describe('BaseRestfulApiLauncher', () => {
         }
 
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(null)
+          .mockResolvedValue(
+            XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            })
+          )
         const extendRequestHooksSpy = jest.spyOn(launcher, 'extendRequestHooks')
 
         const payload = FulfilledRestfulApiPayload.create({
@@ -1487,7 +1595,7 @@ describe('BaseRestfulApiLauncher', () => {
           })
 
           const expectedCapsule = DerivedRestfulApiCapsule.create({
-            rawResponse: null,
+            responseParcel: null,
             payload: input.payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -1578,7 +1686,7 @@ describe('BaseRestfulApiLauncher', () => {
         })
 
         const expectedCapsule = input.Capsule.create({
-          rawResponse: null,
+          responseParcel: null,
           payload: input.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -1644,6 +1752,10 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('baseUrl: $input.baseUrl', async ({ input }) => {
+        const httpParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
         const hooksTally = {
           afterRequest: async () => {},
         }
@@ -1662,7 +1774,7 @@ describe('BaseRestfulApiLauncher', () => {
         })
 
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(null)
+          .mockResolvedValue(httpParcelTally)
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
         const args = {
@@ -1675,7 +1787,7 @@ describe('BaseRestfulApiLauncher', () => {
         expect(actual)
           .toBeInstanceOf(input.Capsule)
         expect(actual)
-          .toHaveProperty('rawResponse', null)
+          .toHaveProperty('responseParcel', httpParcelTally)
 
         expect(afterRequestSpy)
           .toHaveBeenCalledWith(actual)
@@ -1755,7 +1867,13 @@ describe('BaseRestfulApiLauncher', () => {
         })
 
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(tally.response)
+          .mockResolvedValue(
+            XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: tally.response,
+            })
+          )
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
         const args = {
@@ -2420,6 +2538,9 @@ describe('BaseRestfulApiLauncher', () => {
             },
           },
           tally: {
+            config: {
+              timeoutMilliseconds: 30000,
+            },
             request: new Request('http://example.com/restfulapi-customer', {
               method: 'POST',
               headers: new Headers({
@@ -2448,6 +2569,9 @@ describe('BaseRestfulApiLauncher', () => {
             },
           },
           tally: {
+            config: {
+              timeoutMilliseconds: 1000,
+            },
             request: new Request('http://example.com/restfulapi-admin', {
               method: 'POST',
               headers: new Headers({
@@ -2468,18 +2592,28 @@ describe('BaseRestfulApiLauncher', () => {
 
       test.each(cases)('baseUrl: $input.request.baseUrl', async ({ input, tally }) => {
         const responseTally = new Response()
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpParcelTally = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: responseTally,
+        })
+        const httpFetcherMock = XMLHttpFetcher.create({
+          request: tally.request,
+          config: {},
+        })
 
         const expectedArgsForCreateFetchRequest = {
           baseUrl: input.baseUrl,
         }
 
+        jest.spyOn(input.payload, 'timeoutMilliseconds', 'get')
+          .mockReturnValue(tally.config.timeoutMilliseconds)
         const createFetchRequestSpy = jest.spyOn(input.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
         const createHttpFetcherSpy = jest.spyOn(BaseRestfulApiLauncher, 'createHttpFetcher')
           .mockReturnValue(httpFetcherMock)
-        const fetchRequestSpy = jest.spyOn(httpFetcherMock, 'fetchRequest')
-          .mockResolvedValue(responseTally)
+        const fetchResponseSpy = jest.spyOn(httpFetcherMock, 'fetchResponse')
+          .mockResolvedValue(httpParcelTally)
 
         const launcher = BaseRestfulApiLauncher.create({
           config: {
@@ -2494,18 +2628,23 @@ describe('BaseRestfulApiLauncher', () => {
         const actual = await launcher.invokeFetchQuery(args)
 
         expect(actual)
-          .toBe(responseTally) // same instance
+          .toBe(httpParcelTally) // same instance
 
         expect(createFetchRequestSpy)
           .toHaveBeenCalledWith(expectedArgsForCreateFetchRequest)
         expect(createHttpFetcherSpy)
-          .toHaveBeenCalledWith()
-        expect(fetchRequestSpy)
-          .toHaveBeenCalledWith(tally)
+          .toHaveBeenCalledWith({
+            request: tally.request,
+            config: tally.config,
+          })
+        expect(fetchResponseSpy)
+          .toHaveBeenCalledWith({
+            sink: tally.sink,
+          })
       })
     })
 
-    describe('to throw on fetch', () => {
+    describe('to be the parcel of the error on a failed fetch', () => {
       const cases = [
         {
           input: {
@@ -2568,14 +2707,21 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('baseUrl: $input.request.baseUrl', async ({ input, tally }) => {
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = XMLHttpFetcher.create({
+          request: tally.request,
+          config: {},
+        })
+        const networkErrorParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
 
         jest.spyOn(input.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
         jest.spyOn(BaseRestfulApiLauncher, 'createHttpFetcher')
           .mockReturnValue(httpFetcherMock)
-        jest.spyOn(httpFetcherMock, 'fetchRequest')
-          .mockRejectedValue(new Error('Network Error'))
+        jest.spyOn(httpFetcherMock, 'fetchResponse')
+          .mockResolvedValue(networkErrorParcelTally)
 
         const launcher = BaseRestfulApiLauncher.create({
           config: {
@@ -2590,7 +2736,7 @@ describe('BaseRestfulApiLauncher', () => {
         const actual = await launcher.invokeFetchQuery(args)
 
         expect(actual)
-          .toBeNull()
+          .toBe(networkErrorParcelTally) // same instance
       })
     })
   })
@@ -2621,11 +2767,18 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('payload: $input.payload', async ({ input }) => {
+        const httpParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
+
         const expectedArgs = {
+          responseParcel: httpParcelTally,
           payload: input.payload,
         }
 
         const capsuleTally = BaseRestfulApiCapsule.createAsNetworkError({
+          responseParcel: httpParcelTally,
           payload: input.payload,
         })
 
@@ -2640,7 +2793,7 @@ describe('BaseRestfulApiLauncher', () => {
 
         const args = {
           payload: input.payload,
-          response: null,
+          httpParcel: httpParcelTally,
         }
 
         const actual = await launcher.retrieveCapsule(args)
@@ -2676,21 +2829,26 @@ describe('BaseRestfulApiLauncher', () => {
       ]
 
       test.each(cases)('payload: $input.payload', async ({ input }) => {
-        const rawResponseTally = new Response(`{
+        const responseTally = new Response(`{
           "data": {
             "customer": {
               "id": 10001
             }
           }
         }}`) // ERROR: last } is doubled
+        const httpParcelTally = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: responseTally,
+        })
 
         const capsuleTally = BaseRestfulApiCapsule.createAsResponseBodyParseError({
-          rawResponse: rawResponseTally,
+          responseParcel: httpParcelTally,
           payload: input.payload,
         })
 
         const expectedArgs = {
-          rawResponse: rawResponseTally,
+          responseParcel: httpParcelTally,
           payload: input.payload,
         }
 
@@ -2705,7 +2863,7 @@ describe('BaseRestfulApiLauncher', () => {
 
         const args = {
           payload: input.payload,
-          response: rawResponseTally,
+          httpParcel: httpParcelTally,
         }
 
         const actual = await launcher.retrieveCapsule(args)
@@ -2727,13 +2885,17 @@ describe('BaseRestfulApiLauncher', () => {
                 id: 10001,
               },
             }),
-            rawResponse: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10001
                 }
               }
             }`),
+            }),
             result: {
               content: {
                 customer: {
@@ -2750,13 +2912,17 @@ describe('BaseRestfulApiLauncher', () => {
                 id: 20001,
               },
             }),
-            rawResponse: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "admin": {
                   "id": 20001
                 }
               }
             }`),
+            }),
             result: {
               content: {
                 admin: {
@@ -2770,16 +2936,16 @@ describe('BaseRestfulApiLauncher', () => {
 
       test.each(cases)('payload: $input.payload', async ({ input }) => {
         const capsuleTally = BaseRestfulApiCapsule.create({
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: input.payload,
           result: input.result,
         })
 
         const expectedArgsForGenerateFetchResult = {
-          response: input.rawResponse,
+          response: input.responseParcel.response,
         }
         const expectedArgsForCreateCapsule = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: input.payload,
           result: input.result,
         }
@@ -2804,7 +2970,7 @@ describe('BaseRestfulApiLauncher', () => {
 
         const args = {
           payload: input.payload,
-          response: input.rawResponse,
+          httpParcel: input.responseParcel,
         }
 
         const actual = await launcher.retrieveCapsule(args)
