@@ -78,7 +78,6 @@
 | [BaseHttpParcel](./BaseHttpParcel.ja.md) | フェッチャーが返すもの。レスポンス、または受信できなかった理由のエラーです。 |
 | [XMLHttpParcel](./XMLHttpParcel.ja.md) | `XMLHttpRequest` から組み立てたレスポンスの HTTP パーセルです。 |
 | [FetchHttpParcel](./FetchHttpParcel.ja.md) | `fetch()` が返したレスポンスの HTTP パーセルです。 |
-| [ProgressHttpFetcher](./ProgressHttpFetcher.ja.md) | `Request` を実行し、アップロード・ダウンロードの進捗を通知します。 |
 | [HeadersParser](./HeadersParser.ja.md) | 生のヘッダーテキストをエントリまたは `Headers` へパースします。 |
 | [PathnameBuilder](./PathnameBuilder.ja.md) | パス名内の `[name]` プレースホルダーを補間します。 |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.ja.md) | レスポンスボディをパースするための基底クラスです。 |

@@ -78,7 +78,6 @@ Class members are written with the following notation.
 | [BaseHttpParcel](./BaseHttpParcel.md) | What a fetcher returns: the response, or the error that kept it from being received. |
 | [XMLHttpParcel](./XMLHttpParcel.md) | HTTP parcel of a response built from `XMLHttpRequest`. |
 | [FetchHttpParcel](./FetchHttpParcel.md) | HTTP parcel of a response that `fetch()` returned. |
-| [ProgressHttpFetcher](./ProgressHttpFetcher.md) | Performs a `Request`, reporting upload and download progress. |
 | [HeadersParser](./HeadersParser.md) | Parses raw header text into entries or a `Headers`. |
 | [PathnameBuilder](./PathnameBuilder.md) | Interpolates `[name]` placeholders in a pathname. |
 | [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing a response body. |
