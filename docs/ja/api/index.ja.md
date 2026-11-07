@@ -71,6 +71,13 @@
 
 | class | description |
 | :-- | :-- |
+| [BaseHttpFetcher](./BaseHttpFetcher.ja.md) | 取得の流れを持つ、HTTP フェッチャーの基底クラスです。 |
+| [XMLHttpFetcher](./XMLHttpFetcher.ja.md) | `XMLHttpRequest` 経由で取得し、アップロード・ダウンロードの進捗を通知します。 |
+| [FetchHttpFetcher](./FetchHttpFetcher.ja.md) | `fetch()` 経由で取得し、`Response` をそのまま保持します。 |
+| [XMLHttpRequestClerk](./XMLHttpRequestClerk.ja.md) | `XMLHttpRequest` をラップし、呼び出しをつなげて書けるようにします。 |
+| [BaseHttpParcel](./BaseHttpParcel.ja.md) | フェッチャーが返すもの。レスポンス、または受信できなかった理由のエラーです。 |
+| [XMLHttpParcel](./XMLHttpParcel.ja.md) | `XMLHttpRequest` から組み立てたレスポンスの HTTP パーセルです。 |
+| [FetchHttpParcel](./FetchHttpParcel.ja.md) | `fetch()` が返したレスポンスの HTTP パーセルです。 |
 | [ProgressHttpFetcher](./ProgressHttpFetcher.ja.md) | `Request` を実行し、アップロード・ダウンロードの進捗を通知します。 |
 | [HeadersParser](./HeadersParser.ja.md) | 生のヘッダーテキストをエントリまたは `Headers` へパースします。 |
 | [PathnameBuilder](./PathnameBuilder.ja.md) | パス名内の `[name]` プレースホルダーを補間します。 |
