@@ -188,7 +188,9 @@ As with GraphQL, `launchRequest()` resolves to a capsule rather than throwing.
 | `#isPending()` | The capsule was created as a placeholder before the request finished. |
 | `#hasError()` | Any of the error conditions below hold. |
 | `#hasInvalidParameterHashError()` | The parameters failed the payload's own check, so no request was sent. |
-| `#hasNetworkError()` | The request never reached the server. |
+| `#hasAbortError()` | The request was aborted. |
+| `#hasTimeoutError()` | The request timed out. |
+| `#hasNetworkError()` | The request failed for any other reason before a response was received. |
 | `#hasResponseBodyParseError()` | The response body could not be parsed. |
 | `#hasStatusCodeError()` | The response carried a 4xx or 5xx status. |
 | `#hasResultError()` | The parsed body reported an application-level error. |
