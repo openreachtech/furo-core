@@ -122,7 +122,9 @@ if (capsule.hasError()) {
 | `#hasContent()` | レスポンスがデータを保持している。 |
 | `#hasError()` | 以下のいずれかのエラー条件が成立している。 |
 | `#hasInvalidVariablesError()` | 変数がペイロード自身の検査に失敗し、リクエストが送信されなかった。 |
-| `#hasNetworkError()` | リクエストがサーバーに到達しなかった。 |
+| `#hasAbortError()` | リクエストが中断された。 |
+| `#hasTimeoutError()` | リクエストがタイムアウトした。 |
+| `#hasNetworkError()` | それ以外の理由で、レスポンスを受け取る前に失敗した。 |
 | `#hasJsonParseError()` | レスポンスボディが妥当な JSON ではなかった。 |
 | `#hasQueryError()` | サーバーが GraphQL エラーを返した。 |
 
