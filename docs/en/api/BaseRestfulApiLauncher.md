@@ -10,7 +10,8 @@ Binds a payload class to a capsule class, and launches the request. Extend one p
 | `.get:Capsule` | The capsule class for this endpoint. Must be overridden. |
 | `.get:ResponseBodyParser` | The parser applied to the response body. Defaults to `JsonResponseBodyParser`. |
 | `.get:fetch` | The fetch function used for the request. |
-| `.createHttpFetcher()` | Creates the progress-reporting fetcher used for the request. |
+| `.get:HttpFetcherCtor` | The HTTP fetcher class used for the request. Defaults to `XMLHttpFetcher`, which reports the upload and download progress. |
+| `.createHttpFetcher()` | Creates an HTTP fetcher of `.get:HttpFetcherCtor` from the request and the config. |
 | `.createResponseBodyParser()` | Creates a parser of `.get:ResponseBodyParser`. |
 | `.createPayload()` | Creates a payload of `.get:Payload`. |
 | `.createPayloadWithFormValueHash()` | Creates a payload from a `<form>` value hash. |
