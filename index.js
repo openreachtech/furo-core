@@ -13,6 +13,13 @@ export { default as SubscriptionConnector } from './lib/client/graphql/Subscript
 /*
  * Client tools
  */
+export { default as BaseHttpFetcher } from './lib/tools/http-fetchers/BaseHttpFetcher.js'
+export { default as FetchHttpFetcher } from './lib/tools/http-fetchers/concretes/FetchHttpFetcher.js'
+export { default as XMLHttpFetcher } from './lib/tools/http-fetchers/concretes/XMLHttpFetcher.js'
+export { default as XMLHttpRequestClerk } from './lib/tools/http-fetchers/tools/XMLHttpRequestClerk.js'
+export { default as BaseHttpParcel } from './lib/tools/http-fetchers/parcels/BaseHttpParcel.js'
+export { default as FetchHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/FetchHttpParcel.js'
+export { default as XMLHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
 export { default as PathnameBuilder } from './lib/tools/PathnameBuilder.js'
 
