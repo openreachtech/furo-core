@@ -114,6 +114,27 @@ describe('HeadersParser', () => {
           ['x-beta', 'normal value'],
         ],
       },
+      {
+        params: {
+          haystack: 'x-alpha: normal value\r\nx-beta: \r\n',
+        },
+        expected: [
+          ['x-alpha', 'normal value'],
+          ['x-beta', ''],
+        ],
+      },
+      {
+        params: {
+          haystack: '',
+        },
+        expected: [],
+      },
+      {
+        params: {
+          haystack: '\r\n',
+        },
+        expected: [],
+      },
     ]
 
     test.each(cases)('haystack: $params.haystack', ({ params, expected }) => {
@@ -156,6 +177,21 @@ describe('HeadersParser', () => {
           ['x-requested-with', ''],
           ['user-agent', 'Mozilla/5.0'],
         ]),
+      },
+      {
+        params: {
+          haystack: 'x-alpha: normal value\r\nx-beta: \r\n',
+        },
+        expected: new Headers([
+          ['x-alpha', 'normal value'],
+          ['x-beta', ''],
+        ]),
+      },
+      {
+        params: {
+          haystack: '',
+        },
+        expected: new Headers(),
       },
     ]
 
