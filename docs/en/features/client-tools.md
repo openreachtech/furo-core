@@ -18,7 +18,7 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 
 | class | description |
 | :-- | :-- |
-| `BaseHttpFetcher` | Base class that owns the flow: it builds the abort signal, receives the response and always returns an HTTP parcel. |
+| `BaseHttpFetcher` | Base class that owns the flow: it starts the timer that aborts the request, receives the response and always returns an HTTP parcel. |
 | `XMLHttpFetcher` | Sends the request through `XMLHttpRequest`, and reports the upload and download progress through the `sink`. |
 | `FetchHttpFetcher` | Sends the request through `fetch()`, which keeps the `Response` as it is, so that its body can be read as a stream. It reports no progress. |
 | `BaseHttpParcel` | What a fetcher returns. It carries the request, the config, and either the response or the error of the fetcher. |
@@ -57,7 +57,9 @@ if (httpParcel.hasTimeoutError()) {
 const result = await httpParcel.toJson()
 ```
 
-A fetcher never rejects. A failure comes back as a parcel that carries no response, and `#hasNetworkError()`, `#hasTimeoutError()`, `#hasAbortError()` and `#hasUnknownError()` tell which. The request is aborted by its own `signal`, or by `timeoutMilliseconds`, whichever comes first.
+A fetcher never rejects. A failure comes back as a parcel that carries no response, and `#hasNetworkError()`, `#hasTimeoutError()`, `#hasAbortError()` and `#hasUnknownError()` tell which. The request is aborted by its own `signal`, or by `timeoutMilliseconds`, whichever comes first. An abort through the `signal` is reported as an abort whatever its reason is, and `FetchHttpFetcher` counts the timeout until the whole body has been received, so a body that stalls is a timeout too.
+
+The timeout is counted by `AbortTimer`, which stops once the response is received, so the parcel stays readable after the timeout window. `#toText()` and `#toJson()` of the parcel decode the body through `ResponseTextConverter`, with the charset that the `Content-Type` of the response declares, and with UTF-8 where it declares none.
 
 The body of `XMLHttpFetcher` goes out as a `Blob` read from the `Request`, and every header of the `Request` is forwarded, `Content-Type` included. A `FormData` body therefore keeps its multipart boundary, and a JSON body reaches the server as `application/json`.
 
@@ -106,7 +108,7 @@ const pathname = PathnameBuilder.create({
 
 ## Parsing a response body
 
-`JsonResponseBodyParser` is the default parser for the RESTful API launcher. Extend `BaseResponseBodyParser` to accept another content type.
+`JsonResponseBodyParser` is the default parser for the RESTful API launcher. Extend `BaseResponseBodyParser` to accept another content type. A parser holds the `responseParcel`, and reads the body through it, so that the parcel stays readable for the capsule.
 
 ```javascript
 import {
@@ -116,7 +118,7 @@ import {
 export default class TextResponseBodyParser extends BaseResponseBodyParser {
   /** @override */
   async parseBody () {
-    return this.response.text()
+    return this.responseParcel.toText()
   }
 }
 ```

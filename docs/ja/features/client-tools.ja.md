@@ -18,7 +18,7 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 | クラス | 説明 |
 | :-- | :-- |
-| `BaseHttpFetcher` | 流れを持つ基底クラス。中断用のシグナルを作り、レスポンスを受け取り、必ず HTTP パーセルを返します。 |
+| `BaseHttpFetcher` | 流れを持つ基底クラス。リクエストを中断するタイマーを始動し、レスポンスを受け取り、必ず HTTP パーセルを返します。 |
 | `XMLHttpFetcher` | リクエストを `XMLHttpRequest` 経由で送信し、`sink` を通じてアップロードとダウンロードの進捗を通知します。 |
 | `FetchHttpFetcher` | リクエストを `fetch()` 経由で送信します。`Response` をそのまま保持するので、ボディをストリームとして読めます。進捗は通知しません。 |
 | `BaseHttpParcel` | フェッチャーが返すもの。リクエスト、設定、およびレスポンスかフェッチャーのエラーのどちらかを保持します。 |
@@ -57,7 +57,9 @@ if (httpParcel.hasTimeoutError()) {
 const result = await httpParcel.toJson()
 ```
 
-フェッチャーは reject しません。失敗はレスポンスを持たないパーセルとして返り、`#hasNetworkError()`、`#hasTimeoutError()`、`#hasAbortError()`、`#hasUnknownError()` で種類が分かります。リクエストは、そのリクエスト自身の `signal` か `timeoutMilliseconds` の、先に起きたほうで中断されます。
+フェッチャーは reject しません。失敗はレスポンスを持たないパーセルとして返り、`#hasNetworkError()`、`#hasTimeoutError()`、`#hasAbortError()`、`#hasUnknownError()` で種類が分かります。リクエストは、そのリクエスト自身の `signal` か `timeoutMilliseconds` の、先に起きたほうで中断されます。`signal` による中断は、理由が何であっても中断として報告されます。`XMLHttpFetcher` はボディをすべて受信するまでタイムアウトを数えるので、ボディが止まった場合もタイムアウトです。
+
+タイムアウトは `AbortTimer` が数え、レスポンスを受信した時点で止まるので、パーセルはタイムアウトの時間を過ぎても読めます。パーセルの `#toText()` と `#toJson()` は `ResponseTextConverter` を通してボディをデコードします。レスポンスの `Content-Type` が宣言する文字コードを使い、宣言がなければ UTF-8 を使います。
 
 `XMLHttpFetcher` のボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
 
@@ -106,7 +108,7 @@ const pathname = PathnameBuilder.create({
 
 ## レスポンスボディのパース
 
-`JsonResponseBodyParser` は RESTful API ランチャーの既定のパーサーです。別のコンテンツタイプを扱う場合は `BaseResponseBodyParser` を継承してください。
+`JsonResponseBodyParser` は RESTful API ランチャーの既定のパーサーです。別のコンテンツタイプを扱う場合は `BaseResponseBodyParser` を継承してください。パーサーは `responseParcel` を保持し、それを通してボディを読むので、カプセルからもパーセルを読み直せます。
 
 ```javascript
 import {
@@ -116,7 +118,7 @@ import {
 export default class TextResponseBodyParser extends BaseResponseBodyParser {
   /** @override */
   async parseBody () {
-    return this.response.text()
+    return this.responseParcel.toText()
   }
 }
 ```
