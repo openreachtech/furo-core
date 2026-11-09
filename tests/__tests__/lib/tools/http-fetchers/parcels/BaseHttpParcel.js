@@ -1,5 +1,7 @@
 import BaseHttpParcel from '../../../../../../lib/tools/http-fetchers/parcels/BaseHttpParcel.js'
 
+import ResponseTextConverter from '../../../../../../lib/tools/http-fetchers/tools/ResponseTextConverter.js'
+
 import { HTTP_FETCHER_ERROR } from '../../../../../../lib/tools/http-fetchers/tools/constants/HTTP_FETCHER_ERROR.js'
 
 describe('BaseHttpParcel', () => {
@@ -674,6 +676,85 @@ describe('BaseHttpParcel', () => {
 
         expect(received)
           .toBe(HTTP_FETCHER_ERROR) // same reference
+      })
+    })
+  })
+})
+
+describe('BaseHttpParcel', () => {
+  describe('.get:ResponseTextConverterCtor', () => {
+    describe('when called as is', () => {
+      test('should be ResponseTextConverter', () => {
+        const received = BaseHttpParcel.ResponseTextConverterCtor
+
+        expect(received)
+          .toBe(ResponseTextConverter) // same reference
+      })
+    })
+  })
+})
+
+describe('BaseHttpParcel', () => {
+  describe('.createResponseTextConverter()', () => {
+    const alphaParcel = BaseHttpParcel.create({
+      request: new Request('https://example.com/resource-0001'),
+      config: {},
+    })
+    const betaParcel = BaseHttpParcel.create({
+      request: new Request('https://example.com/resource-0002'),
+      config: {},
+    })
+
+    const cases = [
+      {
+        input: {
+          responseParcel: alphaParcel,
+        },
+      },
+      {
+        input: {
+          responseParcel: betaParcel,
+        },
+      },
+    ]
+
+    describe('should be an instance of the converter class', () => {
+      test.each(cases)('url: $input.responseParcel.request.url', ({ input }) => {
+        const received = BaseHttpParcel.createResponseTextConverter(input)
+
+        expect(received)
+          .toBeInstanceOf(ResponseTextConverter)
+      })
+    })
+
+    describe('should call the factory method of the converter class with the parcel', () => {
+      test.each(cases)('url: $input.responseParcel.request.url', ({ input }) => {
+        const createSpy = jest.spyOn(ResponseTextConverter, 'create')
+
+        BaseHttpParcel.createResponseTextConverter(input)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith({
+            responseParcel: input.responseParcel,
+          })
+      })
+    })
+
+    describe('should use the converter class that a subclass overrides', () => {
+      class AlphaConverter extends ResponseTextConverter {}
+
+      class AlphaHttpParcel extends BaseHttpParcel {
+        /** @override */
+        static get ResponseTextConverterCtor () {
+          return AlphaConverter
+        }
+      }
+
+      test.each(cases)('url: $input.responseParcel.request.url', ({ input }) => {
+        const received = AlphaHttpParcel.createResponseTextConverter(input)
+
+        expect(received)
+          .toBeInstanceOf(AlphaConverter)
       })
     })
   })
@@ -1395,16 +1476,55 @@ describe('BaseHttpParcel', () => {
       })
     })
 
-    describe('should read the clone of the response', () => {
+    describe('should parse the text that #toText() resolved', () => {
+      const cases = [
+        {
+          override: {
+            text: '{"id":100001}',
+          },
+          expected: {
+            id: 100001,
+          },
+        },
+        {
+          override: {
+            text: '{"id":100002}',
+          },
+          expected: {
+            id: 100002,
+          },
+        },
+      ]
+
+      test.each(cases)('text: $override.text', async ({ override, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: new Response('{}'), // Neutral value
+        })
+        const toTextSpy = jest.spyOn(parcel, 'toText')
+          .mockResolvedValue(override.text)
+
+        const received = await parcel.toJson()
+
+        expect(toTextSpy)
+          .toHaveBeenCalledWith()
+
+        expect(received)
+          .toEqual(expected)
+      })
+    })
+
+    describe('should reject where the body is not JSON', () => {
       const cases = [
         {
           input: {
-            response: new Response('{"id":100001}'),
+            response: new Response('{"id":10001}}'),
           },
         },
         {
           input: {
-            response: new Response('{"id":100002}'),
+            response: new Response(''),
           },
         },
       ]
@@ -1415,12 +1535,58 @@ describe('BaseHttpParcel', () => {
           config: {}, // Neutral value
           response: input.response,
         })
-        const cloneResponseSpy = jest.spyOn(parcel, 'cloneResponse')
 
-        await parcel.toJson()
+        await expect(parcel.toJson())
+          .rejects
+          .toThrow(SyntaxError)
+      })
+    })
 
-        expect(cloneResponseSpy)
-          .toHaveBeenCalledWith()
+    describe('should decode the body with the charset of the response', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response(
+              Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x82, 0xB1, 0x82, 0xF1, 0x22, 0x7D]), // {"id":"こん"} in Shift_JIS
+              {
+                headers: {
+                  'Content-Type': 'application/json; charset=Shift_JIS',
+                },
+              }
+            ),
+          },
+          expected: {
+            id: 'こん',
+          },
+        },
+        {
+          input: {
+            response: new Response(
+              Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0xE3, 0x81, 0x93, 0x22, 0x7D]), // {"id":"こ"} in UTF-8
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            ),
+          },
+          expected: {
+            id: 'こ',
+          },
+        },
+      ]
+
+      test.each(cases)('content-type: $input.response.headers', async ({ input, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+
+        const received = await parcel.toJson()
+
+        expect(received)
+          .toEqual(expected)
       })
     })
 
@@ -1695,6 +1861,96 @@ describe('BaseHttpParcel', () => {
 
         expect(cloneResponseSpy)
           .toHaveBeenCalledWith()
+      })
+    })
+
+    describe('should convert through the converter that is created with the parcel itself', () => {
+      const cases = [
+        {
+          override: {
+            text: 'text-0001',
+          },
+          input: {
+            response: new Response('neutral-0001'), // Neutral value
+          },
+        },
+        {
+          override: {
+            text: 'text-0002',
+          },
+          input: {
+            response: new Response('neutral-0002'), // Neutral value
+          },
+        },
+      ]
+
+      test.each(cases)('text: $override.text', async ({ override, input }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+        const converter = ResponseTextConverter.create({
+          responseParcel: parcel,
+        })
+        const createSpy = jest.spyOn(BaseHttpParcel, 'createResponseTextConverter')
+          .mockReturnValue(converter)
+        jest.spyOn(converter, 'toText')
+          .mockResolvedValue(override.text)
+
+        const received = await parcel.toText()
+
+        expect(createSpy)
+          .toHaveBeenCalledWith({
+            responseParcel: parcel,
+          })
+
+        expect(received)
+          .toBe(override.text)
+      })
+    })
+
+    describe('should decode the body with the charset of the response', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response(
+              Uint8Array.from([0x82, 0xB1, 0x82, 0xF1, 0x82, 0xC9, 0x82, 0xBF, 0x82, 0xCD]), // こんにちは in Shift_JIS
+              {
+                headers: {
+                  'Content-Type': 'text/plain; charset=Shift_JIS',
+                },
+              }
+            ),
+          },
+          expected: 'こんにちは',
+        },
+        {
+          input: {
+            response: new Response(
+              Uint8Array.from([0xE3, 0x81, 0x93, 0xE3, 0x82, 0x93]), // こん in UTF-8
+              {
+                headers: {
+                  'Content-Type': 'text/plain; charset="utf-8"',
+                },
+              }
+            ),
+          },
+          expected: 'こん',
+        },
+      ]
+
+      test.each(cases)('content-type: $input.response.headers', async ({ input, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+
+        const received = await parcel.toText()
+
+        expect(received)
+          .toBe(expected)
       })
     })
 
