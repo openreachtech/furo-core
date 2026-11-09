@@ -206,6 +206,94 @@ describe('FetchHttpFetcher', () => {
       })
     })
 
+    describe('should await the body of the response before it resolves', () => {
+      const cases = [
+        {
+          override: {
+            response: new Response('text-0001'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+        },
+        {
+          override: {
+            response: new Response('text-0002'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input }) => {
+        const fetcher = FetchHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockResolvedValue(override.response)
+        const awaitBodySpy = jest.spyOn(fetcher, 'awaitBody')
+
+        const args = {
+          sink: {}, // Neutral value
+          signal: new AbortController().signal, // Neutral value
+        }
+
+        await fetcher.receiveResponse(args)
+
+        expect(awaitBodySpy)
+          .toHaveBeenCalledWith({
+            response: override.response,
+          })
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          override: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+          expected: 'signal timed out',
+        },
+        {
+          override: {
+            error: new Error('Body download failed'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+          expected: 'Body download failed',
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input, expected }) => {
+        const fetcher = FetchHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockResolvedValue(new Response('neutral')) // Neutral value
+        jest.spyOn(fetcher, 'awaitBody')
+          .mockRejectedValue(override.error)
+
+        const args = {
+          sink: {}, // Neutral value
+          signal: new AbortController().signal, // Neutral value
+        }
+
+        const received = () => fetcher.receiveResponse(args)
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
+      })
+    })
+
     describe('should send the clone of the request, not the request itself', () => {
       const alphaClone = new Request('https://example.com/resource-0001')
       const betaClone = new Request('https://example.com/resource-0002', {
@@ -443,6 +531,293 @@ describe('FetchHttpFetcher', () => {
         await expect(received)
           .rejects
           .toThrow(expected)
+      })
+    })
+  })
+})
+
+describe('FetchHttpFetcher', () => {
+  describe('#awaitBody()', () => {
+    describe('should resolve the array buffer of the body', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+            response: new Response('text-0001'),
+          },
+          expected: 'text-0001',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+            response: new Response('text-0002'),
+          },
+          expected: 'text-0002',
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input, expected }) => {
+        const fetcher = FetchHttpFetcher.create({
+          request: input.request,
+          config: input.config,
+        })
+
+        const received = await fetcher.awaitBody({
+          response: input.response,
+        })
+
+        const decoder = new TextDecoder()
+
+        expect(decoder.decode(received))
+          .toBe(expected)
+      })
+    })
+
+    describe('should read a clone, so that the response stays readable', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+            response: new Response('text-0001'),
+          },
+          expected: 'text-0001',
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+            response: new Response('text-0002'),
+          },
+          expected: 'text-0002',
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input, expected }) => {
+        const fetcher = FetchHttpFetcher.create({
+          request: input.request,
+          config: input.config,
+        })
+
+        await fetcher.awaitBody({
+          response: input.response,
+        })
+
+        expect(input.response)
+          .toHaveProperty('bodyUsed', false)
+
+        const received = await input.response.text()
+
+        expect(received)
+          .toBe(expected)
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          override: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+          expected: 'signal timed out',
+        },
+        {
+          override: {
+            error: new Error('Body download failed'),
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+          expected: 'Body download failed',
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input, expected }) => {
+        const response = new Response('neutral') // Neutral value
+
+        jest.spyOn(response, 'clone')
+          .mockReturnValue({
+            arrayBuffer: () => Promise.reject(override.error),
+          })
+
+        const fetcher = FetchHttpFetcher.create(input)
+
+        const received = () => fetcher.awaitBody({
+          response,
+        })
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
+      })
+    })
+  })
+})
+
+describe('FetchHttpFetcher', () => {
+  describe('#fetchResponse()', () => {
+    /**
+     * Create a response of fake, whose body download never ends unless the signal aborts it.
+     *
+     * @param {{
+     *   signal: AbortSignal
+     * }} params - Parameters.
+     * @returns {Response} Response of fake.
+     */
+    const createStalledResponse = ({ signal }) => {
+      const response = new Response('neutral') // Neutral value
+
+      jest.spyOn(response, 'clone')
+        .mockReturnValue({
+          arrayBuffer: () => new Promise((resolve, reject) => {
+            signal.addEventListener('abort', () => reject(signal.reason))
+          }),
+        })
+
+      return response
+    }
+
+    describe('should be the parcel of a timeout where the timeout elapses while the body downloads', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {
+              timeoutMilliseconds: 20,
+            },
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {
+              timeoutMilliseconds: 40,
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input }) => {
+        const fetcher = FetchHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockImplementation(async ({ optionHash }) => createStalledResponse({
+            signal: optionHash.signal,
+          }))
+
+        const received = await fetcher.fetchResponse({
+          sink: {}, // Neutral value
+        })
+
+        expect(received.hasTimeoutError())
+          .toBe(true)
+      })
+    })
+
+    describe('should be the parcel of an abort where the request is aborted while the body downloads', () => {
+      const cases = [
+        {
+          input: {
+            reason: 'cancel', // string has no name
+          },
+        },
+        {
+          input: {
+            reason: new DOMException('Cancel 0002', 'AbortError'),
+          },
+        },
+      ]
+
+      test.each(cases)('reason: $input.reason', async ({ input }) => {
+        const controller = new AbortController()
+        const request = new Request('https://example.com/resource-0001', {
+          signal: controller.signal,
+        })
+
+        const fetcher = FetchHttpFetcher.create({
+          request,
+          config: {
+            timeoutMilliseconds: 1000,
+          },
+        })
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockImplementation(async ({ optionHash }) => {
+            setTimeout(() => controller.abort(input.reason), 10)
+
+            return createStalledResponse({
+              signal: optionHash.signal,
+            })
+          })
+
+        const received = await fetcher.fetchResponse({
+          sink: {}, // Neutral value
+        })
+
+        expect(received.hasAbortError())
+          .toBe(true)
+      })
+    })
+
+    describe('should be the parcel of the response, which stays readable after the timeout window', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {
+              timeoutMilliseconds: 30,
+            },
+            body: '{"id":10001}',
+          },
+          expected: {
+            id: 10001,
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {
+              timeoutMilliseconds: 30,
+            },
+            body: '{"id":10002}',
+          },
+          expected: {
+            id: 10002,
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input, expected }) => {
+        const fetcher = FetchHttpFetcher.create({
+          request: input.request,
+          config: input.config,
+        })
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockResolvedValue(new Response(input.body))
+
+        const received = await fetcher.fetchResponse({
+          sink: {}, // Neutral value
+        })
+
+        await new Promise(resolve => {
+          setTimeout(resolve, input.config.timeoutMilliseconds * 2)
+        })
+
+        const json = await received.toJson()
+
+        expect(received.hasError())
+          .toBe(false)
+
+        expect(json)
+          .toEqual(expected)
       })
     })
   })
