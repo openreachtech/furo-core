@@ -5,6 +5,7 @@
 | member | description |
 | :-- | :-- |
 | `.create()` | ファクトリメソッド。`requestSignal` と `timeoutMilliseconds` を受け取り、数え始めます。`0` はタイマーなしで、シグナルはリクエストのものです。 |
+| `.get:MAX_DELAY_MILLISECONDS` | `setTimeout()` が保持できる最長の遅延 `2147483647`。 |
 | `.get:AbortControllerCtor` | `AbortController` クラス。 |
 | `.get:AbortSignalCtor` | `AbortSignal` クラス。 |
 | `.get:DOMExceptionCtor` | `DOMException` クラス。 |
@@ -14,6 +15,7 @@
 | `.createSignal()` | リクエストとタイマーのコントローラーの両方が中断するシグナルを生成します。 |
 | `.createTimeoutReason()` | タイマーが中断に使う、`TimeoutError` という名前の `DOMException` を生成します。 |
 | `.startTimer()` | コントローラーを中断するタイマーを始動します。 |
+| `.resolveDelayMilliseconds()` | 遅延を `.get:MAX_DELAY_MILLISECONDS` 以内に収めます。`setTimeout()` はそれより長い遅延を 1 ms にするためです。 |
 | `#clear()` | タイマーを止めます。この呼び出しのあとは、タイムアウトがシグナルを中断することはありません。 |
 
 インスタンスは使い捨てです。生成した時点から数え、`#clear()` で止まります。`BaseHttpFetcher` は取得が終わった時点でこれを止めます。
