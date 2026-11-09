@@ -1203,22 +1203,30 @@ describe('BaseRestfulApiLauncher', () => {
     describe.each(LauncherCases)('Launcher: $input.Launcher.name', ({ input, expected }) => {
       const responseCases = [
         {
-          response: new Response('{}', {
-            status: 200,
-            statusText: 'OK',
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response('{}', {
+              status: 200,
+              statusText: 'OK',
+            }),
           }),
         },
         {
-          response: new Response('{}', {
-            status: 201,
-            statusText: 'Created',
+          responseParcel: XMLHttpParcel.create({
+            request: new Request('http://example.com/neutral'), // Neutral value
+            config: {}, // Neutral value
+            response: new Response('{}', {
+              status: 201,
+              statusText: 'Created',
+            }),
           }),
         },
       ]
 
-      test.each(responseCases)('response: $response.response', ({ response }) => {
+      test.each(responseCases)('response: $responseParcel.response', ({ responseParcel }) => {
         const args = {
-          response,
+          responseParcel,
         }
 
         const createSpy = jest.spyOn(expected, 'create')
@@ -2942,7 +2950,7 @@ describe('BaseRestfulApiLauncher', () => {
         })
 
         const expectedArgsForGenerateFetchResult = {
-          response: input.responseParcel.response,
+          responseParcel: input.responseParcel,
         }
         const expectedArgsForCreateCapsule = {
           responseParcel: input.responseParcel,
@@ -2984,22 +2992,12 @@ describe('BaseRestfulApiLauncher', () => {
           .toHaveBeenCalledWith(expectedArgsForCreateCapsule)
       })
     })
-  })
-})
 
-describe('BaseRestfulApiLauncher', () => {
-  describe('#generateFetchResult()', () => {
-    describe('to be parsed JSON object', () => {
+    describe('to leave the response of the capsule readable', () => {
       const cases = [
         {
           input: {
-            response: new Response(`{
-              "content": {
-                "customer": {
-                  "id": 10001
-                }
-              }
-            }`),
+            body: '{"content":{"customer":{"id":10001}}}',
           },
           expected: {
             content: {
@@ -3011,13 +3009,94 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            response: new Response(`{
+            body: '{"content":{"admin":{"id":20001}}}',
+          },
+          expected: {
+            content: {
+              admin: {
+                id: 20001,
+              },
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('body: $input.body', async ({ input, expected }) => {
+        class Launcher extends BaseRestfulApiLauncher {
+          /** @override */
+          static get Capsule () {
+            return BaseRestfulApiCapsule
+          }
+        }
+
+        const launcher = Launcher.create({
+          config: {
+            BASE_URL: 'http://example.com/api',
+          },
+        })
+        const httpParcel = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: new Response(input.body),
+        })
+
+        const capsule = await launcher.retrieveCapsule({
+          payload: BaseRestfulApiPayload.create({
+            query: {
+              id: 10001,
+            },
+          }),
+          httpParcel,
+        })
+
+        const actual = await capsule.responseParcel.toJson()
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+  })
+})
+
+describe('BaseRestfulApiLauncher', () => {
+  describe('#generateFetchResult()', () => {
+    describe('to be parsed JSON object', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
+              "content": {
+                "customer": {
+                  "id": 10001
+                }
+              }
+            }`),
+            }),
+          },
+          expected: {
+            content: {
+              customer: {
+                id: 10001,
+              },
+            },
+          },
+        },
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "content": {
                 "customer": {
                   "id": 10002
                 }
               }
             }`),
+            }),
           },
           expected: {
             content: {
@@ -3029,11 +3108,15 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "error": {
                 "message": "Error message 01"
               }
             }`),
+            }),
           },
           expected: {
             error: {
@@ -3043,11 +3126,15 @@ describe('BaseRestfulApiLauncher', () => {
         },
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "error": {
                 "message": "Error message 02"
               }
             }`),
+            }),
           },
           expected: {
             error: {
@@ -3057,7 +3144,7 @@ describe('BaseRestfulApiLauncher', () => {
         },
       ]
 
-      test.each(cases)('response: $input.response', async ({ input, expected }) => {
+      test.each(cases)('response: $input.responseParcel.response', async ({ input, expected }) => {
         const createResponseBodyParserSpy = jest.spyOn(BaseRestfulApiLauncher, 'createResponseBodyParser')
 
         const launcher = BaseRestfulApiLauncher.create({
@@ -3076,51 +3163,175 @@ describe('BaseRestfulApiLauncher', () => {
       })
     })
 
+    describe('to decode the body with the charset of the response', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(
+                Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x82, 0xB1, 0x22, 0x7D]), // {"id":"こ"} in Shift_JIS
+                {
+                  headers: {
+                    'Content-Type': 'application/json; charset=Shift_JIS',
+                  },
+                }
+              ),
+            }),
+          },
+          expected: {
+            id: 'こ',
+          },
+        },
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(
+                Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x82, 0xF1, 0x22, 0x7D]), // {"id":"ん"} in Shift_JIS
+                {
+                  headers: {
+                    'Content-Type': 'application/json; charset=Shift_JIS',
+                  },
+                }
+              ),
+            }),
+          },
+          expected: {
+            id: 'ん',
+          },
+        },
+      ]
+
+      test.each(cases)('response: $input.responseParcel.response', async ({ input, expected }) => {
+        const launcher = BaseRestfulApiLauncher.create({
+          config: {
+            BASE_URL: 'http://example.com/graphql-customer',
+          },
+        })
+
+        const actual = await launcher.generateFetchResult(input)
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+
+    describe('to leave the parcel readable after the result was generated', () => {
+      const cases = [
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{"content":{"customer":{"id":10001}}}'),
+            }),
+          },
+          expected: {
+            content: {
+              customer: {
+                id: 10001,
+              },
+            },
+          },
+        },
+        {
+          input: {
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{"content":{"customer":{"id":10002}}}'),
+            }),
+          },
+          expected: {
+            content: {
+              customer: {
+                id: 10002,
+              },
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('response: $input.responseParcel.response', async ({ input, expected }) => {
+        const launcher = BaseRestfulApiLauncher.create({
+          config: {
+            BASE_URL: 'http://example.com/graphql-customer',
+          },
+        })
+
+        await launcher.generateFetchResult(input)
+
+        const actual = await input.responseParcel.toJson()
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+
     describe('on response body parsed error', () => {
       const cases = [
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "content": {
                 "customer": {
                   "id": 10001
                 }
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "content": {
                 "customer": {
                   "id": 10002
                 }
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "error": {
                 "message": "Error message 01"
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           input: {
-            response: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "error": {
                 "message": "Error message 02"
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
       ]
 
-      test.each(cases)('response: $input.response', async ({ input }) => {
+      test.each(cases)('response: $input.responseParcel.response', async ({ input }) => {
         const launcher = BaseRestfulApiLauncher.create({
           config: {
             BASE_URL: 'http://example.com/graphql-admin',

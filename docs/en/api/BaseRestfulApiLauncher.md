@@ -12,7 +12,7 @@ Binds a payload class to a capsule class, and launches the request. Extend one p
 | `.get:fetch` | The fetch function used for the request. |
 | `.get:HttpFetcherCtor` | The HTTP fetcher class used for the request. Defaults to `XMLHttpFetcher`, which reports the upload and download progress. |
 | `.createHttpFetcher()` | Creates an HTTP fetcher of `.get:HttpFetcherCtor` from the request and the config. |
-| `.createResponseBodyParser()` | Creates a parser of `.get:ResponseBodyParser`. |
+| `.createResponseBodyParser()` | Creates a parser of `.get:ResponseBodyParser` for an HTTP parcel. |
 | `.createPayload()` | Creates a payload of `.get:Payload`. |
 | `.createPayloadWithFormValueHash()` | Creates a payload from a `<form>` value hash. |
 | `.createCapsule()` | Creates a capsule of `.get:Capsule`. |
