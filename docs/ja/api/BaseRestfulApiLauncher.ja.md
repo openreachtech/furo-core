@@ -12,7 +12,7 @@
 | `.get:fetch` | リクエストに使用される fetch 関数。 |
 | `.get:HttpFetcherCtor` | リクエストに使用する HTTP フェッチャーのクラス。既定は、アップロードとダウンロードの進捗を通知する `XMLHttpFetcher` です。 |
 | `.createHttpFetcher()` | リクエストと設定から、`.get:HttpFetcherCtor` の HTTP フェッチャーを生成します。 |
-| `.createResponseBodyParser()` | `.get:ResponseBodyParser` のパーサーを生成します。 |
+| `.createResponseBodyParser()` | HTTP パーセル用に、`.get:ResponseBodyParser` のパーサーを生成します。 |
 | `.createPayload()` | `.get:Payload` のペイロードを生成します。 |
 | `.createPayloadWithFormValueHash()` | `<form>` の値ハッシュからペイロードを生成します。 |
 | `.createCapsule()` | `.get:Capsule` のカプセルを生成します。 |
