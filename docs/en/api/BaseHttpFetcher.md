@@ -1,20 +1,21 @@
 # BaseHttpFetcher
 
-Base class of the HTTP fetchers. It owns the flow of a fetch: it builds the signal that aborts the request, lets a subclass receive the response, and always returns an HTTP parcel. Extend it per transport.
+Base class of the HTTP fetchers. It owns the flow of a fetch: it starts a timer that aborts the request, lets a subclass receive the response, and always returns an HTTP parcel. Extend it per transport.
 
 | member | description |
 | :-- | :-- |
 | `.create()` | Factory method. Takes the `request` and the `config`. |
-| `.get:AbortSignalCtor` | The `AbortSignal` class used to build the signal. |
+| `.get:AbortTimerCtor` | The `AbortTimer` class used to build the timer that aborts the request. |
 | `.get:HttpParcelCtor` | The HTTP parcel class a fetcher returns. Must be overridden. |
 | `.createHttpParcel()` | Creates an HTTP parcel of `.get:HttpParcelCtor`. |
 | `#get:timeoutMilliseconds` | Milliseconds to wait for the response, from the `config`. `0` for no limit. |
-| `#fetchResponse()` | Fetches the response and resolves to an HTTP parcel. It never rejects. |
-| `#createAbortSignal()` | Creates the signal that aborts the request, by the signal of the request and by the timeout. |
-| `#receiveResponse()` | Receives the response. Must be overridden. Rejects with the reason where the response cannot be received. |
+| `#fetchResponse()` | Fetches the response and resolves to an HTTP parcel. It never rejects, even where the timer cannot be created. |
+| `#fetchResponseUnderTimer()` | Fetches while the timer counts the timeout, and stops the timer once the fetch settles. |
+| `#createAbortTimer()` | Creates the `AbortTimer` that aborts the request, by the signal of the request and by the timeout. |
+| `#receiveResponse()` | Receives the response. Must be overridden. Rejects with the reason where the response cannot be received. The timer stops when it settles, so the work the timeout must cover is done before it resolves. |
 | `#createHttpParcelByResponse()` | Creates an HTTP parcel of the received response. |
 | `#resolveResponseUrl()` | Resolves the URL of the response after the redirects. Must be overridden. |
-| `#createHttpParcelByFailure()` | Creates an HTTP parcel of a failure, by the name of the error: `TimeoutError`, `AbortError` or `NetworkError`. |
+| `#createHttpParcelByFailure()` | Creates an HTTP parcel of a failure. A failure while the signal of the request is aborted is an abort, whatever the reason is. Otherwise it goes by the name of the error: `TimeoutError`, `AbortError` or `NetworkError`. |
 | `#createHttpParcelByUnnamedFailure()` | Creates an HTTP parcel of a failure that no name tells. Defaults to an unknown error. |
 | `#createHttpParcelAsNetworkError()` | Creates an HTTP parcel of a network failure. |
 | `#createHttpParcelAsTimeoutError()` | Creates an HTTP parcel of a timed out request. |

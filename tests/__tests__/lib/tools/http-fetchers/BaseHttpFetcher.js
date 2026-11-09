@@ -1,5 +1,7 @@
 import BaseHttpFetcher from '../../../../../lib/tools/http-fetchers/BaseHttpFetcher.js'
 
+import AbortTimer from '../../../../../lib/tools/http-fetchers/tools/AbortTimer.js'
+
 import FetchHttpParcel from '../../../../../lib/tools/http-fetchers/parcels/concretes/FetchHttpParcel.js'
 import XMLHttpParcel from '../../../../../lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
@@ -124,13 +126,13 @@ describe('BaseHttpFetcher', () => {
 })
 
 describe('BaseHttpFetcher', () => {
-  describe('.get:AbortSignalCtor', () => {
+  describe('.get:AbortTimerCtor', () => {
     describe('when called as is', () => {
-      test('should be AbortSignal', () => {
-        const received = BaseHttpFetcher.AbortSignalCtor
+      test('should be AbortTimer', () => {
+        const received = BaseHttpFetcher.AbortTimerCtor
 
         expect(received)
-          .toBe(AbortSignal) // same reference
+          .toBe(AbortTimer) // same reference
       })
     })
   })
@@ -402,7 +404,20 @@ describe('BaseHttpFetcher', () => {
       config: {},
     })
 
-    describe('should let the subclass receive the response with the sink and the signal that aborts the request', () => {
+    /**
+     * Create a timer of fake, which tells whether it was cleared.
+     *
+     * @param {{
+     *   signal: AbortSignal
+     * }} params - Parameters.
+     * @returns {{ signal: AbortSignal, clear: jest.Mock }} Fake of the timer.
+     */
+    const createTimerFake = ({ signal }) => ({
+      signal,
+      clear: jest.fn(),
+    })
+
+    describe('should let the subclass receive the response with the sink and the signal of the timer', () => {
       const cases = [
         {
           override: {
@@ -449,8 +464,8 @@ describe('BaseHttpFetcher', () => {
 
         const fetcher = BaseHttpFetcher.create(createArgs)
 
-        jest.spyOn(fetcher, 'createAbortSignal')
-          .mockReturnValue(override.signal)
+        jest.spyOn(fetcher, 'createAbortTimer')
+          .mockReturnValue(createTimerFake({ signal: override.signal }))
         const receiveResponseSpy = jest.spyOn(fetcher, 'receiveResponse')
           .mockResolvedValue(override.response)
         jest.spyOn(fetcher, 'createHttpParcelByResponse')
@@ -653,135 +668,236 @@ describe('BaseHttpFetcher', () => {
           .toBe(expected) // same reference
       })
     })
+
+    describe('should resolve the parcel of the failure where the timer cannot be created', () => {
+      const cases = [
+        {
+          override: {
+            error: new TypeError('AbortSignal.any is not a function'),
+            parcel: alphaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+          expected: {
+            parcel: alphaParcel,
+            error: new TypeError('AbortSignal.any is not a function'),
+          },
+        },
+        {
+          override: {
+            error: new RangeError('Timeout must not be negative'),
+            parcel: betaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+          expected: {
+            parcel: betaParcel,
+            error: new RangeError('Timeout must not be negative'),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input, expected }) => {
+        const fetchResponseArgs = {
+          sink: {}, // Neutral value
+        }
+
+        const fetcher = BaseHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'createAbortTimer')
+          .mockImplementation(() => {
+            throw override.error
+          })
+        const createHttpParcelByFailureSpy = jest.spyOn(fetcher, 'createHttpParcelByFailure')
+          .mockReturnValue(override.parcel)
+
+        const received = await fetcher.fetchResponse(fetchResponseArgs)
+
+        expect(received)
+          .toBe(expected.parcel) // same reference
+
+        expect(createHttpParcelByFailureSpy)
+          .toHaveBeenCalledWith({
+            error: expected.error,
+          })
+      })
+    })
+
+    describe('should clear the timer after the response was received', () => {
+      const cases = [
+        {
+          override: {
+            response: alphaResponse,
+            parcel: alphaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+        },
+        {
+          override: {
+            response: betaResponse,
+            parcel: betaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input }) => {
+        const fetchResponseArgs = {
+          sink: {}, // Neutral value
+        }
+        const timerFake = createTimerFake({ signal: alphaSignal })
+
+        const fetcher = BaseHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'createAbortTimer')
+          .mockReturnValue(timerFake)
+        jest.spyOn(fetcher, 'receiveResponse')
+          .mockResolvedValue(override.response)
+        jest.spyOn(fetcher, 'createHttpParcelByResponse')
+          .mockReturnValue(override.parcel)
+
+        await fetcher.fetchResponse(fetchResponseArgs)
+
+        expect(timerFake.clear)
+          .toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('should clear the timer after the failure of the subclass', () => {
+      const cases = [
+        {
+          override: {
+            error: new Error('Error 0001'),
+            parcel: alphaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+        },
+        {
+          override: {
+            error: new DOMException('The operation timed out.', 'TimeoutError'),
+            parcel: betaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input }) => {
+        const fetchResponseArgs = {
+          sink: {}, // Neutral value
+        }
+        const timerFake = createTimerFake({ signal: alphaSignal })
+
+        const fetcher = BaseHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'createAbortTimer')
+          .mockReturnValue(timerFake)
+        jest.spyOn(fetcher, 'receiveResponse')
+          .mockRejectedValue(override.error)
+        jest.spyOn(fetcher, 'createHttpParcelByFailure')
+          .mockReturnValue(override.parcel)
+
+        await fetcher.fetchResponse(fetchResponseArgs)
+
+        expect(timerFake.clear)
+          .toHaveBeenCalledTimes(1)
+      })
+    })
   })
 })
 
 describe('BaseHttpFetcher', () => {
-  describe('#createAbortSignal()', () => {
-    describe('when the config has no limit', () => {
-      const alphaRequest = new Request('https://example.com/resource-0001')
-      const betaRequest = new Request('https://example.com/resource-0002')
+  describe('#createAbortTimer()', () => {
+    const alphaRequest = new Request('https://example.com/resource-0001')
+    const betaRequest = new Request('https://example.com/resource-0002')
+    const alphaTimer = AbortTimer.create({
+      requestSignal: alphaRequest.signal,
+      timeoutMilliseconds: 0,
+    })
+    const betaTimer = AbortTimer.create({
+      requestSignal: betaRequest.signal,
+      timeoutMilliseconds: 0,
+    })
 
-      const cases = [
-        {
-          input: {
-            request: alphaRequest,
-            config: {
-              timeoutMilliseconds: 0,
-            },
-          },
-          expected: alphaRequest.signal,
+    const cases = [
+      {
+        override: {
+          timer: alphaTimer,
         },
-        {
-          input: {
-            request: betaRequest,
-            config: {
-              // timeoutMilliseconds: omitted
-            },
+        input: {
+          request: alphaRequest,
+          config: {
+            timeoutMilliseconds: 1000,
           },
-          expected: betaRequest.signal,
         },
-      ]
+        expected: {
+          timer: alphaTimer,
+          args: {
+            requestSignal: alphaRequest.signal,
+            timeoutMilliseconds: 1000,
+          },
+        },
+      },
+      {
+        override: {
+          timer: betaTimer,
+        },
+        input: {
+          request: betaRequest,
+          config: {
+            // timeoutMilliseconds: omitted
+          },
+        },
+        expected: {
+          timer: betaTimer,
+          args: {
+            requestSignal: betaRequest.signal,
+            timeoutMilliseconds: 0,
+          },
+        },
+      },
+    ]
 
-      describe('should be the signal of the request', () => {
-        test.each(cases)('url: $input.request.url', ({ input, expected }) => {
-          const fetcher = BaseHttpFetcher.create(input)
+    describe('should create the timer with the signal of the request and the timeout', () => {
+      test.each(cases)('url: $input.request.url', ({ override, input, expected }) => {
+        const createSpy = jest.spyOn(AbortTimer, 'create')
+          .mockReturnValue(override.timer)
 
-          const received = fetcher.createAbortSignal()
+        const fetcher = BaseHttpFetcher.create(input)
 
-          expect(received)
-            .toBe(expected) // same reference
-        })
+        fetcher.createAbortTimer()
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(expected.args)
       })
     })
 
-    describe('when the config has a limit', () => {
-      const alphaRequest = new Request('https://example.com/resource-0001')
-      const betaRequest = new Request('https://example.com/resource-0002')
-      const alphaTimeoutSignal = new AbortController().signal
-      const betaTimeoutSignal = new AbortController().signal
+    describe('should be the timer that the factory method created', () => {
+      test.each(cases)('url: $input.request.url', ({ override, input, expected }) => {
+        jest.spyOn(AbortTimer, 'create')
+          .mockReturnValue(override.timer)
 
-      const cases = [
-        {
-          override: {
-            timeoutSignal: alphaTimeoutSignal,
-          },
-          input: {
-            request: alphaRequest,
-            config: {
-              timeoutMilliseconds: 1000,
-            },
-          },
-          expected: {
-            timeoutMilliseconds: 1000,
-            signals: [
-              alphaRequest.signal,
-              alphaTimeoutSignal,
-            ],
-          },
-        },
-        {
-          override: {
-            timeoutSignal: betaTimeoutSignal,
-          },
-          input: {
-            request: betaRequest,
-            config: {
-              timeoutMilliseconds: 30000,
-            },
-          },
-          expected: {
-            timeoutMilliseconds: 30000,
-            signals: [
-              betaRequest.signal,
-              betaTimeoutSignal,
-            ],
-          },
-        },
-      ]
+        const fetcher = BaseHttpFetcher.create(input)
 
-      describe('should create the timeout signal with the milliseconds', () => {
-        test.each(cases)('timeoutMilliseconds: $input.config.timeoutMilliseconds', ({ override, input, expected }) => {
-          const timeoutSpy = jest.spyOn(AbortSignal, 'timeout')
-            .mockReturnValue(override.timeoutSignal)
+        const received = fetcher.createAbortTimer()
 
-          const fetcher = BaseHttpFetcher.create(input)
-
-          fetcher.createAbortSignal()
-
-          expect(timeoutSpy)
-            .toHaveBeenCalledWith(expected.timeoutMilliseconds)
-        })
-      })
-
-      describe('should combine the signal of the request and the timeout signal', () => {
-        test.each(cases)('timeoutMilliseconds: $input.config.timeoutMilliseconds', ({ override, input, expected }) => {
-          jest.spyOn(AbortSignal, 'timeout')
-            .mockReturnValue(override.timeoutSignal)
-
-          const anySpy = jest.spyOn(AbortSignal, 'any')
-
-          const fetcher = BaseHttpFetcher.create(input)
-
-          fetcher.createAbortSignal()
-
-          expect(anySpy)
-            .toHaveBeenCalledWith(expected.signals)
-        })
-      })
-
-      describe('should be an instance of AbortSignal', () => {
-        test.each(cases)('timeoutMilliseconds: $input.config.timeoutMilliseconds', ({ override, input }) => {
-          jest.spyOn(AbortSignal, 'timeout')
-            .mockReturnValue(override.timeoutSignal)
-
-          const fetcher = BaseHttpFetcher.create(input)
-
-          const received = fetcher.createAbortSignal()
-
-          expect(received)
-            .toBeInstanceOf(AbortSignal)
-        })
+        expect(received)
+          .toBe(expected.timer) // same reference
       })
     })
   })
@@ -1083,6 +1199,78 @@ describe('BaseHttpFetcher', () => {
             request: new Request('https://example.com/resource-0004'),
             config: {},
             error: new DOMException('Failure 0004', 'AbortError'),
+          },
+        },
+      ]
+
+      test.each(cases)('request: $input.request.url', ({ input }) => {
+        const args = {
+          error: input.error,
+        }
+
+        const fetcher = BaseHttpFetcher.create({
+          request: input.request,
+          config: input.config,
+        })
+
+        const hookSpy = jest.spyOn(fetcher, 'createHttpParcelAsAbortError')
+          .mockReturnValue(parcel)
+
+        const received = fetcher.createHttpParcelByFailure(args)
+
+        expect(hookSpy)
+          .toHaveBeenCalledWith()
+
+        expect(received)
+          .toBe(parcel) // same reference
+      })
+    })
+
+    describe('should create the parcel through #createHttpParcelAsAbortError() where the signal of the request was aborted, whatever the reason is', () => {
+      const parcel = FetchHttpParcel.createAsError({
+        request: new Request('https://example.com/neutral'), // Neutral value
+        config: {}, // Neutral value
+      })
+
+      const createAbortedRequest = ({ url, reason }) => {
+        const controller = new AbortController()
+
+        controller.abort(reason)
+
+        return new Request(url, {
+          signal: controller.signal,
+        })
+      }
+
+      const cases = [
+        {
+          input: {
+            request: createAbortedRequest({
+              url: 'https://example.com/resource-0021',
+              reason: 'cancel', // string has no name
+            }),
+            config: {},
+            error: 'cancel',
+          },
+        },
+        {
+          input: {
+            request: createAbortedRequest({
+              url: 'https://example.com/resource-0022',
+              reason: new Error('Cancel 0022'), // name is Error
+            }),
+            config: {},
+            error: new Error('Cancel 0022'),
+          },
+        },
+        {
+          input: {
+            request: createAbortedRequest({
+              url: 'https://example.com/resource-0023',
+              reason: new DOMException('Failure 0023', 'NetworkError'),
+            }),
+            config: {},
+            error: new DOMException('Failure 0023', 'NetworkError'),
           },
         },
       ]
