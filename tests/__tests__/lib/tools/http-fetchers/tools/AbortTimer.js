@@ -459,6 +459,44 @@ describe('AbortTimer', () => {
           .toHaveProperty('name', 'TimeoutError')
       })
     })
+
+    describe('should keep the delay within the limit of setTimeout()', () => {
+      const cases = [
+        {
+          input: {
+            timeoutMilliseconds: 2147483647,
+          },
+          expected: 2147483647,
+        },
+        {
+          input: {
+            timeoutMilliseconds: 2147483648,
+          },
+          expected: 2147483647,
+        },
+        {
+          input: {
+            timeoutMilliseconds: 5000000000,
+          },
+          expected: 2147483647,
+        },
+      ]
+
+      test.each(cases)('timeoutMilliseconds: $input.timeoutMilliseconds', ({ input, expected }) => {
+        const setTimeoutMock = jest.fn()
+
+        jest.spyOn(AbortTimer, 'setTimeout', 'get')
+          .mockReturnValue(setTimeoutMock)
+
+        AbortTimer.startTimer({
+          controller: new AbortController(),
+          timeoutMilliseconds: input.timeoutMilliseconds,
+        })
+
+        expect(setTimeoutMock)
+          .toHaveBeenCalledWith(expect.any(Function), expected)
+      })
+    })
   })
 })
 

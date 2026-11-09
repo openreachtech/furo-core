@@ -260,6 +260,18 @@ describe('ResponseTextConverter', () => {
           },
           expected: 'ISO-8859-1',
         },
+        {
+          input: {
+            contentType: 'text/plain; charset=" Shift_JIS "',
+          },
+          expected: 'Shift_JIS',
+        },
+        {
+          input: {
+            contentType: 'text/plain; charset="utf-16le"; format=flowed',
+          },
+          expected: 'utf-16le',
+        },
       ]
 
       test.each(cases)('content-type: $input.contentType', ({ input, expected }) => {
