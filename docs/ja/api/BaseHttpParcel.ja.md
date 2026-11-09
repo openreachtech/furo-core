@@ -10,6 +10,8 @@
 | `.createAsTimeoutError()` | タイムアウトしたリクエストを表すファクトリメソッド。 |
 | `.createAsAbortError()` | 中断されたリクエストを表すファクトリメソッド。 |
 | `.get:HTTP_FETCHER_ERROR` | フェッチャーのエラー。`NETWORK`、`TIMEOUT`、`ABORT`、`UNKNOWN` です。 |
+| `.get:ResponseTextConverterCtor` | ボディをテキストへデコードする `ResponseTextConverter` クラス。 |
+| `.createResponseTextConverter()` | パーセル用に、`.get:ResponseTextConverterCtor` の `ResponseTextConverter` を生成します。 |
 | `#get:requestUrl` | リクエストの URL。 |
 | `#get:status` | レスポンスのステータスコード。受信していない場合は `null`。 |
 | `#get:statusText` | レスポンスのステータステキスト。受信していない場合は `null`。 |
@@ -19,9 +21,9 @@
 | `#hasTimeoutError()` | リクエストがタイムアウトしたためにレスポンスを受信できなかったかどうか。 |
 | `#hasAbortError()` | リクエストが中断されたためにレスポンスを受信できなかったかどうか。 |
 | `#hasUnknownError()` | 原因不明の理由でレスポンスを受信できなかったかどうか。 |
-| `#toJson()` | ボディを JSON として読み取ります。 |
+| `#toJson()` | `#toText()` をパースして、ボディを JSON として読み取ります。ボディが JSON でない場合は `SyntaxError` で reject します。 |
 | `#cloneResponse()` | ボディを読み直せるようにする、レスポンスの複製。 |
-| `#toText()` | ボディをテキストとして読み取ります。 |
+| `#toText()` | レスポンスの `Content-Type` が宣言する文字コードでデコードして、ボディをテキストとして読み取ります。宣言がなければ UTF-8 です。 |
 | `#toArrayBuffer()` | ボディを配列バッファとして読み取ります。 |
 | `#toBlob()` | ボディを `Blob` として読み取ります。 |
 | `#isRedirected()` | レスポンスがリダイレクトの結果かどうか。オーバーライドが必須です。 |
