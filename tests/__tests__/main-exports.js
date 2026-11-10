@@ -15,11 +15,12 @@ import {
   HeadersParser,
   PathnameBuilder,
 
-  BaseResponseBodyParser,
-  JsonResponseBodyParser,
   BaseRequestBodyConverter,
   FormDataRequestBodyConverter,
   JsonRequestBodyConverter,
+
+  BaseResponseBodyParser,
+  JsonResponseBodyParser,
 
   BaseRestfulApiCapsule,
   BaseRestfulApiLauncher,
@@ -72,11 +73,12 @@ describe('Classes exported correctly', () => {
     { ExportedClass: HeadersParser },
     { ExportedClass: PathnameBuilder },
 
-    { ExportedClass: BaseResponseBodyParser },
-    { ExportedClass: JsonResponseBodyParser },
     { ExportedClass: BaseRequestBodyConverter },
     { ExportedClass: FormDataRequestBodyConverter },
     { ExportedClass: JsonRequestBodyConverter },
+
+    { ExportedClass: BaseResponseBodyParser },
+    { ExportedClass: JsonResponseBodyParser },
 
     { ExportedClass: BaseRestfulApiCapsule },
     { ExportedClass: BaseRestfulApiLauncher },
