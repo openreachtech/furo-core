@@ -172,7 +172,7 @@ describe('JsonResponseBodyParser', () => {
       })
     })
 
-    describe('should throw an JSON parse error', () => {
+    describe('should be null where the body is not JSON', () => {
       const cases = [
         {
           input: {
@@ -205,9 +205,10 @@ describe('JsonResponseBodyParser', () => {
       test.each(cases)('url: $input.responseParcel.request.url', async ({ input, expected }) => {
         const parser = JsonResponseBodyParser.create(input)
 
-        await expect(parser.parseBody())
-          .rejects
-          .toThrow(SyntaxError)
+        const received = await parser.parseBody()
+
+        expect(received)
+          .toBeNull()
       })
     })
   })
