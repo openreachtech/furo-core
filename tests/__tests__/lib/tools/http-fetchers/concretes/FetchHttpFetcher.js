@@ -510,6 +510,66 @@ describe('FetchHttpFetcher', () => {
       })
     })
 
+    describe('should be the parcel of a timeout where the body download rejects with an error other than the reason of the signal', () => {
+      /**
+       * Create a response of fake, whose body download rejects with a generic `AbortError` once the signal aborts it.
+       *
+       * @param {{
+       *   signal: AbortSignal
+       * }} params - Parameters.
+       * @returns {Response} Response of fake.
+       */
+      const createGenericAbortResponse = ({ signal }) => {
+        const response = new Response('neutral') // Neutral value
+
+        jest.spyOn(response, 'clone')
+          .mockReturnValue({
+            body: {
+              pipeTo: () => new Promise((resolve, reject) => {
+                signal.addEventListener('abort', () => reject(new DOMException('Fetch is aborted', 'AbortError')))
+              }),
+            },
+          })
+
+        return response
+      }
+
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {
+              timeoutMilliseconds: 20,
+            },
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {
+              timeoutMilliseconds: 40,
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input }) => {
+        const fetcher = FetchHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'invokeFetch')
+          .mockImplementation(async ({ optionHash }) => createGenericAbortResponse({
+            signal: optionHash.signal,
+          }))
+
+        const received = await fetcher.fetchResponse({
+          sink: {}, // Neutral value
+        })
+
+        expect(received.hasTimeoutError())
+          .toBe(true)
+      })
+    })
+
     describe('should be the parcel of an abort where the request is aborted while the body downloads', () => {
       const cases = [
         {
