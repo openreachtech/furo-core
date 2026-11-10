@@ -981,78 +981,6 @@ describe('BaseHttpParcel', () => {
 })
 
 describe('BaseHttpParcel', () => {
-  describe('#get:headerHash', () => {
-    describe('should be null when the response was not received', () => {
-      const cases = [
-        {
-          input: {
-            parcel: BaseHttpParcel.createAsNetworkError({
-              request: new Request('https://example.com/resource-0001'),
-              config: {},
-            }),
-          },
-        },
-        {
-          input: {
-            parcel: BaseHttpParcel.createAsTimeoutError({
-              request: new Request('https://example.com/resource-0002'),
-              config: {},
-            }),
-          },
-        },
-      ]
-
-      test.each(cases)('url: $input.parcel.request.url', ({ input }) => {
-        const received = input.parcel.headerHash
-
-        expect(received)
-          .toBeNull()
-      })
-    })
-
-    describe('should be a record of the headers of the response, whose names are in lower case', () => {
-      const cases = [
-        {
-          input: {
-            response: new Response('', {
-              headers: {
-                'Content-Type': 'application/json; charset=Shift_JIS',
-                'X-Request-Id': 'id-0001',
-              },
-            }),
-          },
-          expected: {
-            'content-type': 'application/json; charset=Shift_JIS',
-            'x-request-id': 'id-0001',
-          },
-        },
-        {
-          input: {
-            response: new Response(Uint8Array.from([]), { // a text body would carry its own Content-Type
-              headers: {},
-            }),
-          },
-          expected: {},
-        },
-      ]
-
-      test.each(cases)('expected: $expected', ({ input, expected }) => {
-        const parcel = BaseHttpParcel.create({
-          request: new Request('https://example.com/neutral'), // Neutral value
-          config: {}, // Neutral value
-          response: input.response,
-        })
-
-        const received = parcel.headerHash
-
-        expect(received)
-          .toEqual(expected)
-      })
-    })
-  })
-})
-
-describe('BaseHttpParcel', () => {
   describe('#get:ok', () => {
     describe('should be false when the response was not received', () => {
       const cases = [
@@ -1143,6 +1071,78 @@ describe('BaseHttpParcel', () => {
 
         expect(received)
           .toBe(false)
+      })
+    })
+  })
+})
+
+describe('BaseHttpParcel', () => {
+  describe('#extractHeaderHash()', () => {
+    describe('should be null when the response was not received', () => {
+      const cases = [
+        {
+          input: {
+            parcel: BaseHttpParcel.createAsNetworkError({
+              request: new Request('https://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            parcel: BaseHttpParcel.createAsTimeoutError({
+              request: new Request('https://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.parcel.request.url', ({ input }) => {
+        const received = input.parcel.extractHeaderHash()
+
+        expect(received)
+          .toBeNull()
+      })
+    })
+
+    describe('should be a record of the headers of the response, whose names are in lower case', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response('', {
+              headers: {
+                'Content-Type': 'application/json; charset=Shift_JIS',
+                'X-Request-Id': 'id-0001',
+              },
+            }),
+          },
+          expected: {
+            'content-type': 'application/json; charset=Shift_JIS',
+            'x-request-id': 'id-0001',
+          },
+        },
+        {
+          input: {
+            response: new Response(Uint8Array.from([]), { // a text body would carry its own Content-Type
+              headers: {},
+            }),
+          },
+          expected: {},
+        },
+      ]
+
+      test.each(cases)('expected: $expected', ({ input, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+
+        const received = parcel.extractHeaderHash()
+
+        expect(received)
+          .toEqual(expected)
       })
     })
   })

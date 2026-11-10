@@ -9,4 +9,4 @@ HTTP パーセルのヘッダーハッシュから、`Content-Type` ヘッダー
 | `#resolveCharset()` | 前後の空白を除いた宣言の文字コード。なければ `.get:DEFAULT_CHARSET`。 |
 | `#extractDeclaredCharset()` | `Content-Type` が宣言する文字コードを、前後の空白を除いて返します。宣言がなければ `null`。 |
 
-`ResponseTextConverter` は `BaseHttpParcel#get:headerHash` を渡して、これで文字コードを解決します。
+`ResponseTextConverter` は `BaseHttpParcel#extractHeaderHash()` の結果を渡して、これで文字コードを解決します。

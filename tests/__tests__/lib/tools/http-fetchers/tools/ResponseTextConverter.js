@@ -287,7 +287,7 @@ describe('ResponseTextConverter', () => {
 
 describe('ResponseTextConverter', () => {
   describe('#resolveCharset()', () => {
-    describe('should resolve the charset through the resolver of the header hash of the parcel', () => {
+    describe('should resolve the charset through the resolver of the header hash that the parcel extracts', () => {
       const cases = [
         {
           input: {

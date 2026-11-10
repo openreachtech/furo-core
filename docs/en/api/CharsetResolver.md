@@ -9,4 +9,4 @@ Resolves the charset that the `Content-Type` header declares, such as `charset=S
 | `#resolveCharset()` | The declared charset without the spaces around it, or `.get:DEFAULT_CHARSET`. |
 | `#extractDeclaredCharset()` | The charset that a `Content-Type` declares, trimmed, or `null` where it declares none. |
 
-`ResponseTextConverter` resolves the charset through it, with `BaseHttpParcel#get:headerHash`.
+`ResponseTextConverter` resolves the charset through it, with `BaseHttpParcel#extractHeaderHash()`.
