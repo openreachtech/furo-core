@@ -10,7 +10,8 @@ HTTP フェッチャーの基底クラスです。取得の流れを持ちます
 | `.createHttpParcel()` | `.get:HttpParcelCtor` の HTTP パーセルを生成します。 |
 | `#get:timeoutMilliseconds` | `config` から得る、レスポンスを待つミリ秒。`0` は制限なし。 |
 | `#fetchResponse()` | レスポンスを取得し、HTTP パーセルへ解決します。タイマーを生成できない場合も含め、reject しません。 |
-| `#fetchResponseUnderTimer()` | タイマーがタイムアウトを数えている間に取得し、パーセルにボディをすべて待たせ、両方が終わった時点でタイマーを止めます。ボディの受信中のタイムアウトもタイムアウトです。 |
+| `#fetchResponseUnderTimer()` | タイマーがタイムアウトを数えている間に `#receiveHttpParcel()` を呼び、終わった時点でタイマーを止めます。 |
+| `#receiveHttpParcel()` | レスポンスを受信し、そのパーセルを作ります。サブクラスはタイマー内で待つ処理を足すためにオーバーライドします。 |
 | `#createAbortTimer()` | リクエスト自身のシグナルとタイムアウトで、リクエストを中断する `AbortTimer` を生成します。 |
 | `#receiveResponse()` | レスポンスを受信します。オーバーライドが必須です。受信できない場合はその理由で reject します。パーセルがタイマーの動いている間にボディを待つので、ヘッダーの受信で解決して構いません。 |
 | `#createHttpParcelByResponse()` | 受信したレスポンスの HTTP パーセルを生成します。 |

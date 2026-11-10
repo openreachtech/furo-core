@@ -1807,40 +1807,6 @@ describe('BaseHttpParcel', () => {
 })
 
 describe('BaseHttpParcel', () => {
-  describe('#awaitBody()', () => {
-    describe('should resolve without reading the body', () => {
-      const cases = [
-        {
-          input: {
-            response: new Response('text-0001'),
-          },
-        },
-        {
-          input: {
-            response: new Response('text-0002'),
-          },
-        },
-      ]
-
-      test.each(cases)('response: $input.response', async ({ input }) => {
-        const parcel = BaseHttpParcel.create({
-          request: new Request('https://example.com/neutral'), // Neutral value
-          config: {}, // Neutral value
-          response: input.response,
-        })
-        const toArrayBufferSpy = jest.spyOn(parcel, 'toArrayBuffer')
-
-        await parcel.awaitBody()
-
-        expect(toArrayBufferSpy)
-          .not
-          .toHaveBeenCalled()
-      })
-    })
-  })
-})
-
-describe('BaseHttpParcel', () => {
   describe('#toText()', () => {
     describe('should be null when the response was not received', () => {
       const cases = [

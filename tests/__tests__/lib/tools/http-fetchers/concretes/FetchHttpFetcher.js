@@ -463,9 +463,11 @@ describe('FetchHttpFetcher', () => {
 
       jest.spyOn(response, 'clone')
         .mockReturnValue({
-          arrayBuffer: () => new Promise((resolve, reject) => {
-            signal.addEventListener('abort', () => reject(signal.reason))
-          }),
+          body: {
+            pipeTo: () => new Promise((resolve, reject) => {
+              signal.addEventListener('abort', () => reject(signal.reason))
+            }),
+          },
         })
 
       return response
@@ -950,6 +952,108 @@ describe('FetchHttpFetcher', () => {
 
         expect(received)
           .toBeInstanceOf(FetchHttpParcel)
+      })
+    })
+  })
+})
+
+describe('FetchHttpFetcher', () => {
+  describe('#receiveHttpParcel()', () => {
+    describe('should await the body of the parcel before it resolves', () => {
+      const cases = [
+        {
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+            response: new Response('text-0001'),
+          },
+        },
+        {
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+            response: new Response('text-0002'),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ input }) => {
+        const parcel = FetchHttpParcel.create({
+          request: input.request,
+          config: input.config,
+          response: input.response,
+        })
+        const awaitBodySpy = jest.spyOn(parcel, 'awaitBody')
+          .mockResolvedValue(undefined)
+
+        const fetcher = FetchHttpFetcher.create({
+          request: input.request,
+          config: input.config,
+        })
+
+        jest.spyOn(fetcher, 'receiveResponse')
+          .mockResolvedValue(input.response)
+        jest.spyOn(fetcher, 'createHttpParcelByResponse')
+          .mockReturnValue(parcel)
+
+        const received = await fetcher.receiveHttpParcel({
+          sink: {}, // Neutral value
+          signal: new AbortController().signal, // Neutral value
+        })
+
+        expect(received)
+          .toBe(parcel) // same reference
+
+        expect(awaitBodySpy)
+          .toHaveBeenCalledWith()
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          input: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          expected: 'signal timed out',
+        },
+        {
+          input: {
+            error: new Error('Body download failed'),
+          },
+          expected: 'Body download failed',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const request = new Request('https://example.com/neutral') // Neutral value
+        const parcel = FetchHttpParcel.create({
+          request,
+          config: {}, // Neutral value
+          response: new Response('neutral'), // Neutral value
+        })
+
+        jest.spyOn(parcel, 'awaitBody')
+          .mockRejectedValue(input.error)
+
+        const fetcher = FetchHttpFetcher.create({
+          request,
+          config: {}, // Neutral value
+        })
+
+        jest.spyOn(fetcher, 'receiveResponse')
+          .mockResolvedValue(new Response('neutral')) // Neutral value
+        jest.spyOn(fetcher, 'createHttpParcelByResponse')
+          .mockReturnValue(parcel)
+
+        const received = () => fetcher.receiveHttpParcel({
+          sink: {}, // Neutral value
+          signal: new AbortController().signal, // Neutral value
+        })
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
       })
     })
   })

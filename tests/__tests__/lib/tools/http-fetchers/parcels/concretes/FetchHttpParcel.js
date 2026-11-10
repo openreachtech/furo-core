@@ -188,46 +188,63 @@ describe('FetchHttpParcel', () => {
 
 describe('FetchHttpParcel', () => {
   describe('#awaitBody()', () => {
-    describe('should read the whole body through a clone, so that the response stays readable', () => {
+    /**
+     * Create a response of fake, whose clone has a body stream of fake.
+     *
+     * @param {{
+     *   pipeTo: jest.Mock
+     * }} params - Parameters.
+     * @returns {Response} Response of fake.
+     */
+    const createResponseWithBody = ({ pipeTo }) => {
+      const response = new Response('neutral') // Neutral value
+
+      jest.spyOn(response, 'clone')
+        .mockReturnValue({
+          body: {
+            pipeTo,
+          },
+        })
+
+      return response
+    }
+
+    describe('should drain the body of a clone into a writable stream', () => {
       const cases = [
         {
           input: {
-            response: new Response('text-0001'),
+            url: 'https://example.com/resource-0001',
           },
-          expected: 'text-0001',
         },
         {
           input: {
-            response: new Response('text-0002'),
+            url: 'https://example.com/resource-0002',
           },
-          expected: 'text-0002',
         },
       ]
 
-      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+      test.each(cases)('url: $input.url', async ({ input }) => {
+        const pipeTo = jest.fn()
+          .mockResolvedValue(undefined)
+        const response = createResponseWithBody({ pipeTo })
+
         const parcel = FetchHttpParcel.create({
-          request: new Request('https://example.com/neutral'), // Neutral value
+          request: new Request(input.url),
           config: {}, // Neutral value
-          response: input.response,
+          response,
         })
-        const toArrayBufferSpy = jest.spyOn(parcel, 'toArrayBuffer')
 
         await parcel.awaitBody()
 
-        expect(toArrayBufferSpy)
+        expect(response.clone)
           .toHaveBeenCalledWith()
 
-        expect(input.response)
-          .toHaveProperty('bodyUsed', false)
-
-        const received = await parcel.toText()
-
-        expect(received)
-          .toBe(expected)
+        expect(pipeTo)
+          .toHaveBeenCalledWith(expect.any(WritableStream))
       })
     })
 
-    describe('should resolve where the response was not received', () => {
+    describe('should resolve where there is no body to await', () => {
       const cases = [
         {
           input: {
@@ -239,9 +256,10 @@ describe('FetchHttpParcel', () => {
         },
         {
           input: {
-            parcel: FetchHttpParcel.createAsTimeoutError({
+            parcel: FetchHttpParcel.create({
               request: new Request('https://example.com/resource-0002'),
               config: {},
+              response: new Response(null, { status: 204 }),
             }),
           },
         },
@@ -266,24 +284,20 @@ describe('FetchHttpParcel', () => {
         },
         {
           input: {
-            error: new Error('Body download failed'),
+            error: new TypeError('network error'),
           },
-          expected: 'Body download failed',
+          expected: 'network error',
         },
       ]
 
       test.each(cases)('expected: $expected', async ({ input, expected }) => {
-        const response = new Response('neutral') // Neutral value
-
-        jest.spyOn(response, 'clone')
-          .mockReturnValue({
-            arrayBuffer: () => Promise.reject(input.error),
-          })
+        const pipeTo = jest.fn()
+          .mockRejectedValue(input.error)
 
         const parcel = FetchHttpParcel.create({
           request: new Request('https://example.com/neutral'), // Neutral value
           config: {}, // Neutral value
-          response,
+          response: createResponseWithBody({ pipeTo }),
         })
 
         const received = () => parcel.awaitBody()
