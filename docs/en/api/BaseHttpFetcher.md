@@ -10,7 +10,8 @@ Base class of the HTTP fetchers. It owns the flow of a fetch: it starts a timer 
 | `.createHttpParcel()` | Creates an HTTP parcel of `.get:HttpParcelCtor`. |
 | `#get:timeoutMilliseconds` | Milliseconds to wait for the response, from the `config`. `0` for no limit. |
 | `#fetchResponse()` | Fetches the response and resolves to an HTTP parcel. It never rejects, even where the timer cannot be created. |
-| `#fetchResponseUnderTimer()` | Fetches while the timer counts the timeout, lets the parcel await the whole body, and stops the timer once both settle. A timeout during the body is a timeout. |
+| `#fetchResponseUnderTimer()` | Calls `#receiveHttpParcel()` while the timer counts the timeout, and stops the timer once it settles. |
+| `#receiveHttpParcel()` | Receives the response and creates its parcel. A subclass overrides it to await more work inside the timer. |
 | `#createAbortTimer()` | Creates the `AbortTimer` that aborts the request, by the signal of the request and by the timeout. |
 | `#receiveResponse()` | Receives the response. Must be overridden. Rejects with the reason where the response cannot be received. It may resolve at the headers, because the parcel awaits the body while the timer still counts. |
 | `#createHttpParcelByResponse()` | Creates an HTTP parcel of the received response. |

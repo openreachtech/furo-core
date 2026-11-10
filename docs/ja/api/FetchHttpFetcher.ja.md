@@ -7,6 +7,7 @@
 | `.get:HttpParcelCtor` | `FetchHttpParcel` を返します。 |
 | `.get:fetch` | リクエストに使用される fetch 関数。 |
 | `#receiveResponse()` | 中断用のシグナルを持つオプションハッシュとともに、リクエストの複製を `fetch()` で送信し、ヘッダーの受信で解決します。 |
+| `#receiveHttpParcel()` | タイマーが動いている間に `FetchHttpParcel#awaitBody()` でボディを待つので、ボディ受信中のタイムアウトもタイムアウトです。 |
 | `#resolveResponseUrl()` | `fetch()` が報告するレスポンスの URL。 |
 | `#buildOptionHash()` | `config.optionHash` とシグナルから `fetch()` のオプションハッシュを組み立てます。シグナルが常に優先されます。 |
 | `#invokeFetch()` | リクエストとオプションハッシュで `.get:fetch` を呼び出します。 |
