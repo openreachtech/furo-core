@@ -1806,6 +1806,143 @@ describe('BaseHttpParcel', () => {
 })
 
 describe('BaseHttpParcel', () => {
+  describe('#awaitBody()', () => {
+    describe('should be null when the response was not received', () => {
+      const cases = [
+        {
+          input: {
+            parcel: BaseHttpParcel.createAsNetworkError({
+              request: new Request('https://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            parcel: BaseHttpParcel.createAsTimeoutError({
+              request: new Request('https://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.parcel.request.url', async ({ input }) => {
+        const received = await input.parcel.awaitBody()
+
+        expect(received)
+          .toBeNull()
+      })
+    })
+
+    describe('should resolve the array buffer of the body', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response('text-0001'),
+          },
+          expected: 'text-0001',
+        },
+        {
+          input: {
+            response: new Response('text-0002'),
+          },
+          expected: 'text-0002',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+
+        const received = await parcel.awaitBody()
+
+        const decoder = new TextDecoder()
+
+        expect(decoder.decode(received))
+          .toBe(expected)
+      })
+    })
+
+    describe('should read a clone, so that the response stays readable', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response('text-0001'),
+          },
+          expected: 'text-0001',
+        },
+        {
+          input: {
+            response: new Response('text-0002'),
+          },
+          expected: 'text-0002',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+
+        await parcel.awaitBody()
+
+        expect(input.response)
+          .toHaveProperty('bodyUsed', false)
+
+        const received = await parcel.toText()
+
+        expect(received)
+          .toBe(expected)
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          input: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          expected: 'signal timed out',
+        },
+        {
+          input: {
+            error: new Error('Body download failed'),
+          },
+          expected: 'Body download failed',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const response = new Response('neutral') // Neutral value
+
+        jest.spyOn(response, 'clone')
+          .mockReturnValue({
+            arrayBuffer: () => Promise.reject(input.error),
+          })
+
+        const parcel = BaseHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response,
+        })
+
+        const received = () => parcel.awaitBody()
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
+      })
+    })
+  })
+})
+
+describe('BaseHttpParcel', () => {
   describe('#toText()', () => {
     describe('should be null when the response was not received', () => {
       const cases = [

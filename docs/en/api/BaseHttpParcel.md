@@ -23,6 +23,7 @@ What a fetcher returns. It carries the request, the config, the URL of the respo
 | `#hasUnknownError()` | Whether the response was not received for an unknown reason. |
 | `#toJson()` | Reads the body as JSON, by parsing `#toText()`. Rejects with `SyntaxError` where the body is not JSON. |
 | `#cloneResponse()` | A clone of the response, so that the body can be read again. |
+| `#awaitBody()` | Awaits the whole body through a clone, so that a failure during the download rejects while the fetcher still counts the timeout. |
 | `#toText()` | Reads the body as text, decoded with the charset that the `Content-Type` of the response declares, and with UTF-8 where it declares none. |
 | `#toArrayBuffer()` | Reads the body as an array buffer. |
 | `#toBlob()` | Reads the body as a `Blob`. |
