@@ -185,3 +185,127 @@ describe('FetchHttpParcel', () => {
     })
   })
 })
+
+describe('FetchHttpParcel', () => {
+  describe('#awaitBody()', () => {
+    /**
+     * Create a response of fake, whose clone has a body stream of fake.
+     *
+     * @param {{
+     *   pipeTo: jest.Mock
+     * }} params - Parameters.
+     * @returns {Response} Response of fake.
+     */
+    const createResponseWithBody = ({ pipeTo }) => {
+      const response = new Response('neutral') // Neutral value
+
+      jest.spyOn(response, 'clone')
+        .mockReturnValue({
+          body: {
+            pipeTo,
+          },
+        })
+
+      return response
+    }
+
+    describe('should drain the body of a clone into a writable stream', () => {
+      const cases = [
+        {
+          input: {
+            url: 'https://example.com/resource-0001',
+          },
+        },
+        {
+          input: {
+            url: 'https://example.com/resource-0002',
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.url', async ({ input }) => {
+        const pipeTo = jest.fn()
+          .mockResolvedValue(undefined)
+        const response = createResponseWithBody({ pipeTo })
+
+        const parcel = FetchHttpParcel.create({
+          request: new Request(input.url),
+          config: {}, // Neutral value
+          response,
+        })
+
+        await parcel.awaitBody()
+
+        expect(response.clone)
+          .toHaveBeenCalledWith()
+
+        expect(pipeTo)
+          .toHaveBeenCalledWith(expect.any(WritableStream))
+      })
+    })
+
+    describe('should resolve where there is no body to await', () => {
+      const cases = [
+        {
+          input: {
+            parcel: FetchHttpParcel.createAsNetworkError({
+              request: new Request('https://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            parcel: FetchHttpParcel.create({
+              request: new Request('https://example.com/resource-0002'),
+              config: {},
+              response: new Response(null, { status: 204 }),
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.parcel.request.url', async ({ input }) => {
+        const received = input.parcel.awaitBody()
+
+        await expect(received)
+          .resolves
+          .toBeUndefined()
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          input: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          expected: 'signal timed out',
+        },
+        {
+          input: {
+            error: new TypeError('network error'),
+          },
+          expected: 'network error',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const pipeTo = jest.fn()
+          .mockRejectedValue(input.error)
+
+        const parcel = FetchHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: createResponseWithBody({ pipeTo }),
+        })
+
+        const received = () => parcel.awaitBody()
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
+      })
+    })
+  })
+})

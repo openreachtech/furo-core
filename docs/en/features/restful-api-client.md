@@ -212,7 +212,7 @@ export default class CsvGetRestfulApiLauncher extends BaseAlphaRestfulApiLaunche
 }
 ```
 
-See [HTTP Client Tools](./client-tools.md) for writing a parser.
+The parser receives the HTTP parcel as `responseParcel`, and reads the body through it. See [HTTP Client Tools](./client-tools.md) for writing a parser.
 
 ## Declaring a method without a subclass
 

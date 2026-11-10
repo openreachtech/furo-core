@@ -212,7 +212,7 @@ export default class CsvGetRestfulApiLauncher extends BaseAlphaRestfulApiLaunche
 }
 ```
 
-パーサーの書き方は [HTTP クライアントツール](./client-tools.ja.md) を参照してください。
+パーサーは HTTP パーセルを `responseParcel` として受け取り、それを通してボディを読みます。パーサーの書き方は [HTTP クライアントツール](./client-tools.ja.md) を参照してください。
 
 ## サブクラスを作らずにメソッドを宣言する
 
