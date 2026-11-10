@@ -15,6 +15,7 @@
 | `#get:requestUrl` | リクエストの URL。 |
 | `#get:status` | レスポンスのステータスコード。受信していない場合は `null`。 |
 | `#get:statusText` | レスポンスのステータステキスト。受信していない場合は `null`。 |
+| `#get:headerHash` | レスポンスのヘッダーを、名前が小文字の `Record<string, string>` で返します。受信していない場合は `null`。 |
 | `#get:ok` | ステータスが 200 から 299 の範囲かどうか。 |
 | `#hasError()` | エラーのためにレスポンスを受信できなかったかどうか。 |
 | `#hasNetworkError()` | 通信失敗のためにレスポンスを受信できなかったかどうか。 |

@@ -76,6 +76,7 @@
 | [FetchHttpFetcher](./FetchHttpFetcher.ja.md) | `fetch()` 経由で取得し、`Response` をそのまま保持します。 |
 | [XMLHttpRequestClerk](./XMLHttpRequestClerk.ja.md) | `XMLHttpRequest` をラップし、呼び出しをつなげて書けるようにします。 |
 | [AbortTimer](./AbortTimer.ja.md) | タイムアウトが経過するとリクエストを中断し、止めることもできます。 |
+| [CharsetResolver](./CharsetResolver.ja.md) | `Content-Type` ヘッダーが宣言する文字コードを解決します。なければ UTF-8。 |
 | [ResponseTextConverter](./ResponseTextConverter.ja.md) | レスポンスが宣言する文字コードで、レスポンスボディをテキストへデコードします。 |
 | [BaseHttpParcel](./BaseHttpParcel.ja.md) | フェッチャーが返すもの。レスポンス、または受信できなかった理由のエラーです。 |
 | [XMLHttpParcel](./XMLHttpParcel.ja.md) | `XMLHttpRequest` から組み立てたレスポンスの HTTP パーセルです。 |

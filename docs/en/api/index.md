@@ -76,6 +76,7 @@ Class members are written with the following notation.
 | [FetchHttpFetcher](./FetchHttpFetcher.md) | Fetches over `fetch()`, keeping the `Response` as it is. |
 | [XMLHttpRequestClerk](./XMLHttpRequestClerk.md) | Wraps an `XMLHttpRequest`, so that its calls chain. |
 | [AbortTimer](./AbortTimer.md) | Aborts a request when the timeout elapses, and can be cleared. |
+| [CharsetResolver](./CharsetResolver.md) | Resolves the charset that the `Content-Type` header declares, or UTF-8. |
 | [ResponseTextConverter](./ResponseTextConverter.md) | Decodes a response body into text with the charset that the response declares. |
 | [BaseHttpParcel](./BaseHttpParcel.md) | What a fetcher returns: the response, or the error that kept it from being received. |
 | [XMLHttpParcel](./XMLHttpParcel.md) | HTTP parcel of a response built from `XMLHttpRequest`. |
