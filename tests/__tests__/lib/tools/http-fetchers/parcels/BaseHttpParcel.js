@@ -1515,7 +1515,7 @@ describe('BaseHttpParcel', () => {
       })
     })
 
-    describe('should reject where the body is not JSON', () => {
+    describe('should be null where the body is not JSON', () => {
       const cases = [
         {
           input: {
@@ -1536,9 +1536,10 @@ describe('BaseHttpParcel', () => {
           response: input.response,
         })
 
-        await expect(parcel.toJson())
-          .rejects
-          .toThrow(SyntaxError)
+        const received = await parcel.toJson()
+
+        expect(received)
+          .toBeNull()
       })
     })
 
