@@ -1297,6 +1297,17 @@ describe('BaseGraphqlPayload', () => {
 })
 
 describe('BaseGraphqlPayload', () => {
+  describe('.get:timeoutMilliseconds', () => {
+    test('to be 0', () => {
+      const actual = BaseGraphqlPayload.timeoutMilliseconds
+
+      expect(actual)
+        .toBe(0)
+    })
+  })
+})
+
+describe('BaseGraphqlPayload', () => {
   describe('#get:Ctor', () => {
     describe('to be own class', () => {
       const cases = [
@@ -1371,6 +1382,47 @@ describe('BaseGraphqlPayload', () => {
 
         expect(payload.Ctor)
           .toBe(BaseGraphqlPayload)
+      })
+    })
+  })
+})
+
+describe('BaseGraphqlPayload', () => {
+  describe('#get:timeoutMilliseconds', () => {
+    describe('to be the static one', () => {
+      const cases = [
+        {
+          override: {
+            timeoutMilliseconds: 0,
+          },
+          expected: 0,
+        },
+        {
+          override: {
+            timeoutMilliseconds: 30000,
+          },
+          expected: 30000,
+        },
+        {
+          override: {
+            timeoutMilliseconds: 1000,
+          },
+          expected: 1000,
+        },
+      ]
+
+      test.each(cases)('timeoutMilliseconds: $override.timeoutMilliseconds', ({ override, expected }) => {
+        jest.spyOn(BaseGraphqlPayload, 'timeoutMilliseconds', 'get')
+          .mockReturnValue(override.timeoutMilliseconds)
+        jest.spyOn(BaseGraphqlPayload, 'document', 'get')
+          .mockReturnValue('query { neutral }') // Neutral value
+
+        const payload = BaseGraphqlPayload.create()
+
+        const actual = payload.timeoutMilliseconds
+
+        expect(actual)
+          .toBe(expected)
       })
     })
   })

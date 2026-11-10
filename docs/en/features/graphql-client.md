@@ -122,7 +122,9 @@ if (capsule.hasError()) {
 | `#hasContent()` | The response carried data. |
 | `#hasError()` | Any of the error conditions below hold. |
 | `#hasInvalidVariablesError()` | The variables failed the payload's own check, so no request was sent. |
-| `#hasNetworkError()` | The request never reached the server. |
+| `#hasAbortError()` | The request was aborted. |
+| `#hasTimeoutError()` | The request timed out. |
+| `#hasNetworkError()` | The request failed for any other reason before a response was received. |
 | `#hasJsonParseError()` | The response body was not valid JSON. |
 | `#hasQueryError()` | The server answered with GraphQL errors. |
 

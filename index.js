@@ -13,15 +13,25 @@ export { default as SubscriptionConnector } from './lib/client/graphql/Subscript
 /*
  * Client tools
  */
-export { default as ProgressHttpFetcher } from './lib/tools/ProgressHttpFetcher.js'
+export { default as BaseHttpFetcher } from './lib/tools/http-fetchers/BaseHttpFetcher.js'
+export { default as FetchHttpFetcher } from './lib/tools/http-fetchers/concretes/FetchHttpFetcher.js'
+export { default as XMLHttpFetcher } from './lib/tools/http-fetchers/concretes/XMLHttpFetcher.js'
+export { default as XMLHttpRequestClerk } from './lib/tools/http-fetchers/tools/XMLHttpRequestClerk.js'
+export { default as AbortTimer } from './lib/tools/http-fetchers/tools/AbortTimer.js'
+export { default as ResponseTextConverter } from './lib/tools/http-fetchers/tools/ResponseTextConverter.js'
+export { default as CharsetResolver } from './lib/tools/http-fetchers/tools/CharsetResolver.js'
+export { default as BaseHttpParcel } from './lib/tools/http-fetchers/parcels/BaseHttpParcel.js'
+export { default as FetchHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/FetchHttpParcel.js'
+export { default as XMLHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 export { default as HeadersParser } from './lib/tools/HeadersParser.js'
 export { default as PathnameBuilder } from './lib/tools/PathnameBuilder.js'
 
-export { default as BaseResponseBodyParser } from './lib/tools/response-body-parser/BaseResponseBodyParser.js'
-export { default as JsonResponseBodyParser } from './lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
 export { default as BaseRequestBodyConverter } from './lib/tools/request-body-converter/BaseRequestBodyConverter.js'
 export { default as FormDataRequestBodyConverter } from './lib/tools/request-body-converter/concretes/FormDataRequestBodyConverter.js'
 export { default as JsonRequestBodyConverter } from './lib/tools/request-body-converter/concretes/JsonRequestBodyConverter.js'
+
+export { default as BaseResponseBodyParser } from './lib/tools/response-body-parser/BaseResponseBodyParser.js'
+export { default as JsonResponseBodyParser } from './lib/tools/response-body-parser/concretes/JsonResponseBodyParser.js'
 
 /*
  * RESTful API client
