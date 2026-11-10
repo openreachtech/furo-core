@@ -19,6 +19,7 @@ export { default as XMLHttpFetcher } from './lib/tools/http-fetchers/concretes/X
 export { default as XMLHttpRequestClerk } from './lib/tools/http-fetchers/tools/XMLHttpRequestClerk.js'
 export { default as AbortTimer } from './lib/tools/http-fetchers/tools/AbortTimer.js'
 export { default as ResponseTextConverter } from './lib/tools/http-fetchers/tools/ResponseTextConverter.js'
+export { default as CharsetResolver } from './lib/tools/http-fetchers/tools/CharsetResolver.js'
 export { default as BaseHttpParcel } from './lib/tools/http-fetchers/parcels/BaseHttpParcel.js'
 export { default as FetchHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/FetchHttpParcel.js'
 export { default as XMLHttpParcel } from './lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'

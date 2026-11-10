@@ -15,6 +15,7 @@ What a fetcher returns. It carries the request, the config, the URL of the respo
 | `#get:requestUrl` | The URL of the request. |
 | `#get:status` | The status code of the response, or `null` if it was not received. |
 | `#get:statusText` | The status text of the response, or `null` if it was not received. |
+| `#get:headerHash` | The headers of the response as a `Record<string, string>` whose names are in lower case, or `null` if it was not received. |
 | `#get:ok` | Whether the status is in the range of 200 to 299. |
 | `#hasError()` | Whether the response was not received because of an error. |
 | `#hasNetworkError()` | Whether the response was not received because of a network failure. |

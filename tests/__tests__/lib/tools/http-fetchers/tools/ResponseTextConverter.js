@@ -1,5 +1,6 @@
 import ResponseTextConverter from '../../../../../../lib/tools/http-fetchers/tools/ResponseTextConverter.js'
 
+import CharsetResolver from '../../../../../../lib/tools/http-fetchers/tools/CharsetResolver.js'
 import BaseHttpParcel from '../../../../../../lib/tools/http-fetchers/parcels/BaseHttpParcel.js'
 
 /**
@@ -97,11 +98,63 @@ describe('ResponseTextConverter', () => {
 describe('ResponseTextConverter', () => {
   describe('.get:DEFAULT_CHARSET', () => {
     describe('when called as is', () => {
-      test('should be utf-8', () => {
+      test('should be the default charset of the resolver', () => {
         const received = ResponseTextConverter.DEFAULT_CHARSET
 
         expect(received)
           .toBe('utf-8')
+      })
+    })
+  })
+})
+
+describe('ResponseTextConverter', () => {
+  describe('.get:CharsetResolverCtor', () => {
+    describe('when called as is', () => {
+      test('should be CharsetResolver', () => {
+        const received = ResponseTextConverter.CharsetResolverCtor
+
+        expect(received)
+          .toBe(CharsetResolver) // same reference
+      })
+    })
+  })
+})
+
+describe('ResponseTextConverter', () => {
+  describe('.createCharsetResolver()', () => {
+    const cases = [
+      {
+        input: {
+          headerHash: {
+            'content-type': 'application/json; charset=Shift_JIS',
+          },
+        },
+      },
+      {
+        input: {
+          headerHash: null,
+        },
+      },
+    ]
+
+    describe('should be an instance of the resolver class', () => {
+      test.each(cases)('headerHash: $input.headerHash', ({ input }) => {
+        const received = ResponseTextConverter.createCharsetResolver(input)
+
+        expect(received)
+          .toBeInstanceOf(CharsetResolver)
+      })
+    })
+
+    describe('should call the factory method of the resolver class', () => {
+      test.each(cases)('headerHash: $input.headerHash', ({ input }) => {
+        const createSpy = jest.spyOn(CharsetResolver, 'create')
+
+        ResponseTextConverter.createCharsetResolver(input)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(input)
       })
     })
   })
@@ -233,97 +286,58 @@ describe('ResponseTextConverter', () => {
 })
 
 describe('ResponseTextConverter', () => {
-  describe('#extractCharset()', () => {
-    describe('should be the charset that the Content-Type declares', () => {
+  describe('#resolveCharset()', () => {
+    describe('should resolve the charset through the resolver of the header hash of the parcel', () => {
       const cases = [
         {
           input: {
             contentType: 'application/json; charset=Shift_JIS',
           },
-          expected: 'Shift_JIS',
+          expected: {
+            headerHash: {
+              'content-type': 'application/json; charset=Shift_JIS',
+            },
+            charset: 'Shift_JIS',
+          },
         },
         {
           input: {
-            contentType: 'text/html;charset=euc-jp',
+            contentType: 'text/plain',
           },
-          expected: 'euc-jp',
-        },
-        {
-          input: {
-            contentType: 'text/plain; charset="utf-16le"',
+          expected: {
+            headerHash: {
+              'content-type': 'text/plain',
+            },
+            charset: 'utf-8',
           },
-          expected: 'utf-16le',
-        },
-        {
-          input: {
-            contentType: 'text/plain; CHARSET=ISO-8859-1; format=flowed',
-          },
-          expected: 'ISO-8859-1',
-        },
-        {
-          input: {
-            contentType: 'text/plain; charset=" Shift_JIS "',
-          },
-          expected: 'Shift_JIS',
-        },
-        {
-          input: {
-            contentType: 'text/plain; charset="utf-16le"; format=flowed',
-          },
-          expected: 'utf-16le',
         },
       ]
 
       test.each(cases)('content-type: $input.contentType', ({ input, expected }) => {
         const converter = ResponseTextConverter.create({
           responseParcel: createParcel({
-            response: new Response('', {
+            response: new Response(Uint8Array.from([]), { // a text body would carry its own charset
               headers: {
                 'Content-Type': input.contentType,
               },
             }),
           }),
         })
+        const createCharsetResolverSpy = jest.spyOn(ResponseTextConverter, 'createCharsetResolver')
 
-        expect(converter.extractCharset())
-          .toBe(expected)
+        const received = converter.resolveCharset()
+
+        expect(received)
+          .toBe(expected.charset)
+
+        expect(createCharsetResolverSpy)
+          .toHaveBeenCalledWith({
+            headerHash: expected.headerHash,
+          })
       })
     })
 
-    describe('should be UTF-8 where the response declares no charset', () => {
-      const cases = [
-        {
-          input: {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        },
-        {
-          input: {
-            headers: {
-              // Content-Type: omitted
-              'X-Neutral': 'neutral',
-            },
-          },
-        },
-      ]
-
-      test.each(cases)('headers: $input.headers', ({ input }) => {
-        const converter = ResponseTextConverter.create({
-          responseParcel: createParcel({
-            response: new Response(Uint8Array.from([]), { // a text body would carry its own charset
-              headers: input.headers,
-            }),
-          }),
-        })
-
-        expect(converter.extractCharset())
-          .toBe('utf-8')
-      })
-    })
-
-    describe('should be UTF-8 where the response was not received', () => {
+    describe('should be the default charset where the response was not received', () => {
       test('response: null', () => {
         const converter = ResponseTextConverter.create({
           responseParcel: createParcel({
@@ -331,7 +345,9 @@ describe('ResponseTextConverter', () => {
           }),
         })
 
-        expect(converter.extractCharset())
+        const received = converter.resolveCharset()
+
+        expect(received)
           .toBe('utf-8')
       })
     })
@@ -436,6 +452,19 @@ describe('ResponseTextConverter', () => {
               {
                 headers: {
                   'Content-Type': 'text/plain',
+                },
+              }
+            ),
+          },
+          expected: 'ん',
+        },
+        {
+          input: {
+            response: new Response(
+              Uint8Array.from([0xE3, 0x82, 0x93]), // ん in UTF-8
+              {
+                headers: {
+                  'Content-Type': 'text/plain; charset=""',
                 },
               }
             ),
