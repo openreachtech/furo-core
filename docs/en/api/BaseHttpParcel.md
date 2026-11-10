@@ -24,7 +24,7 @@ What a fetcher returns. It carries the request, the config, the URL of the respo
 | `#toJson()` | Reads the body as JSON, by parsing `#toText()`. Answers `null` where the body is not JSON. |
 | `#parseJson()` | Parses the text as JSON, and answers `null` where it is not JSON. |
 | `#cloneResponse()` | A clone of the response, so that the body can be read again. |
-| `#awaitBody()` | Awaits the whole body through a clone, so that a failure during the download rejects while the fetcher still counts the timeout. |
+| `#awaitBody()` | Resolves at once, because a response arrives with its whole body unless a subclass tells otherwise. |
 | `#toText()` | Reads the body as text, decoded with the charset that the `Content-Type` of the response declares, and with UTF-8 where it declares none. |
 | `#toArrayBuffer()` | Reads the body as an array buffer. |
 | `#toBlob()` | Reads the body as a `Blob`. |
