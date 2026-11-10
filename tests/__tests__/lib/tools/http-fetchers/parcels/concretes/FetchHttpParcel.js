@@ -185,3 +185,113 @@ describe('FetchHttpParcel', () => {
     })
   })
 })
+
+describe('FetchHttpParcel', () => {
+  describe('#awaitBody()', () => {
+    describe('should read the whole body through a clone, so that the response stays readable', () => {
+      const cases = [
+        {
+          input: {
+            response: new Response('text-0001'),
+          },
+          expected: 'text-0001',
+        },
+        {
+          input: {
+            response: new Response('text-0002'),
+          },
+          expected: 'text-0002',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const parcel = FetchHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: input.response,
+        })
+        const toArrayBufferSpy = jest.spyOn(parcel, 'toArrayBuffer')
+
+        await parcel.awaitBody()
+
+        expect(toArrayBufferSpy)
+          .toHaveBeenCalledWith()
+
+        expect(input.response)
+          .toHaveProperty('bodyUsed', false)
+
+        const received = await parcel.toText()
+
+        expect(received)
+          .toBe(expected)
+      })
+    })
+
+    describe('should resolve where the response was not received', () => {
+      const cases = [
+        {
+          input: {
+            parcel: FetchHttpParcel.createAsNetworkError({
+              request: new Request('https://example.com/resource-0001'),
+              config: {},
+            }),
+          },
+        },
+        {
+          input: {
+            parcel: FetchHttpParcel.createAsTimeoutError({
+              request: new Request('https://example.com/resource-0002'),
+              config: {},
+            }),
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.parcel.request.url', async ({ input }) => {
+        const received = input.parcel.awaitBody()
+
+        await expect(received)
+          .resolves
+          .toBeUndefined()
+      })
+    })
+
+    describe('should reject where the body cannot be received', () => {
+      const cases = [
+        {
+          input: {
+            error: new DOMException('signal timed out', 'TimeoutError'),
+          },
+          expected: 'signal timed out',
+        },
+        {
+          input: {
+            error: new Error('Body download failed'),
+          },
+          expected: 'Body download failed',
+        },
+      ]
+
+      test.each(cases)('expected: $expected', async ({ input, expected }) => {
+        const response = new Response('neutral') // Neutral value
+
+        jest.spyOn(response, 'clone')
+          .mockReturnValue({
+            arrayBuffer: () => Promise.reject(input.error),
+          })
+
+        const parcel = FetchHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response,
+        })
+
+        const received = () => parcel.awaitBody()
+
+        await expect(received)
+          .rejects
+          .toThrow(expected)
+      })
+    })
+  })
+})
