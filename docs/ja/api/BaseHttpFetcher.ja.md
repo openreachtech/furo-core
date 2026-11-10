@@ -10,7 +10,8 @@ HTTP フェッチャーの基底クラスです。取得の流れを持ちます
 | `.createHttpParcel()` | `.get:HttpParcelCtor` の HTTP パーセルを生成します。 |
 | `#get:timeoutMilliseconds` | `config` から得る、レスポンスを待つミリ秒。`0` は制限なし。 |
 | `#fetchResponse()` | レスポンスを取得し、HTTP パーセルへ解決します。タイマーを生成できない場合も含め、reject しません。 |
-| `#fetchResponseUnderTimer()` | タイマーがタイムアウトを数えている間に `#receiveHttpParcel()` を呼び、終わった時点でタイマーを止めます。 |
+| `#fetchResponseUnderTimer()` | タイマーがタイムアウトを数えている間に `#receiveHttpParcel()` を呼び、終わった時点でタイマーを止めます。失敗は `#resolveFailure()` を通して投げ直します。 |
+| `#resolveFailure()` | シグナルが中断していればその理由を、そうでなければエラーを返します。Safari は中断したボディのダウンロードを汎用の `AbortError` で reject するので、理由でタイムアウトと中断を区別します。 |
 | `#receiveHttpParcel()` | レスポンスを受信し、そのパーセルを作ります。サブクラスはタイマー内で待つ処理を足すためにオーバーライドします。 |
 | `#createAbortTimer()` | リクエスト自身のシグナルとタイムアウトで、リクエストを中断する `AbortTimer` を生成します。 |
 | `#receiveResponse()` | レスポンスを受信します。オーバーライドが必須です。受信できない場合はその理由で reject します。パーセルがタイマーの動いている間にボディを待つので、ヘッダーの受信で解決して構いません。 |
