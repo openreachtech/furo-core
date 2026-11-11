@@ -167,6 +167,38 @@ describe('XMLHttpParcel', () => {
       })
     })
 
+    describe('should be cors when the page has an opaque origin, as in a sandboxed frame', () => {
+      const cases = [
+        {
+          input: {
+            responseUrl: 'http://localhost/resource-0001', // the URL of the page in the test environment
+          },
+        },
+        {
+          input: {
+            responseUrl: 'https://example.com/resource-0002',
+          },
+        },
+      ]
+
+      test.each(cases)('responseUrl: $input.responseUrl', ({ input }) => {
+        jest.spyOn(globalThis, 'origin', 'get')
+          .mockReturnValue('null')
+
+        const parcel = XMLHttpParcel.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: new Response(''), // Neutral value
+          responseUrl: input.responseUrl,
+        })
+
+        const received = parcel.extractResponseType()
+
+        expect(received)
+          .toBe('cors')
+      })
+    })
+
     describe('should be null when the response was not received', () => {
       const cases = [
         {

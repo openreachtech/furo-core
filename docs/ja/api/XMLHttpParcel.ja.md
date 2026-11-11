@@ -5,4 +5,4 @@
 | member | description |
 | :-- | :-- |
 | `#isRedirected()` | レスポンスの URL がリクエストの URL と異なるかどうか（どちらもフラグメントを除く）。受信していない場合は `false`。 |
-| `#extractResponseType()` | ページと同じオリジンのレスポンスは `basic`、それ以外は `cors`。受信していない場合は `null`。 |
+| `#extractResponseType()` | ページと同じオリジンのレスポンスは `basic`、それ以外は `cors`。不透明なオリジンのページでは常に `cors`。受信していない場合は `null`。 |

@@ -23,3 +23,5 @@ HTTP fetcher that sends the request through `XMLHttpRequest`, and reports the up
 | `#invokeSend()` | Sends the request through the clerk. |
 
 An instance holds one clerk, so that it fetches once. The timeout is counted by the abort signal, and `XMLHttpRequest#timeout` is not used.
+
+`XMLHttpRequest` sends same-origin cookies even where the credentials mode of the request is `omit`. A launcher that sends such a request returns `FetchHttpFetcher` from `.get:HttpFetcherCtor`.

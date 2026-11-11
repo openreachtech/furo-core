@@ -23,3 +23,5 @@
 | `#invokeSend()` | 係を通じてリクエストを送信します。 |
 
 インスタンスは係を 1 つ持つので、取得は一度だけです。タイムアウトは中断用のシグナルで数え、`XMLHttpRequest#timeout` は使いません。
+
+`XMLHttpRequest` は、リクエストの認証情報モードが `omit` でも同一オリジンの Cookie を送信します。そのようなリクエストを送るランチャーは、`.get:HttpFetcherCtor` で `FetchHttpFetcher` を返します。
