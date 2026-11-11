@@ -9,7 +9,6 @@ import {
   LAUNCH_ABORTED_REASON,
 } from '~/lib/client/restfulapi/BaseRestfulApiCapsule.js'
 
-import FetchHttpFetcher from '~/lib/tools/http-fetchers/concretes/FetchHttpFetcher.js'
 import XMLHttpFetcher from '~/lib/tools/http-fetchers/concretes/XMLHttpFetcher.js'
 import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
@@ -130,79 +129,6 @@ describe('BaseRestfulApiLauncher', () => {
 })
 
 describe('BaseRestfulApiLauncher', () => {
-  describe('.get:FetchHttpFetcherCtor', () => {
-    test('to be fixed value', () => {
-      const actual = BaseRestfulApiLauncher.FetchHttpFetcherCtor
-
-      expect(actual)
-        .toBe(FetchHttpFetcher) // same reference
-    })
-  })
-})
-
-describe('BaseRestfulApiLauncher', () => {
-  describe('.extractHttpFetcherCtor()', () => {
-    describe('should be FetchHttpFetcher when the request omits credentials', () => {
-      const cases = [
-        {
-          input: {
-            request: new Request('https://example.com/resource-0001', {
-              credentials: 'omit',
-            }),
-          },
-        },
-        {
-          input: {
-            request: new Request('https://example.com/resource-0002', {
-              method: 'POST',
-              credentials: 'omit',
-            }),
-          },
-        },
-      ]
-
-      test.each(cases)('url: $input.request.url', ({ input }) => {
-        const actual = BaseRestfulApiLauncher.extractHttpFetcherCtor(input)
-
-        expect(actual)
-          .toBe(FetchHttpFetcher) // same reference
-      })
-    })
-
-    describe('should be XMLHttpFetcher when the request sends credentials', () => {
-      const cases = [
-        {
-          input: {
-            request: new Request('https://example.com/resource-0001'),
-          },
-        },
-        {
-          input: {
-            request: new Request('https://example.com/resource-0002', {
-              credentials: 'same-origin',
-            }),
-          },
-        },
-        {
-          input: {
-            request: new Request('https://example.com/resource-0003', {
-              credentials: 'include',
-            }),
-          },
-        },
-      ]
-
-      test.each(cases)('credentials: $input.request.credentials', ({ input }) => {
-        const actual = BaseRestfulApiLauncher.extractHttpFetcherCtor(input)
-
-        expect(actual)
-          .toBe(XMLHttpFetcher) // same reference
-      })
-    })
-  })
-})
-
-describe('BaseRestfulApiLauncher', () => {
   describe('.createHttpFetcher()', () => {
     const cases = [
       {
@@ -238,36 +164,6 @@ describe('BaseRestfulApiLauncher', () => {
 
         expect(createSpy)
           .toHaveBeenCalledWith(input)
-      })
-    })
-
-    describe('should be an instance of FetchHttpFetcher when the request omits credentials', () => {
-      const omitCases = [
-        {
-          input: {
-            request: new Request('https://example.com/resource-0001', {
-              credentials: 'omit',
-            }),
-            config: {},
-          },
-        },
-        {
-          input: {
-            request: new Request('https://example.com/resource-0002', {
-              credentials: 'omit',
-            }),
-            config: {
-              timeoutMilliseconds: 1000,
-            },
-          },
-        },
-      ]
-
-      test.each(omitCases)('url: $input.request.url', ({ input }) => {
-        const actual = BaseRestfulApiLauncher.createHttpFetcher(input)
-
-        expect(actual)
-          .toBeInstanceOf(FetchHttpFetcher)
       })
     })
   })
