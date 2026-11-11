@@ -818,6 +818,146 @@ describe('BaseHttpFetcher', () => {
           .toHaveBeenCalledTimes(1)
       })
     })
+
+    describe('should create the parcel of the reason of the signal where the signal of the timer aborted', () => {
+      const alphaReason = new DOMException('signal timed out', 'TimeoutError')
+      const betaReason = 'cancel'
+
+      const cases = [
+        {
+          override: {
+            reason: alphaReason,
+            parcel: alphaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0001'),
+            config: {},
+          },
+          expected: {
+            error: alphaReason,
+          },
+        },
+        {
+          override: {
+            reason: betaReason,
+            parcel: betaParcel,
+          },
+          input: {
+            request: new Request('https://example.com/resource-0002'),
+            config: {},
+          },
+          expected: {
+            error: betaReason,
+          },
+        },
+      ]
+
+      test.each(cases)('url: $input.request.url', async ({ override, input, expected }) => {
+        const fetchResponseArgs = {
+          sink: {}, // Neutral value
+        }
+        const controller = new AbortController()
+
+        controller.abort(override.reason)
+
+        const fetcher = BaseHttpFetcher.create(input)
+
+        jest.spyOn(fetcher, 'createAbortTimer')
+          .mockReturnValue(createTimerFake({ signal: controller.signal }))
+        jest.spyOn(fetcher, 'receiveResponse')
+          .mockRejectedValue(new DOMException('Fetch is aborted', 'AbortError'))
+        const createHttpParcelByFailureSpy = jest.spyOn(fetcher, 'createHttpParcelByFailure')
+          .mockReturnValue(override.parcel)
+
+        const received = await fetcher.fetchResponse(fetchResponseArgs)
+
+        expect(received)
+          .toBe(override.parcel) // same reference
+
+        expect(createHttpParcelByFailureSpy)
+          .toHaveBeenCalledWith(expected)
+      })
+    })
+  })
+})
+
+describe('BaseHttpFetcher', () => {
+  describe('#resolveFailure()', () => {
+    describe('should be the error where the signal has not aborted', () => {
+      const alphaError = new Error('Error 0001')
+      const betaError = new TypeError('Failed to fetch')
+
+      const cases = [
+        {
+          input: {
+            error: alphaError,
+          },
+          expected: alphaError,
+        },
+        {
+          input: {
+            error: betaError,
+          },
+          expected: betaError,
+        },
+      ]
+
+      test.each(cases)('error: $input.error', ({ input, expected }) => {
+        const fetcher = BaseHttpFetcher.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
+
+        const received = fetcher.resolveFailure({
+          error: input.error,
+          signal: new AbortController().signal,
+        })
+
+        expect(received)
+          .toBe(expected) // same reference
+      })
+    })
+
+    describe('should be the reason of the signal where the signal has aborted, whatever the error is', () => {
+      const alphaReason = new DOMException('signal timed out', 'TimeoutError')
+      const betaReason = 'cancel'
+
+      const cases = [
+        {
+          input: {
+            error: new DOMException('Fetch is aborted', 'AbortError'),
+            reason: alphaReason,
+          },
+          expected: alphaReason,
+        },
+        {
+          input: {
+            error: new TypeError('Load failed'),
+            reason: betaReason,
+          },
+          expected: betaReason,
+        },
+      ]
+
+      test.each(cases)('reason: $input.reason', ({ input, expected }) => {
+        const controller = new AbortController()
+
+        controller.abort(input.reason)
+
+        const fetcher = BaseHttpFetcher.create({
+          request: new Request('https://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
+
+        const received = fetcher.resolveFailure({
+          error: input.error,
+          signal: controller.signal,
+        })
+
+        expect(received)
+          .toBe(expected) // same reference
+      })
+    })
   })
 })
 
