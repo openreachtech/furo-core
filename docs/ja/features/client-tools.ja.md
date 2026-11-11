@@ -14,7 +14,7 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 ## HTTP フェッチャー
 
-`fetch()` はアップロードの進捗を通知できないため、ランチャーは既定で `XMLHttpFetcher` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行します。ランチャーは `.get:HttpFetcherCtor` でフェッチャーを選びます。サブクラスが `FetchHttpFetcher` を返せば、リクエストを `fetch()` 経由で送信します。
+`fetch()` はアップロードの進捗を通知できないため、ランチャーは既定で `XMLHttpFetcher` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行します。ランチャーは `.get:HttpFetcherCtor` でフェッチャーを選びます。サブクラスが `FetchHttpFetcher` を返せば、リクエストを `fetch()` 経由で送信します。`XMLHttpRequest` は認証情報モードに関係なく同一オリジンの Cookie を送信するため、認証情報モードが `omit` のリクエストには `FetchHttpFetcher` が必要です。
 
 | クラス | 説明 |
 | :-- | :-- |
