@@ -10,7 +10,9 @@ Binds a payload class to a capsule class, and launches the request. Extend one p
 | `.get:Capsule` | The capsule class for this operation. Must be overridden. |
 | `.get:fetch` | The fetch function used for the request. |
 | `.get:HttpFetcherCtor` | The HTTP fetcher class used for the request. Defaults to `XMLHttpFetcher`, which reports the upload and download progress. |
-| `.createHttpFetcher()` | Creates an HTTP fetcher of `.get:HttpFetcherCtor` from the request and the config. |
+| `.get:FetchHttpFetcherCtor` | The HTTP fetcher class used for a request that omits credentials. Defaults to `FetchHttpFetcher`, because `XMLHttpRequest` sends same-origin cookies whatever the credentials mode. |
+| `.createHttpFetcher()` | Creates an HTTP fetcher of `.extractHttpFetcherCtor()` from the request and the config. |
+| `.extractHttpFetcherCtor()` | `.get:FetchHttpFetcherCtor` for a request whose credentials mode is `omit`, and `.get:HttpFetcherCtor` for any other. |
 | `.createPayload()` | Creates a payload of `.get:Payload` from variables and options. |
 | `.createPayloadWithValueHash()` | Creates a payload from a flat value hash. |
 | `.createPayloadWithFormValueHash()` | Creates a payload from a `<form>` value hash. |

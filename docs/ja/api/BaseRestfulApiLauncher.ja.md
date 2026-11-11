@@ -11,7 +11,9 @@
 | `.get:ResponseBodyParser` | レスポンスボディに適用されるパーサー。既定値は `JsonResponseBodyParser` です。 |
 | `.get:fetch` | リクエストに使用される fetch 関数。 |
 | `.get:HttpFetcherCtor` | リクエストに使用する HTTP フェッチャーのクラス。既定は、アップロードとダウンロードの進捗を通知する `XMLHttpFetcher` です。 |
-| `.createHttpFetcher()` | リクエストと設定から、`.get:HttpFetcherCtor` の HTTP フェッチャーを生成します。 |
+| `.get:FetchHttpFetcherCtor` | 認証情報を送らないリクエストに使用する HTTP フェッチャーのクラス。`XMLHttpRequest` は認証情報モードに関係なく同一オリジンの Cookie を送信するため、既定は `FetchHttpFetcher` です。 |
+| `.createHttpFetcher()` | リクエストと設定から、`.extractHttpFetcherCtor()` の HTTP フェッチャーを生成します。 |
+| `.extractHttpFetcherCtor()` | 認証情報モードが `omit` のリクエストには `.get:FetchHttpFetcherCtor`、それ以外には `.get:HttpFetcherCtor` を返します。 |
 | `.createResponseBodyParser()` | HTTP パーセル用に、`.get:ResponseBodyParser` のパーサーを生成します。 |
 | `.createPayload()` | `.get:Payload` のペイロードを生成します。 |
 | `.createPayloadWithFormValueHash()` | `<form>` の値ハッシュからペイロードを生成します。 |
