@@ -8,19 +8,24 @@ Wraps a GraphQL response, and answers which outcome it holds. Extend one per ope
 | `.createAsPending()` | Factory method for a placeholder capsule before a request finishes. |
 | `.createAsInvalidVariablesError()` | Factory method for variables that failed the payload's check. |
 | `.createAsAbortedByHooks()` | Factory method for a request aborted by `beforeRequest`. |
-| `.createAsNetworkError()` | Factory method for a request that never reached the server. |
+| `.createAsNetworkError()` | Factory method for a request that failed before a response was received, which carries the HTTP parcel of the failure. |
 | `.createAsJsonParseError()` | Factory method for a response body that was not valid JSON. |
 | `.get:unknownErrorCode` | Error code reported when no more specific code applies. |
 | `.get:invalidVariablesErrorCode` | Error code for invalid variables. |
+| `.get:abortErrorCode` | Error code for an aborted request. |
+| `.get:timeoutErrorCode` | Error code for a timed out request. |
 | `.get:networkErrorCode` | Error code for a network failure. |
 | `.get:jsonParseErrorCode` | Error code for a JSON parse failure. |
+| `#responseParcel` | The HTTP parcel that carries the response or the error of the fetcher, or `null` for a capsule that sent no request. |
 | `#get:content` | The response content. |
 | `#get:errors` | The GraphQL errors carried by the response. |
 | `#hasContent()` | Whether the response carried data. |
 | `#hasError()` | Whether any error condition holds. |
 | `#isPending()` | Whether this is a placeholder capsule. |
 | `#hasInvalidVariablesError()` | Whether the variables failed the payload's check. |
-| `#hasNetworkError()` | Whether the request never reached the server. |
+| `#hasAbortError()` | Whether the request was aborted. |
+| `#hasTimeoutError()` | Whether the request timed out. |
+| `#hasNetworkError()` | Whether the request failed for any reason other than an abortion and a timeout, or was never sent. |
 | `#hasJsonParseError()` | Whether the response body could not be parsed as JSON. |
 | `#hasQueryError()` | Whether the server answered with GraphQL errors. |
 | `#getErrorMessage()` | A message describing the error held, if any. |

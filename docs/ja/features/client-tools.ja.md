@@ -4,7 +4,6 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 
 | class | responsibility |
 | :-- | :-- |
-| `ProgressHttpFetcher` | `Request` を `XMLHttpRequest` 経由で実行し、アップロード・ダウンロードの進捗を通知します。 |
 | `HeadersParser` | 生のヘッダーテキストをエントリまたは `Headers` インスタンスへパースします。 |
 | `PathnameBuilder` | パス名テンプレート内の `[name]` プレースホルダーを補間します。 |
 | `BaseResponseBodyParser` | `Response` のボディを値へ変換するための基底クラスです。 |
@@ -13,21 +12,34 @@ GraphQL クライアントと RESTful API クライアントは、より小さ�
 | `FormDataRequestBodyConverter` | リクエストボディを `FormData` へ変換します。 |
 | `JsonRequestBodyConverter` | リクエストボディを JSON テキストへ変換します。 |
 
-## 進捗を通知する fetch
+## HTTP フェッチャー
 
-`fetch()` はアップロードの進捗を通知できないため、ランチャーは `ProgressHttpFetcher` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行し、`Response` へ解決します。
+`fetch()` はアップロードの進捗を通知できないため、ランチャーは既定で `XMLHttpFetcher` を使用します。これはリクエストを `XMLHttpRequest` 経由で実行します。ランチャーは `.get:HttpFetcherCtor` でフェッチャーを選びます。サブクラスが `FetchHttpFetcher` を返せば、リクエストを `fetch()` 経由で送信します。`XMLHttpRequest` は認証情報モードに関係なく同一オリジンの Cookie を送信するため、認証情報モードが `omit` のリクエストには `FetchHttpFetcher` が必要です。
+
+| クラス | 説明 |
+| :-- | :-- |
+| `BaseHttpFetcher` | 流れを持つ基底クラス。リクエストを中断するタイマーを始動し、レスポンスを受け取り、必ず HTTP パーセルを返します。 |
+| `XMLHttpFetcher` | リクエストを `XMLHttpRequest` 経由で送信し、`sink` を通じてアップロードとダウンロードの進捗を通知します。 |
+| `FetchHttpFetcher` | リクエストを `fetch()` 経由で送信します。`Response` をそのまま保持するので、ボディをストリームとして読めます。進捗は通知しません。 |
+| `BaseHttpParcel` | フェッチャーが返すもの。リクエスト、設定、およびレスポンスかフェッチャーのエラーのどちらかを保持します。 |
+
+フェッチャーは使い捨てです。`request` と `config` を一度だけ受け取り、一度だけ取得します。`config` が持つのは、`Request` では表せないものだけです。`timeoutMilliseconds`（`0` で制限なし）と、`FetchHttpFetcher` の `optionHash` です。
 
 ```javascript
 import {
-  ProgressHttpFetcher,
+  XMLHttpFetcher,
 } from '@openreachtech/furo'
 
-const response = await ProgressHttpFetcher.create()
-  .fetchRequest({
-    request: new Request('https://example.com/upload', {
-      method: 'POST',
-      body: formData,
-    }),
+const httpParcel = await XMLHttpFetcher.create({
+  request: new Request('https://example.com/upload', {
+    method: 'POST',
+    body: formData,
+  }),
+  config: {
+    timeoutMilliseconds: 30000,
+  },
+})
+  .fetchResponse({
     sink: {
       onUploadProgress ({ request, progressEvent }) {
         console.log(progressEvent.loaded / progressEvent.total)
@@ -37,11 +49,19 @@ const response = await ProgressHttpFetcher.create()
       },
     },
   })
+
+if (httpParcel.hasTimeoutError()) {
+  // ...
+}
+
+const result = await httpParcel.toJson()
 ```
 
-ボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
+フェッチャーは reject しません。失敗はレスポンスを持たないパーセルとして返り、`#hasNetworkError()`、`#hasTimeoutError()`、`#hasAbortError()`、`#hasUnknownError()` で種類が分かります。リクエストは、そのリクエスト自身の `signal` か `timeoutMilliseconds` の、先に起きたほうで中断されます。`signal` による中断は、理由が何であっても中断として報告されます。`XMLHttpFetcher` はボディをすべて受信するまでタイムアウトを数えるので、ボディが止まった場合もタイムアウトです。
 
-返される Promise は、リクエストが中断・失敗・タイムアウトした場合に `TypeError` で reject します。これは `fetch()` が同じ状況を報告する方法に揃えたものです。
+タイムアウトは `AbortTimer` が数え、レスポンスを受信した時点で止まるので、パーセルはタイムアウトの時間を過ぎても読めます。パーセルの `#toText()` と `#toJson()` は `ResponseTextConverter` を通してボディをデコードします。レスポンスの `Content-Type` が宣言する文字コードを使い、宣言がなければ UTF-8 を使います。
+
+`XMLHttpFetcher` のボディは `Request` から読み取った `Blob` として送信され、`Content-Type` を含む `Request` のすべてのヘッダーが転送されます。そのため `FormData` のボディはマルチパートの境界文字列を保持し、JSON ボディは `application/json` としてサーバーへ届きます。
 
 ## ヘッダーのパース
 
@@ -88,7 +108,7 @@ const pathname = PathnameBuilder.create({
 
 ## レスポンスボディのパース
 
-`JsonResponseBodyParser` は RESTful API ランチャーの既定のパーサーです。別のコンテンツタイプを扱う場合は `BaseResponseBodyParser` を継承してください。
+`JsonResponseBodyParser` は RESTful API ランチャーの既定のパーサーです。別のコンテンツタイプを扱う場合は `BaseResponseBodyParser` を継承してください。パーサーは `responseParcel` を保持し、それを通してボディを読むので、カプセルからもパーセルを読み直せます。
 
 ```javascript
 import {
@@ -98,7 +118,7 @@ import {
 export default class TextResponseBodyParser extends BaseResponseBodyParser {
   /** @override */
   async parseBody () {
-    return this.response.text()
+    return this.responseParcel.toText()
   }
 }
 ```

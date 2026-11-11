@@ -71,11 +71,20 @@ Class members are written with the following notation.
 
 | class | description |
 | :-- | :-- |
-| [ProgressHttpFetcher](./ProgressHttpFetcher.md) | Performs a `Request`, reporting upload and download progress. |
+| [BaseHttpFetcher](./BaseHttpFetcher.md) | Base class of the HTTP fetchers, which owns the flow of a fetch. |
+| [XMLHttpFetcher](./XMLHttpFetcher.md) | Fetches over `XMLHttpRequest`, reporting upload and download progress. |
+| [FetchHttpFetcher](./FetchHttpFetcher.md) | Fetches over `fetch()`, keeping the `Response` as it is. |
+| [XMLHttpRequestClerk](./XMLHttpRequestClerk.md) | Wraps an `XMLHttpRequest`, so that its calls chain. |
+| [AbortTimer](./AbortTimer.md) | Aborts a request when the timeout elapses, and can be cleared. |
+| [CharsetResolver](./CharsetResolver.md) | Resolves the charset that the `Content-Type` header declares, or UTF-8. |
+| [ResponseTextConverter](./ResponseTextConverter.md) | Decodes a response body into text with the charset that the response declares. |
+| [BaseHttpParcel](./BaseHttpParcel.md) | What a fetcher returns: the response, or the error that kept it from being received. |
+| [XMLHttpParcel](./XMLHttpParcel.md) | HTTP parcel of a response built from `XMLHttpRequest`. |
+| [FetchHttpParcel](./FetchHttpParcel.md) | HTTP parcel of a response that `fetch()` returned. |
 | [HeadersParser](./HeadersParser.md) | Parses raw header text into entries or a `Headers`. |
 | [PathnameBuilder](./PathnameBuilder.md) | Interpolates `[name]` placeholders in a pathname. |
-| [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing a response body. |
-| [JsonResponseBodyParser](./JsonResponseBodyParser.md) | Parses a response body as JSON. |
+| [BaseResponseBodyParser](./BaseResponseBodyParser.md) | Base class for parsing the body of an HTTP parcel. |
+| [JsonResponseBodyParser](./JsonResponseBodyParser.md) | Parses the body of an HTTP parcel as JSON. |
 | [BaseRequestBodyConverter](./BaseRequestBodyConverter.md) | Base class for converting a request body. |
 | [FormDataRequestBodyConverter](./FormDataRequestBodyConverter.md) | Converts a request body into `FormData`. |
 | [JsonRequestBodyConverter](./JsonRequestBodyConverter.md) | Converts a request body into JSON text. |

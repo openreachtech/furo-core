@@ -188,7 +188,9 @@ GraphQL と同様に、`launchRequest()` は例外を投げずカプセルへ解
 | `#isPending()` | リクエスト完了前のプレースホルダーとして生成されたカプセルである。 |
 | `#hasError()` | 以下のいずれかのエラー条件が成立している。 |
 | `#hasInvalidParameterHashError()` | パラメータがペイロード自身の検査に失敗し、リクエストが送信されなかった。 |
-| `#hasNetworkError()` | リクエストがサーバーに到達しなかった。 |
+| `#hasAbortError()` | リクエストが中断された。 |
+| `#hasTimeoutError()` | リクエストがタイムアウトした。 |
+| `#hasNetworkError()` | それ以外の理由で、レスポンスを受け取る前に失敗した。 |
 | `#hasResponseBodyParseError()` | レスポンスボディをパースできなかった。 |
 | `#hasStatusCodeError()` | レスポンスが 4xx または 5xx のステータスを返した。 |
 | `#hasResultError()` | パースされたボディがアプリケーションレベルのエラーを報告した。 |
@@ -210,7 +212,7 @@ export default class CsvGetRestfulApiLauncher extends BaseAlphaRestfulApiLaunche
 }
 ```
 
-パーサーの書き方は [HTTP クライアントツール](./client-tools.ja.md) を参照してください。
+パーサーは HTTP パーセルを `responseParcel` として受け取り、それを通してボディを読みます。パーサーの書き方は [HTTP クライアントツール](./client-tools.ja.md) を参照してください。
 
 ## サブクラスを作らずにメソッドを宣言する
 

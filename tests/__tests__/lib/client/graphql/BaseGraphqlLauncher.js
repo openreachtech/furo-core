@@ -9,7 +9,8 @@ import {
   LAUNCH_ABORTED_REASON,
 } from '~/lib/client/graphql/BaseGraphqlCapsule'
 
-import ProgressHttpFetcher from '~/lib/tools/ProgressHttpFetcher'
+import XMLHttpFetcher from '~/lib/tools/http-fetchers/concretes/XMLHttpFetcher.js'
+import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
 describe('BaseGraphqlLauncher', () => {
   describe('constructor', () => {
@@ -231,7 +232,7 @@ describe('BaseGraphqlLauncher', () => {
         }
 
         const expected = {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
         }
@@ -372,7 +373,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const expected = {
-            rawResponse: null,
+            responseParcel: null,
             payload: args.payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -533,7 +534,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const expected = {
-            rawResponse: null,
+            responseParcel: null,
             payload: args.payload,
             result: null,
             abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -577,6 +578,10 @@ describe('BaseGraphqlLauncher', () => {
         const cases = [
           {
             args: {
+              responseParcel: XMLHttpParcel.createAsNetworkError({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -591,6 +596,10 @@ describe('BaseGraphqlLauncher', () => {
           },
           {
             args: {
+              responseParcel: XMLHttpParcel.createAsNetworkError({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -614,6 +623,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const currentArgs = {
+            responseParcel: args.responseParcel,
             payload: args.payload,
           }
 
@@ -643,6 +653,10 @@ describe('BaseGraphqlLauncher', () => {
         const cases = [
           {
             args: {
+              responseParcel: XMLHttpParcel.createAsNetworkError({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -657,6 +671,10 @@ describe('BaseGraphqlLauncher', () => {
           },
           {
             args: {
+              responseParcel: XMLHttpParcel.createAsNetworkError({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -680,7 +698,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const expected = {
-            rawResponse: null,
+            responseParcel: args.responseParcel,
             payload: args.payload,
             result: null,
           }
@@ -688,6 +706,7 @@ describe('BaseGraphqlLauncher', () => {
           const createSpy = jest.spyOn(params.CapsuleClass, 'create')
 
           const currentArgs = {
+            responseParcel: args.responseParcel,
             payload: args.payload,
           }
 
@@ -723,7 +742,11 @@ describe('BaseGraphqlLauncher', () => {
         const cases = [
           {
             args: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -738,7 +761,11 @@ describe('BaseGraphqlLauncher', () => {
           },
           {
             args: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -762,7 +789,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const currentArgs = {
-            rawResponse: args.rawResponse,
+            responseParcel: args.responseParcel,
             payload: args.payload,
           }
 
@@ -792,7 +819,11 @@ describe('BaseGraphqlLauncher', () => {
         const cases = [
           {
             args: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -807,7 +838,11 @@ describe('BaseGraphqlLauncher', () => {
           },
           {
             args: {
-              rawResponse: new Response(),
+              responseParcel: XMLHttpParcel.create({
+                request: new Request('http://example.com/neutral'), // Neutral value
+                config: {}, // Neutral value
+                response: new Response(),
+              }),
               payload: new BaseGraphqlPayload({
                 queryTemplate: /* GraphQL */ `
                   query {
@@ -831,7 +866,7 @@ describe('BaseGraphqlLauncher', () => {
           }
 
           const expected = {
-            rawResponse: args.rawResponse,
+            responseParcel: args.responseParcel,
             payload: args.payload,
             result: null,
           }
@@ -839,7 +874,7 @@ describe('BaseGraphqlLauncher', () => {
           const createSpy = jest.spyOn(params.CapsuleClass, 'create')
 
           const currentArgs = {
-            rawResponse: args.rawResponse,
+            responseParcel: args.responseParcel,
             payload: args.payload,
           }
 
@@ -867,12 +902,53 @@ describe('BaseGraphqlLauncher', () => {
 })
 
 describe('BaseGraphqlLauncher', () => {
-  describe('.createHttpFetcher()', () => {
+  describe('.get:HttpFetcherCtor', () => {
     test('to be fixed value', () => {
-      const actual = BaseGraphqlLauncher.createHttpFetcher()
+      const actual = BaseGraphqlLauncher.HttpFetcherCtor
 
       expect(actual)
-        .toBeInstanceOf(ProgressHttpFetcher)
+        .toBe(XMLHttpFetcher) // same reference
+    })
+  })
+})
+
+describe('BaseGraphqlLauncher', () => {
+  describe('.createHttpFetcher()', () => {
+    const cases = [
+      {
+        input: {
+          request: new Request('https://example.com/resource-0001'),
+          config: {},
+        },
+      },
+      {
+        input: {
+          request: new Request('https://example.com/resource-0002'),
+          config: {
+            timeoutMilliseconds: 1000,
+          },
+        },
+      },
+    ]
+
+    describe('should be an instance of the HTTP fetcher class', () => {
+      test.each(cases)('url: $input.request.url', ({ input }) => {
+        const actual = BaseGraphqlLauncher.createHttpFetcher(input)
+
+        expect(actual)
+          .toBeInstanceOf(XMLHttpFetcher)
+      })
+    })
+
+    describe('should create the HTTP fetcher with the request and the config', () => {
+      test.each(cases)('url: $input.request.url', ({ input }) => {
+        const createSpy = jest.spyOn(BaseGraphqlLauncher.HttpFetcherCtor, 'create')
+
+        BaseGraphqlLauncher.createHttpFetcher(input)
+
+        expect(createSpy)
+          .toHaveBeenCalledWith(input)
+      })
     })
   })
 })
@@ -1344,7 +1420,11 @@ describe('BaseGraphqlLauncher', () => {
       const cases = [
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1370,7 +1450,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1396,7 +1480,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1422,7 +1510,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1469,7 +1561,11 @@ describe('BaseGraphqlLauncher', () => {
       const cases = [
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1496,7 +1592,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1523,7 +1623,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1550,7 +1654,11 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            rawResponse: new Response(),
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(),
+            }),
             payload: new BaseGraphqlPayload({
               queryTemplate: /* GraphQL */ `
                 query {
@@ -1630,6 +1738,9 @@ describe('BaseGraphqlLauncher', () => {
             },
           },
           tally: {
+            config: {
+              timeoutMilliseconds: 30000,
+            },
             request: new Request('http://example.com/graphql-customer', {
               method: 'POST',
               headers: new Headers({
@@ -1659,6 +1770,9 @@ describe('BaseGraphqlLauncher', () => {
             },
           },
           tally: {
+            config: {
+              timeoutMilliseconds: 1000,
+            },
             request: new Request('http://example.com/graphql-admin', {
               method: 'POST',
               headers: new Headers({
@@ -1679,18 +1793,28 @@ describe('BaseGraphqlLauncher', () => {
 
       test.each(cases)('endpointUrl: $params.request.endpointUrl', async ({ params, tally }) => {
         const responseTally = new Response()
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpParcelTally = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: responseTally,
+        })
+        const httpFetcherMock = XMLHttpFetcher.create({
+          request: tally.request,
+          config: {},
+        })
 
         const expectedArgsForCreateFetchRequest = {
           url: params.endpointUrl,
         }
 
+        jest.spyOn(params.payload, 'timeoutMilliseconds', 'get')
+          .mockReturnValue(tally.config.timeoutMilliseconds)
         const createFetchRequestSpy = jest.spyOn(params.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
         const createHttpFetcherSpy = jest.spyOn(BaseGraphqlLauncher, 'createHttpFetcher')
           .mockReturnValue(httpFetcherMock)
-        const fetchRequestSpy = jest.spyOn(httpFetcherMock, 'fetchRequest')
-          .mockResolvedValue(responseTally)
+        const fetchResponseSpy = jest.spyOn(httpFetcherMock, 'fetchResponse')
+          .mockResolvedValue(httpParcelTally)
 
         const launcher = BaseGraphqlLauncher.create({
           config: {
@@ -1705,18 +1829,23 @@ describe('BaseGraphqlLauncher', () => {
         const actual = await launcher.invokeFetchQuery(args)
 
         expect(actual)
-          .toBe(responseTally) // same instance
+          .toBe(httpParcelTally) // same instance
 
         expect(createFetchRequestSpy)
           .toHaveBeenCalledWith(expectedArgsForCreateFetchRequest)
         expect(createHttpFetcherSpy)
-          .toHaveBeenCalledWith()
-        expect(fetchRequestSpy)
-          .toHaveBeenCalledWith(tally)
+          .toHaveBeenCalledWith({
+            request: tally.request,
+            config: tally.config,
+          })
+        expect(fetchResponseSpy)
+          .toHaveBeenCalledWith({
+            sink: tally.sink,
+          })
       })
     })
 
-    describe('to throw on fetch', () => {
+    describe('to be the parcel of the error on a failed fetch', () => {
       const customerQueryTemplate = /* GraphQL */ `
         query {
           customer {
@@ -1794,14 +1923,21 @@ describe('BaseGraphqlLauncher', () => {
       ]
 
       test.each(cases)('endpointUrl: $params.request.endpointUrl', async ({ params, tally }) => {
-        const httpFetcherMock = ProgressHttpFetcher.create()
+        const httpFetcherMock = XMLHttpFetcher.create({
+          request: tally.request,
+          config: {},
+        })
+        const networkErrorParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
 
         jest.spyOn(params.payload, 'createFetchRequest')
           .mockReturnValue(tally.request)
         jest.spyOn(BaseGraphqlLauncher, 'createHttpFetcher')
           .mockReturnValue(httpFetcherMock)
-        jest.spyOn(httpFetcherMock, 'fetchRequest')
-          .mockRejectedValue(new Error('Network Error'))
+        jest.spyOn(httpFetcherMock, 'fetchResponse')
+          .mockResolvedValue(networkErrorParcelTally)
 
         const launcher = BaseGraphqlLauncher.create({
           config: {
@@ -1816,7 +1952,7 @@ describe('BaseGraphqlLauncher', () => {
         const actual = await launcher.invokeFetchQuery(args)
 
         expect(actual)
-          .toBeNull()
+          .toBe(networkErrorParcelTally) // same instance
       })
     })
   })
@@ -1828,13 +1964,17 @@ describe('BaseGraphqlLauncher', () => {
       const cases = [
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10001
                 }
               }
             }`),
+            }),
           },
           expected: {
             data: {
@@ -1846,13 +1986,17 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10002
                 }
               }
             }`),
+            }),
           },
           expected: {
             data: {
@@ -1864,7 +2008,10 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "errors": [
                 {
                   "message": "Error message 01"
@@ -1874,6 +2021,7 @@ describe('BaseGraphqlLauncher', () => {
                 }
               ]
             }`),
+            }),
           },
           expected: {
             errors: [
@@ -1888,13 +2036,17 @@ describe('BaseGraphqlLauncher', () => {
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "errors": [
                 {
                   "message": "Error message 03"
                 }
               ]
             }`),
+            }),
           },
           expected: {
             errors: [
@@ -1906,7 +2058,7 @@ describe('BaseGraphqlLauncher', () => {
         },
       ]
 
-      test.each(cases)('response: $params.response', async ({ params, expected }) => {
+      test.each(cases)('response: $params.httpParcel.response', async ({ params, expected }) => {
         const launcher = BaseGraphqlLauncher.create({
           config: {
             ENDPOINT_URL: 'http://example.com/graphql-customer',
@@ -1920,33 +2072,152 @@ describe('BaseGraphqlLauncher', () => {
       })
     })
 
+    describe('to decode the body with the charset of the response', () => {
+      const cases = [
+        {
+          params: {
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(
+                Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x82, 0xB1, 0x22, 0x7D]), // {"id":"こ"} in Shift_JIS
+                {
+                  headers: {
+                    'Content-Type': 'application/json; charset=Shift_JIS',
+                  },
+                }
+              ),
+            }),
+          },
+          expected: {
+            id: 'こ',
+          },
+        },
+        {
+          params: {
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(
+                Uint8Array.from([0x7B, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x82, 0xF1, 0x22, 0x7D]), // {"id":"ん"} in Shift_JIS
+                {
+                  headers: {
+                    'Content-Type': 'application/json; charset=Shift_JIS',
+                  },
+                }
+              ),
+            }),
+          },
+          expected: {
+            id: 'ん',
+          },
+        },
+      ]
+
+      test.each(cases)('response: $params.httpParcel.response', async ({ params, expected }) => {
+        const launcher = BaseGraphqlLauncher.create({
+          config: {
+            ENDPOINT_URL: 'http://example.com/graphql-customer',
+          },
+        })
+
+        const actual = await launcher.generateFetchResult(params)
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+
+    describe('to leave the parcel readable after the result was generated', () => {
+      const cases = [
+        {
+          params: {
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{"data":{"customer":{"id":10001}}}'),
+            }),
+          },
+          expected: {
+            data: {
+              customer: {
+                id: 10001,
+              },
+            },
+          },
+        },
+        {
+          params: {
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response('{"data":{"customer":{"id":10002}}}'),
+            }),
+          },
+          expected: {
+            data: {
+              customer: {
+                id: 10002,
+              },
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('response: $params.httpParcel.response', async ({ params, expected }) => {
+        const launcher = BaseGraphqlLauncher.create({
+          config: {
+            ENDPOINT_URL: 'http://example.com/graphql-customer',
+          },
+        })
+
+        await launcher.generateFetchResult(params)
+
+        const actual = await params.httpParcel.toJson()
+
+        expect(actual)
+          .toEqual(expected)
+      })
+    })
+
     describe('on JSON parsed error', () => {
       const cases = [
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10001
                 }
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10002
                 }
               }
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "errors": [
                 {
                   "message": "Error message 01"
@@ -1955,23 +2226,28 @@ describe('BaseGraphqlLauncher', () => {
                   "message": "Error message 02"
                 }
               ]
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
         {
           params: {
-            response: new Response(`{
+            httpParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "errors": [
                 {
                   "message": "Error message 03"
                 }
               ]
-            }}`), // ERROR: last } is doubled
+            }}`),
+            }), // ERROR: last } is doubled
           },
         },
       ]
 
-      test.each(cases)('response: $params.response', async ({ params }) => {
+      test.each(cases)('response: $params.httpParcel.response', async ({ params }) => {
         const launcher = BaseGraphqlLauncher.create({
           config: {
             ENDPOINT_URL: 'http://example.com/graphql-admin',
@@ -2022,11 +2298,18 @@ describe('BaseGraphqlLauncher', () => {
       ]
 
       test.each(cases)('payload: $params.payload', async ({ params }) => {
+        const httpParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
+
         const expectedArgs = {
+          responseParcel: httpParcelTally,
           payload: params.payload,
         }
 
         const capsuleTally = BaseGraphqlCapsule.createAsNetworkError({
+          responseParcel: httpParcelTally,
           payload: params.payload,
         })
 
@@ -2041,7 +2324,7 @@ describe('BaseGraphqlLauncher', () => {
 
         const args = {
           payload: params.payload,
-          response: null,
+          httpParcel: httpParcelTally,
         }
 
         const actual = await launcher.retrieveCapsule(args)
@@ -2087,21 +2370,26 @@ describe('BaseGraphqlLauncher', () => {
       ]
 
       test.each(cases)('payload: $params.payload', async ({ params }) => {
-        const rawResponseTally = new Response(`{
+        const responseTally = new Response(`{
           "data": {
             "customer": {
               "id": 10001
             }
           }
         }}`) // ERROR: last } is doubled
+        const httpParcelTally = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: responseTally,
+        })
 
         const capsuleTally = BaseGraphqlCapsule.createAsJsonParseError({
-          rawResponse: rawResponseTally,
+          responseParcel: httpParcelTally,
           payload: params.payload,
         })
 
         const expectedArgs = {
-          rawResponse: rawResponseTally,
+          responseParcel: httpParcelTally,
           payload: params.payload,
         }
 
@@ -2116,7 +2404,7 @@ describe('BaseGraphqlLauncher', () => {
 
         const args = {
           payload: params.payload,
-          response: rawResponseTally,
+          httpParcel: httpParcelTally,
         }
 
         const actual = await launcher.retrieveCapsule(args)
@@ -2143,13 +2431,17 @@ describe('BaseGraphqlLauncher', () => {
               `,
               variables: null,
             }),
-            rawResponse: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "customer": {
                   "id": 10001
                 }
               }
             }`),
+            }),
             result: {
               data: {
                 customer: {
@@ -2171,13 +2463,17 @@ describe('BaseGraphqlLauncher', () => {
               `,
               variables: null,
             }),
-            rawResponse: new Response(`{
+            responseParcel: XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: new Response(`{
               "data": {
                 "admin": {
                   "id": 20001
                 }
               }
             }`),
+            }),
             result: {
               data: {
                 admin: {
@@ -2191,16 +2487,16 @@ describe('BaseGraphqlLauncher', () => {
 
       test.each(cases)('payload: $params.payload', async ({ params }) => {
         const capsuleTally = BaseGraphqlCapsule.create({
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: params.payload,
           result: params.result,
         })
 
         const expectedArgsForGenerateFetchResult = {
-          response: params.rawResponse,
+          httpParcel: params.responseParcel,
         }
         const expectedArgsForCreateCapsule = {
-          rawResponse: params.rawResponse,
+          responseParcel: params.responseParcel,
           payload: params.payload,
           result: params.result,
         }
@@ -2225,7 +2521,7 @@ describe('BaseGraphqlLauncher', () => {
 
         const args = {
           payload: params.payload,
-          response: params.rawResponse,
+          httpParcel: params.responseParcel,
         }
 
         const actual = await launcher.retrieveCapsule(args)
@@ -2237,6 +2533,74 @@ describe('BaseGraphqlLauncher', () => {
           .toHaveBeenCalledWith(expectedArgsForGenerateFetchResult)
         expect(createCapsuleSpy)
           .toHaveBeenCalledWith(expectedArgsForCreateCapsule)
+      })
+    })
+
+    describe('to leave the response of the capsule readable', () => {
+      const cases = [
+        {
+          params: {
+            body: '{"data":{"customer":{"id":10001}}}',
+          },
+          expected: {
+            data: {
+              customer: {
+                id: 10001,
+              },
+            },
+          },
+        },
+        {
+          params: {
+            body: '{"data":{"admin":{"id":20001}}}',
+          },
+          expected: {
+            data: {
+              admin: {
+                id: 20001,
+              },
+            },
+          },
+        },
+      ]
+
+      test.each(cases)('body: $params.body', async ({ params, expected }) => {
+        class Launcher extends BaseGraphqlLauncher {
+          /** @override */
+          static get Capsule () {
+            return BaseGraphqlCapsule
+          }
+        }
+
+        const launcher = Launcher.create({
+          config: {
+            ENDPOINT_URL: 'http://example.com/graphql',
+          },
+        })
+        const httpParcel = XMLHttpParcel.create({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+          response: new Response(params.body),
+        })
+
+        const capsule = await launcher.retrieveCapsule({
+          payload: new BaseGraphqlPayload({
+            queryTemplate: /* GraphQL */ `
+              query {
+                customer {
+                  id
+                }
+              }
+            `,
+            variables: null,
+          }),
+          httpParcel,
+        })
+
+        const actual = await capsule.responseParcel.toJson()
+
+        expect(actual)
+          .toEqual(expected)
       })
     })
   })
@@ -2347,7 +2711,13 @@ describe('BaseGraphqlLauncher', () => {
         })
 
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(tally.response)
+          .mockResolvedValue(
+            XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: tally.response,
+            })
+          )
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
         const args = {
@@ -2424,7 +2794,12 @@ describe('BaseGraphqlLauncher', () => {
 
       test.each(cases)('[$#]', async ({ params }) => {
         jest.spyOn(launcher, 'invokeFetchQuery')
-          .mockResolvedValue(null)
+          .mockResolvedValue(
+            XMLHttpParcel.createAsNetworkError({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+            })
+          )
 
         const extendRequestHooksSpy = jest.spyOn(launcher, 'extendRequestHooks')
 
@@ -2517,7 +2892,7 @@ describe('BaseGraphqlLauncher', () => {
         })
 
         const expectedCapsule = DerivedCapsule.create({
-          rawResponse: null,
+          responseParcel: null,
           payload: invalidVariablesPayload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.INVALID_VARIABLES,
@@ -2624,7 +2999,7 @@ describe('BaseGraphqlLauncher', () => {
         })
 
         const expectedCapsule = params.Capsule.create({
-          rawResponse: null,
+          responseParcel: null,
           payload: params.payload,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.BEFORE_REQUEST_HOOK,
@@ -2706,6 +3081,10 @@ describe('BaseGraphqlLauncher', () => {
       ]
 
       test.each(cases)('endpointUrl: $params.endpointUrl', async ({ params }) => {
+        const httpParcelTally = XMLHttpParcel.createAsNetworkError({
+          request: new Request('http://example.com/neutral'), // Neutral value
+          config: {}, // Neutral value
+        })
         const hooksTally = {
           afterRequest: async () => {},
         }
@@ -2717,8 +3096,6 @@ describe('BaseGraphqlLauncher', () => {
           }
         }
 
-        jest.spyOn(globalThis, 'fetch')
-          .mockRejectedValue(new Error('Network Error'))
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
         const launcher = Launcher.create({
@@ -2726,6 +3103,9 @@ describe('BaseGraphqlLauncher', () => {
             ENDPOINT_URL: params.endpointUrl,
           },
         })
+
+        jest.spyOn(launcher, 'invokeFetchQuery')
+          .mockResolvedValue(httpParcelTally)
         const args = {
           payload: params.payload,
           hooks: hooksTally,
@@ -2736,7 +3116,7 @@ describe('BaseGraphqlLauncher', () => {
         expect(actual)
           .toBeInstanceOf(params.Capsule)
         expect(actual)
-          .toHaveProperty('rawResponse', null)
+          .toHaveProperty('responseParcel', httpParcelTally)
         expect(actual.extractContent())
           .toBeNull()
 
@@ -2831,7 +3211,13 @@ describe('BaseGraphqlLauncher', () => {
         }
 
         jest.spyOn(globalThis, 'fetch')
-          .mockResolvedValue(tally.response)
+          .mockResolvedValue(
+            XMLHttpParcel.create({
+              request: new Request('http://example.com/neutral'), // Neutral value
+              config: {}, // Neutral value
+              response: tally.response,
+            })
+          )
         const afterRequestSpy = jest.spyOn(hooksTally, 'afterRequest')
 
         const launcher = Launcher.create({

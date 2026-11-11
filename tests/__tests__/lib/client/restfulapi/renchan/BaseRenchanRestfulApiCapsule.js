@@ -6,6 +6,7 @@ import {
 } from '~/lib/client/restfulapi/BaseRestfulApiCapsule.js'
 
 import BaseRenchanRestfulApiPayload from '~/lib/client/restfulapi/renchan/BaseRenchanRestfulApiPayload.js'
+import XMLHttpParcel from '~/lib/tools/http-fetchers/parcels/concretes/XMLHttpParcel.js'
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('inheritance', () => {
@@ -20,7 +21,11 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('#get:content', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRenchanRestfulApiPayload.create()
 
     describe('when has content', () => {
@@ -61,7 +66,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input, expected }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -80,21 +85,21 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         // on network error
         {
           input: {
-            rawResponse: null,
+            responseParcel: null,
             result: null,
           },
         },
         // on response body parse error
         {
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: null,
           },
         },
         // on query error
         {
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               error: {
                 code: '190.X000.001',
@@ -104,7 +109,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         },
         {
           input: {
-            rawResponse: mockResponse,
+            responseParcel: mockResponseParcel,
             result: {
               error: {
                 code: null,
@@ -114,9 +119,9 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         },
       ]
 
-      test.each(cases)('rawResponse: $input.rawResponse; result: $input.result', ({ input }) => {
+      test.each(cases)('responseParcel: $input.responseParcel; result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: input.rawResponse,
+          responseParcel: input.responseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -134,13 +139,17 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('#get:error', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRenchanRestfulApiPayload.create()
 
     const cases = [
       {
         input: {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: {
             error: {
@@ -155,7 +164,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
       },
       {
         input: {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: {
             error: {
@@ -170,7 +179,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
       },
       {
         input: {
-          rawResponse: null,
+          responseParcel: null,
           payload: mockPayload,
           result: {
             error: {
@@ -185,7 +194,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
       },
       {
         input: {
-          rawResponse: null,
+          responseParcel: null,
           payload: null,
           result: null,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -207,7 +216,11 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('#hasResultContent()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRenchanRestfulApiPayload.create()
 
     describe('to has content (truthy)', () => {
@@ -238,7 +251,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -272,7 +285,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -290,7 +303,11 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('#hasResultError()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRenchanRestfulApiPayload.create()
 
     describe('to has result error (truthy)', () => {
@@ -308,7 +325,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -344,7 +361,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -362,7 +379,11 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
 describe('BaseRenchanRestfulApiCapsule', () => {
   describe('#generateResultErrorCode()', () => {
-    const mockResponse = new Response()
+    const mockResponseParcel = XMLHttpParcel.create({
+      request: new Request('http://example.com/neutral'), // Neutral value
+      config: {}, // Neutral value
+      response: new Response(),
+    })
     const mockPayload = BaseRenchanRestfulApiPayload.create()
 
     describe('to return error code of result', () => {
@@ -401,7 +422,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
 
       test.each(cases)('result: $input.result', ({ input, expected }) => {
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
@@ -435,7 +456,7 @@ describe('BaseRenchanRestfulApiCapsule', () => {
         const expected = '190.X000.001' // BaseRenchanRestfulApiCapsule.unknownErrorCode
 
         const args = {
-          rawResponse: mockResponse,
+          responseParcel: mockResponseParcel,
           payload: mockPayload,
           result: input.result,
           abortedReason: LAUNCH_ABORTED_REASON.NONE,
