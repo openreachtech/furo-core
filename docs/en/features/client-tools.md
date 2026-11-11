@@ -14,7 +14,7 @@ The GraphQL and RESTful API clients are assembled from smaller tools, each usabl
 
 ## HTTP fetchers
 
-`fetch()` cannot report upload progress, so the launchers use `XMLHttpFetcher` by default, which runs the request through `XMLHttpRequest`. A launcher chooses its fetcher through `.get:HttpFetcherCtor`, and a subclass may return `FetchHttpFetcher` instead to send the request through `fetch()`. A request whose credentials mode is `omit` goes through `.get:FetchHttpFetcherCtor`, because `XMLHttpRequest` sends same-origin cookies whatever the credentials mode.
+`fetch()` cannot report upload progress, so the launchers use `XMLHttpFetcher` by default, which runs the request through `XMLHttpRequest`. A launcher chooses its fetcher through `.get:HttpFetcherCtor`, and a subclass may return `FetchHttpFetcher` instead to send the request through `fetch()`.
 
 | class | description |
 | :-- | :-- |
