@@ -31,6 +31,8 @@ export default class BaseAlphaRestfulApiLauncher extends BaseRestfulApiLauncher 
 }
 ```
 
+In a browser, `BASE_URL` may be relative, such as `''` or `'/api'`. It is resolved against the page origin and keeps its fixed pathname, so a request reaches the app's own origin through a proxy. Where the page has no usable origin, such as on a server or in a sandboxed frame, a relative `BASE_URL` throws a `TypeError`. A `BASE_URL` of `'/'` or one starting with `//`, such as `'//api.example.com'`, throws a `TypeError` too, because the joined URL would name another host. Write the origin root as `''`. An absolute `BASE_URL` builds the same URL in every setting.
+
 The payload declares the method and the pathname. A `[name]` segment in the pathname is a path parameter, filled from the request's path parameter hash.
 
 ```javascript
