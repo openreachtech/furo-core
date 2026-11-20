@@ -31,6 +31,8 @@ export default class BaseAlphaRestfulApiLauncher extends BaseRestfulApiLauncher 
 }
 ```
 
+ブラウザーでは、`BASE_URL` に `''` や `'/api'` のような相対パスを指定できます。相対パスはページのオリジンに対して解決され、固定のパス名も保たれるため、プロキシ経由でアプリ自身のオリジンへリクエストを送れます。サーバーやサンドボックス化されたフレームのように、使用できるオリジンがページに無い場合、相対パスの `BASE_URL` は `TypeError` を投げます。`'/'` の `BASE_URL`、および `'//api.example.com'` のように `//` で始まる `BASE_URL` も、連結した URL が別のホストを指してしまうため `TypeError` を投げます。オリジンのルートは `''` と書きます。絶対 URL の `BASE_URL` は、どの環境でも同じ URL を構築します。
+
 ペイロードはメソッドとパス名を宣言します。パス名内の `[name]` セグメントはパスパラメータとなり、リクエストのパスパラメータハッシュから埋められます。
 
 ```javascript

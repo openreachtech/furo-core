@@ -5,7 +5,7 @@ Binds a payload class to a capsule class, and launches the request. Extend one p
 | member | description |
 | :-- | :-- |
 | `.create()` | Factory method. Takes an optional `config` overriding `.get:restfulApiConfig`. |
-| `.get:restfulApiConfig` | Configuration carrying `BASE_URL`. Must be overridden. |
+| `.get:restfulApiConfig` | Configuration carrying `BASE_URL`, which may be relative in a browser, with the origin root written `''`. Must be overridden. |
 | `.get:Payload` | The payload class for this endpoint. Must be overridden. |
 | `.get:Capsule` | The capsule class for this endpoint. Must be overridden. |
 | `.get:ResponseBodyParser` | The parser applied to the response body. Defaults to `JsonResponseBodyParser`. |
