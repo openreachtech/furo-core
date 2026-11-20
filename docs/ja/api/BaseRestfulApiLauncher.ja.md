@@ -5,7 +5,7 @@
 | member | description |
 | :-- | :-- |
 | `.create()` | ファクトリメソッド。`.get:restfulApiConfig` を上書きする任意の `config` を受け取ります。 |
-| `.get:restfulApiConfig` | `BASE_URL` を保持する設定。オーバーライドが必須です。 |
+| `.get:restfulApiConfig` | `BASE_URL` を保持する設定。ブラウザーでは `BASE_URL` に相対パスを指定でき、オリジンのルートは `''` と書きます。オーバーライドが必須です。 |
 | `.get:Payload` | このエンドポイントのペイロードクラス。オーバーライドが必須です。 |
 | `.get:Capsule` | このエンドポイントのカプセルクラス。オーバーライドが必須です。 |
 | `.get:ResponseBodyParser` | レスポンスボディに適用されるパーサー。既定値は `JsonResponseBodyParser` です。 |
