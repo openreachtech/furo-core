@@ -27,7 +27,7 @@
     "url": "https://github.com/openreachtech/furo-core/issues"
   },
   "dependencies": {
-    "graphql-ws": "^6.4.1"
+    "graphql-ws": "^6.4.2"
   },
   "devDependencies": {
     "@babel/core": "^8.1.0",
