@@ -1197,6 +1197,19 @@ describe('BaseGraphqlCapsule', () => {
       {
         params: {
           args: {
+            responseParcel: mockResponseParcel,
+            payload: mockPayload,
+            result: {
+              data: null,
+            },
+            abortedReason: LAUNCH_ABORTED_REASON.NONE,
+          },
+        },
+        expected: null,
+      },
+      {
+        params: {
+          args: {
             responseParcel: null,
             payload: null,
             result: null,
