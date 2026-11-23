@@ -1968,6 +1968,325 @@ describe('BaseRestfulApiPayload', () => {
             .toHaveProperty('href', expected)
         })
       })
+
+      describe('with relative baseUrl', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *     origin: string
+         *   }
+         *   expected: string
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: '',
+              query: {
+                alpha: 111,
+                beta: 222,
+              },
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
+              origin: 'https://alpha.example.com',
+            },
+            expected: 'https://alpha.example.com/alpha-endpoint?alpha=111&beta=222',
+          },
+          {
+            args: {
+              baseUrl: '/api',
+              query: {
+                gamma: 333,
+                delta: 444,
+              },
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+              origin: 'https://beta.example.com',
+            },
+            expected: 'https://beta.example.com/api/beta-endpoint?delta=444&gamma=333', // sorted query parameters
+          },
+          {
+            args: {
+              baseUrl: '/api/v1',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+              origin: 'http://localhost:3000',
+            },
+            expected: 'http://localhost:3000/api/v1/gamma-endpoint',
+          },
+        ]
+
+        test.each(cases)('baseUrl: "$args.baseUrl", origin: $tally.origin', ({ args, tally, expected }) => {
+          jest.spyOn(globalThis, 'origin', 'get')
+            .mockReturnValue(tally.origin)
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
+
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          const actual = payload.createRequestURL(args)
+
+          expect(actual)
+            .toBeInstanceOf(URL)
+          expect(actual)
+            .toHaveProperty('href', expected)
+        })
+      })
+
+      describe('with absolute baseUrl in any setting of the page origin', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *     origin: string | undefined
+         *   }
+         *   expected: string
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: 'https://alpha.example.com/v1',
+              query: {
+                alpha: 111,
+              },
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
+              origin: 'https://page.example.com', // normal page
+            },
+            expected: 'https://alpha.example.com/v1/alpha-endpoint?alpha=111',
+          },
+          {
+            args: {
+              baseUrl: 'https://beta.example.com/v2',
+              query: {
+                beta: 222,
+              },
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+              origin: 'null', // opaque origin, as in a sandboxed frame
+            },
+            expected: 'https://beta.example.com/v2/beta-endpoint?beta=222',
+          },
+          {
+            args: {
+              baseUrl: 'https://gamma.example.com',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+              origin: undefined, // no origin, as on a server
+            },
+            expected: 'https://gamma.example.com/gamma-endpoint',
+          },
+        ]
+
+        test.each(cases)('baseUrl: $args.baseUrl, origin: $tally.origin', ({ args, tally, expected }) => {
+          jest.spyOn(globalThis, 'origin', 'get')
+            .mockReturnValue(/** @type {string} */ (tally.origin))
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
+
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          const actual = payload.createRequestURL(args)
+
+          expect(actual)
+            .toBeInstanceOf(URL)
+          expect(actual)
+            .toHaveProperty('href', expected)
+        })
+      })
+    })
+
+    describe('to throw invalid URL error', () => {
+      describe('with relative baseUrl where the page has no usable origin', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *     origin: string | undefined
+         *   }
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: '',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
+              origin: 'null', // opaque origin, as in a sandboxed frame
+            },
+          },
+          {
+            args: {
+              baseUrl: '/api',
+              query: {},
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+              origin: 'null', // opaque origin, as in a sandboxed frame
+            },
+          },
+          {
+            args: {
+              baseUrl: '',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+              origin: undefined, // no origin, as on a server
+            },
+          },
+          {
+            args: {
+              baseUrl: '/api',
+              query: {},
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/delta-endpoint',
+              origin: undefined, // no origin, as on a server
+            },
+          },
+        ]
+
+        test.each(cases)('baseUrl: "$args.baseUrl", origin: $tally.origin', ({ args, tally }) => {
+          jest.spyOn(globalThis, 'origin', 'get')
+            .mockReturnValue(/** @type {string} */ (tally.origin))
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
+
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          expect(() => payload.createRequestURL(args))
+            .toThrow(/^Invalid (base )?URL/u)
+        })
+      })
+
+      describe('with baseUrl that makes a protocol-relative request URL where the page has a usable origin', () => {
+        /**
+         * @type {Array<{
+         *   args: {
+         *     baseUrl: string
+         *     query: Record<string, unknown>
+         *   }
+         *   tally: {
+         *     method: RestfulApiType.METHOD
+         *     pathname: string
+         *     origin: string
+         *   }
+         * }>}
+         */
+        const cases = [
+          {
+            args: {
+              baseUrl: '/',
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/alpha-endpoint',
+              origin: 'https://page.example.com',
+            },
+          },
+          {
+            args: {
+              baseUrl: '//api.example.com',
+              query: {},
+            },
+            tally: {
+              method: 'POST',
+              pathname: '/beta-endpoint',
+              origin: 'https://page.example.com',
+            },
+          },
+          {
+            args: {
+              baseUrl: '/\\api.example.com', // a backslash reads as a slash in an HTTP URL
+              query: {},
+            },
+            tally: {
+              method: 'GET',
+              pathname: '/gamma-endpoint',
+              origin: 'https://page.example.com',
+            },
+          },
+        ]
+
+        test.each(cases)('baseUrl: "$args.baseUrl"', ({ args, tally }) => {
+          jest.spyOn(globalThis, 'origin', 'get')
+            .mockReturnValue(tally.origin)
+          jest.spyOn(BaseRestfulApiPayload, 'method', 'get')
+            .mockReturnValue(tally.method)
+          jest.spyOn(BaseRestfulApiPayload, 'pathname', 'get')
+            .mockReturnValue(tally.pathname)
+
+          const payload = new BaseRestfulApiPayload({
+            query: args.query,
+            body: {},
+            pathParameterHash: {},
+            options: {},
+          })
+
+          expect(() => payload.createRequestURL(args))
+            .toThrow(/^Invalid (base )?URL/u)
+        })
+      })
     })
   })
 })
